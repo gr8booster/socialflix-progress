@@ -108,17 +108,45 @@ const PostModal = ({ post, isOpen, onClose }) => {
         <div className="flex flex-col md:flex-row h-full">
           {/* Left Side - Media */}
           <div className="flex-1 bg-black flex items-center justify-center relative">
-            <img 
-              src={post.media.type === 'video' ? post.media.thumbnail : post.media.url}
-              alt={post.content}
-              className="max-w-full max-h-full object-contain"
-            />
-            {post.media.type === 'video' && (
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-20 h-20 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center cursor-pointer hover:bg-white/30 transition-colors">
-                  <div className="w-0 h-0 border-t-[15px] border-t-transparent border-l-[25px] border-l-white border-b-[15px] border-b-transparent ml-1" />
-                </div>
-              </div>
+            {isYouTubeVideo ? (
+              // YouTube video player
+              <iframe
+                width="100%"
+                height="100%"
+                src={youtubeEmbedUrl}
+                title={post.content}
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                className="w-full h-full"
+              />
+            ) : isRedditVideo && post.media.url ? (
+              // Reddit video player
+              <video
+                controls
+                autoPlay
+                className="max-w-full max-h-full"
+                poster={post.media.thumbnail}
+              >
+                <source src={post.media.url} type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+            ) : (
+              // Regular image or thumbnail
+              <>
+                <img 
+                  src={post.media.type === 'video' ? post.media.thumbnail : post.media.url}
+                  alt={post.content}
+                  className="max-w-full max-h-full object-contain"
+                />
+                {post.media.type === 'video' && !isYouTubeVideo && !isRedditVideo && (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="w-20 h-20 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center cursor-pointer hover:bg-white/30 transition-colors">
+                      <div className="w-0 h-0 border-t-[15px] border-t-transparent border-l-[25px] border-l-white border-b-[15px] border-b-transparent ml-1" />
+                    </div>
+                  </div>
+                )}
+              </>
             )}
           </div>
 

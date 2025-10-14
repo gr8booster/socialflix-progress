@@ -1,10 +1,23 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 import { X, Heart, MessageCircle, Share2, Send } from 'lucide-react';
 import { Dialog, DialogContent } from './ui/dialog';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
-import { formatNumber } from '../mockData';
 import { toast } from '../hooks/use-toast';
+
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const API = `${BACKEND_URL}/api`;
+
+const formatNumber = (num) => {
+  if (num >= 1000000) {
+    return (num / 1000000).toFixed(1) + 'M';
+  }
+  if (num >= 1000) {
+    return (num / 1000).toFixed(1) + 'K';
+  }
+  return num.toString();
+};
 
 const PostModal = ({ post, isOpen, onClose }) => {
   const [isLiked, setIsLiked] = useState(false);

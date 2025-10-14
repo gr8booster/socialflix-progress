@@ -1,10 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import Navbar from '../components/Navbar';
 import Hero from '../components/Hero';
 import PostCarousel from '../components/PostCarousel';
 import PostModal from '../components/PostModal';
 import { Toaster } from '../components/ui/toaster';
-import { mockViralPosts, getPostsByPlatform, getPostsByCategory } from '../mockData';
+
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const API = `${BACKEND_URL}/api`;
 
 const Home = () => {
   const [selectedPost, setSelectedPost] = useState(null);

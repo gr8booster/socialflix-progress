@@ -71,6 +71,41 @@ const Admin = () => {
     }
   };
 
+  const fetchYouTubeVideos = async () => {
+    try {
+      setFetchingYoutube(true);
+      toast({
+        title: "Fetching YouTube Videos...",
+        description: "This may take a few seconds",
+      });
+
+      const response = await axios.post(`${API}/scraper/fetch-youtube?limit=50`);
+      
+      if (response.data.success) {
+        toast({
+          title: "Success!",
+          description: `Added ${response.data.posts_added} new YouTube videos`,
+        });
+        // Refresh status
+        await fetchStatus();
+      } else {
+        toast({
+          title: "No New Videos",
+          description: response.data.message,
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching YouTube videos:', error);
+      toast({
+        title: "Error",
+        description: "Failed to fetch YouTube videos",
+        variant: "destructive"
+      });
+    } finally {
+      setFetchingYoutube(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 p-8">
       <div className="max-w-6xl mx-auto">

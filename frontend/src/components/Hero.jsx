@@ -1,10 +1,44 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { Play, Info, Heart, MessageCircle, Share2 } from 'lucide-react';
 import { Button } from './ui/button';
-import { getFeaturedPost, formatNumber } from '../mockData';
+
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const API = `${BACKEND_URL}/api`;
+
+const formatNumber = (num) => {
+  if (num >= 1000000) {
+    return (num / 1000000).toFixed(1) + 'M';
+  }
+  if (num >= 1000) {
+    return (num / 1000).toFixed(1) + 'K';
+  }
+  return num.toString();
+};
 
 const Hero = ({ onViewPost }) => {
-  const featuredPost = getFeaturedPost();
+  const [featuredPost, setFeaturedPost] = useState(null);
+
+  useEffect(() => {
+    fetchFeaturedPost();
+  }, []);
+
+  const fetchFeaturedPost = async () => {
+    try {
+      const response = await axios.get(`${API}/posts/featured`);
+      setFeaturedPost(response.data);
+    } catch (error) {
+      console.error('Error fetching featured post:', error);
+    }
+  };
+
+  if (!featuredPost) {
+    return (
+      <div className="relative h-[85vh] w-full bg-black flex items-center justify-center">
+        <div className="text-white text-xl">Loading...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="relative h-[85vh] w-full overflow-hidden">

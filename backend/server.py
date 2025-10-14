@@ -60,7 +60,7 @@ async def startup_db():
 # API Routes
 @api_router.get("/")
 async def root():
-    return {"message": "Welcome to SocialFlix API"}
+    return {"message": "Welcome to ChyllApp API"}
 
 
 @api_router.get("/posts", response_model=List[Post])

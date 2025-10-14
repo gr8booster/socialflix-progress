@@ -48,6 +48,9 @@ async def seed_database():
         logger.info(f"Database already contains {count} posts")
 
 
+# Initialize Reddit scraper
+reddit_scraper = RedditScraper()
+
 # Startup event to seed database
 @app.on_event("startup")
 async def startup_db():

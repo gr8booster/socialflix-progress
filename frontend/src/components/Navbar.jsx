@@ -24,7 +24,7 @@ const Navbar = () => {
         {/* Logo */}
         <div className="flex items-center gap-8">
           <h1 className="text-3xl font-bold text-red-600 tracking-tight">
-            SocialFlix
+            ChyllApp
           </h1>
           
           {/* Navigation Links */}

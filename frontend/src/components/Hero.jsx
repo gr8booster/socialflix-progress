@@ -109,7 +109,7 @@ const Hero = ({ onViewPost }) => {
         <div className="flex flex-wrap gap-4">
           <Button 
             size="lg" 
-            className="bg-white text-black hover:bg-white/90 font-semibold px-8 transition-all duration-300 hover:scale-105"
+            className="bg-white text-black hover:bg-white/90 font-semibold px-8 transition-all duration-300 hover:scale-110 hover:shadow-2xl transform"
             onClick={() => onViewPost(featuredPost)}
           >
             <Play className="w-5 h-5 mr-2" fill="black" />
@@ -118,7 +118,7 @@ const Hero = ({ onViewPost }) => {
           <Button 
             size="lg" 
             variant="outline" 
-            className="bg-gray-500/30 text-white border-white/40 hover:bg-gray-500/50 backdrop-blur-md font-semibold px-8 transition-all duration-300 hover:scale-105"
+            className="bg-gray-500/30 text-white border-white/40 hover:bg-gray-500/50 backdrop-blur-md font-semibold px-8 transition-all duration-300 hover:scale-110 hover:shadow-2xl transform"
             onClick={() => onViewPost(featuredPost)}
           >
             <Info className="w-5 h-5 mr-2" />

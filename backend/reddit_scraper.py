@@ -117,8 +117,11 @@ class RedditScraper:
         Returns:
             List of viral posts
         """
-        # Fetch from r/popular which aggregates trending content
-        return self.fetch_posts("popular", sort="hot", limit=limit)
+        # Use specific popular subreddits instead of r/popular
+        popular_subs = ["pics", "funny", "videos", "interestingasfuck", "nextfuckinglevel", "aww"]
+        posts_per_sub = max(limit // len(popular_subs), 5)
+        
+        return self.fetch_multiple_subreddits(popular_subs, limit_per_sub=posts_per_sub)
     
     def _transform_post(self, reddit_post: Dict) -> Dict:
         """

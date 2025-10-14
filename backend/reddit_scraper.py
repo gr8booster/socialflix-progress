@@ -45,11 +45,12 @@ class RedditScraper:
             List of post dictionaries
         """
         try:
-            url = f"{self.BASE_URL}/r/{subreddit}/{sort}.json"
+            # Use old.reddit.com which is more permissive
+            url = f"https://old.reddit.com/r/{subreddit}/{sort}.json"
             params = {'limit': min(limit, 100)}
             
             logger.info(f"Fetching posts from r/{subreddit} ({sort})")
-            response = self.session.get(url, params=params, timeout=10)
+            response = self.session.get(url, params=params, timeout=15)
             response.raise_for_status()
             
             data = response.json()
@@ -57,7 +58,9 @@ class RedditScraper:
             
             for child in data.get('data', {}).get('children', []):
                 post_data = child.get('data', {})
-                posts.append(self._transform_post(post_data))
+                # Only process posts with media
+                if self._has_valid_media(post_data):
+                    posts.append(self._transform_post(post_data))
             
             logger.info(f"Successfully fetched {len(posts)} posts from r/{subreddit}")
             return posts
@@ -65,6 +68,22 @@ class RedditScraper:
         except requests.RequestException as e:
             logger.error(f"Error fetching posts from r/{subreddit}: {e}")
             return []
+    
+    def _has_valid_media(self, reddit_post: Dict) -> bool:
+        """Check if post has valid media (image or video)"""
+        # Has image
+        if reddit_post.get('post_hint') == 'image':
+            return True
+        # Has video
+        if reddit_post.get('is_video'):
+            return True
+        # Has preview images
+        if 'preview' in reddit_post and reddit_post['preview']:
+            return True
+        # Has valid thumbnail
+        if reddit_post.get('thumbnail') and reddit_post['thumbnail'].startswith('http'):
+            return True
+        return False
     
     def fetch_multiple_subreddits(self, subreddit_list: List[str], limit_per_sub: int = 10) -> List[Dict]:
         """

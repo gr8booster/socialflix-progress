@@ -168,7 +168,7 @@ const Home = () => {
             </div>
           </div>
           <div className="text-center text-gray-500 text-sm">
-            <p>© 2025 SocialFlix. All rights reserved.</p>
+            <p>© 2025 ChyllApp. All rights reserved.</p>
             <p className="mt-2">Experience the best viral content from all social media platforms in one place.</p>
           </div>
         </div>

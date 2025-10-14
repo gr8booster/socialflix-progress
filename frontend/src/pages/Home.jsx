@@ -12,6 +12,32 @@ const API = `${BACKEND_URL}/api`;
 const Home = () => {
   const [selectedPost, setSelectedPost] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [allPosts, setAllPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch all posts on component mount
+  useEffect(() => {
+    fetchPosts();
+  }, []);
+
+  const fetchPosts = async () => {
+    try {
+      const response = await axios.get(`${API}/posts`);
+      setAllPosts(response.data);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching posts:', error);
+      setLoading(false);
+    }
+  };
+
+  const getPostsByPlatform = (platform) => {
+    return allPosts.filter(post => post.platform === platform);
+  };
+
+  const getPostsByCategory = (category) => {
+    return allPosts.filter(post => post.category === category);
+  };
 
   const handleViewPost = (post) => {
     setSelectedPost(post);
@@ -22,6 +48,14 @@ const Home = () => {
     setIsModalOpen(false);
     setTimeout(() => setSelectedPost(null), 300);
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="text-white text-2xl">Loading...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-black">

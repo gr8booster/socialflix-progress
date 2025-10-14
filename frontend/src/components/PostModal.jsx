@@ -26,6 +26,13 @@ const PostModal = ({ post, isOpen, onClose }) => {
 
   if (!post) return null;
 
+  // Check if it's a YouTube video
+  const isYouTubeVideo = post.platform === 'youtube' && post.youtube_id;
+  const youtubeEmbedUrl = isYouTubeVideo ? `https://www.youtube.com/embed/${post.youtube_id}?autoplay=1` : null;
+  
+  // Check if it's a Reddit video
+  const isRedditVideo = post.platform === 'reddit' && post.media.type === 'video';
+
   const handleLike = async () => {
     try {
       const response = await axios.post(`${API}/posts/${post.id}/like`, {

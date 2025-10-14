@@ -14,7 +14,7 @@ const formatNumber = (num) => {
 const PostCard = ({ post, onClick }) => {
   return (
     <div 
-      className="group relative flex-shrink-0 w-[280px] md:w-[320px] cursor-pointer transition-all duration-300 hover:scale-105"
+      className="group relative flex-shrink-0 w-[280px] md:w-[320px] cursor-pointer transition-all duration-500 hover:scale-110 hover:z-50"
       onClick={() => onClick(post)}
     >
       {/* Card Container */}

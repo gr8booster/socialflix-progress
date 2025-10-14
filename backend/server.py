@@ -233,18 +233,66 @@ async def fetch_reddit_posts(limit: int = 50):
         raise HTTPException(status_code=500, detail=f"Error fetching Reddit posts: {str(e)}")
 
 
+@api_router.post("/scraper/fetch-youtube")
+async def fetch_youtube_videos(limit: int = 50):
+    """
+    Fetch trending videos from YouTube and save to database
+    
+    Args:
+        limit: Number of videos to fetch (default 50, max 50)
+    """
+    try:
+        logger.info(f"Fetching {limit} trending videos from YouTube...")
+        
+        # Fetch videos from YouTube
+        youtube_videos = youtube_scraper.fetch_trending_videos(max_results=limit)
+        
+        if not youtube_videos:
+            return {
+                "success": False,
+                "message": "No videos fetched from YouTube",
+                "posts_added": 0
+            }
+        
+        # Save videos to database (avoid duplicates)
+        posts_added = 0
+        for video_data in youtube_videos:
+            # Check if video already exists (by youtube_id)
+            existing_post = await db.posts.find_one({"youtube_id": video_data.get("youtube_id")})
+            
+            if not existing_post:
+                post = Post(**video_data)
+                await db.posts.insert_one(post.dict())
+                posts_added += 1
+        
+        logger.info(f"Successfully added {posts_added} new YouTube videos to database")
+        
+        return {
+            "success": True,
+            "message": f"Successfully fetched and saved {posts_added} YouTube videos",
+            "posts_added": posts_added,
+            "total_fetched": len(youtube_videos)
+        }
+        
+    except Exception as e:
+        logger.error(f"Error fetching YouTube videos: {e}")
+        raise HTTPException(status_code=500, detail=f"Error fetching YouTube videos: {str(e)}")
+
+
 @api_router.get("/scraper/status")
 async def scraper_status():
     """Get status of scraper and database"""
     try:
         total_posts = await db.posts.count_documents({})
         reddit_posts = await db.posts.count_documents({"platform": "reddit"})
-        mock_posts = total_posts - reddit_posts
+        youtube_posts = await db.posts.count_documents({"platform": "youtube"})
+        mock_posts = total_posts - reddit_posts - youtube_posts
         
         return {
             "status": "active",
             "total_posts": total_posts,
             "reddit_posts": reddit_posts,
+            "youtube_posts": youtube_posts,
             "mock_posts": mock_posts,
             "scraper_ready": True
         }

@@ -25,14 +25,49 @@ class RedditScraper:
     
     def __init__(self):
         self.session = requests.Session()
-        # Use a more realistic user agent to avoid being blocked
+        self.client_id = os.getenv('REDDIT_CLIENT_ID')
+        self.client_secret = os.getenv('REDDIT_CLIENT_SECRET')
+        self.access_token = None
+        
+        # Get OAuth access token if credentials are available
+        if self.client_id and self.client_secret:
+            self._authenticate()
+        
+        # Use a more realistic user agent
         self.session.headers.update({
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'User-Agent': 'ChyllApp:v1.0.0 (by /u/chyllapp)',
             'Accept': 'application/json',
-            'Accept-Language': 'en-US,en;q=0.9',
-            'Accept-Encoding': 'gzip, deflate',
-            'Connection': 'keep-alive'
+            'Accept-Language': 'en-US,en;q=0.9'
         })
+    
+    def _authenticate(self):
+        """Authenticate with Reddit OAuth"""
+        try:
+            auth = requests.auth.HTTPBasicAuth(self.client_id, self.client_secret)
+            data = {
+                'grant_type': 'client_credentials',
+                'device_id': 'chyllapp_device'
+            }
+            headers = {'User-Agent': 'ChyllApp:v1.0.0 (by /u/chyllapp)'}
+            
+            response = requests.post(
+                'https://www.reddit.com/api/v1/access_token',
+                auth=auth,
+                data=data,
+                headers=headers,
+                timeout=10
+            )
+            
+            if response.status_code == 200:
+                self.access_token = response.json().get('access_token')
+                self.session.headers.update({
+                    'Authorization': f'Bearer {self.access_token}'
+                })
+                logger.info("Successfully authenticated with Reddit OAuth")
+            else:
+                logger.error(f"Failed to authenticate with Reddit: {response.status_code}")
+        except Exception as e:
+            logger.error(f"Error authenticating with Reddit: {e}")
     
     def fetch_posts(self, subreddit: str = "popular", sort: str = "hot", limit: int = 25) -> List[Dict]:
         """

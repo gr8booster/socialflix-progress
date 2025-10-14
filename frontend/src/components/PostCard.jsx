@@ -29,8 +29,8 @@ const PostCard = ({ post, onClick }) => {
           
           {/* Play Button for Videos */}
           {post.media.type === 'video' && (
-            <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/30 transition-colors">
-              <div className="w-16 h-16 rounded-full bg-white/90 flex items-center justify-center backdrop-blur-sm group-hover:scale-110 transition-transform">
+            <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/40 transition-all duration-300">
+              <div className="w-16 h-16 rounded-full bg-white/90 flex items-center justify-center backdrop-blur-sm group-hover:scale-125 group-hover:bg-white transition-all duration-300 animate-pulse">
                 <Play className="w-8 h-8 text-black ml-1" fill="black" />
               </div>
             </div>

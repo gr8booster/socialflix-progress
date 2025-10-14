@@ -82,11 +82,15 @@ class RedditScraper:
             List of post dictionaries
         """
         try:
-            # Use old.reddit.com which is more permissive
-            url = f"https://old.reddit.com/r/{subreddit}/{sort}.json"
+            # Use OAuth API if available, otherwise fallback to old.reddit.com
+            if self.access_token:
+                url = f"https://oauth.reddit.com/r/{subreddit}/{sort}"
+            else:
+                url = f"https://old.reddit.com/r/{subreddit}/{sort}.json"
+            
             params = {'limit': min(limit, 100)}
             
-            logger.info(f"Fetching posts from r/{subreddit} ({sort})")
+            logger.info(f"Fetching posts from r/{subreddit} ({sort}) - OAuth: {bool(self.access_token)}")
             response = self.session.get(url, params=params, timeout=15)
             response.raise_for_status()
             

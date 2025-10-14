@@ -11,6 +11,7 @@ from datetime import datetime
 from models import Post, PostCreate, LikeRequest, CommentRequest, ShareRequest, PlatformInfo
 from seed_data import seed_posts, platform_info
 from reddit_scraper import RedditScraper
+from youtube_scraper import YouTubeScraper
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')

@@ -227,6 +227,43 @@ const Admin = () => {
             </CardContent>
           </Card>
 
+          {/* YouTube Scraper */}
+          <Card className="bg-gray-800 border-gray-700">
+            <CardHeader>
+              <CardTitle className="text-white flex items-center gap-2">
+                <div className="w-8 h-8 rounded-full bg-red-600 flex items-center justify-center text-white">
+                  ▶
+                </div>
+                YouTube Scraper
+              </CardTitle>
+              <CardDescription className="text-gray-400">
+                Fetch trending videos from YouTube
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-gray-300 mb-4">
+                Click below to fetch the latest trending videos from YouTube. This will add popular video content to your database.
+              </p>
+              <Button 
+                onClick={fetchYouTubeVideos}
+                disabled={fetchingYoutube}
+                className="w-full bg-red-600 hover:bg-red-700 text-white"
+              >
+                {fetchingYoutube ? (
+                  <>
+                    <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                    Fetching...
+                  </>
+                ) : (
+                  <>
+                    <RefreshCw className="w-4 h-4 mr-2" />
+                    Fetch YouTube Videos
+                  </>
+                )}
+              </Button>
+            </CardContent>
+          </Card>
+
           {/* Database Info */}
           <Card className="bg-gray-800 border-gray-700">
             <CardHeader>

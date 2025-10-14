@@ -113,7 +113,7 @@ export const mockViralPosts = [
       username: '@neiltyson',
       avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop'
     },
-    content: 'The Universe is under no obligation to make sense to you. But it's fun trying to figure it out anyway.',
+    content: 'The Universe is under no obligation to make sense to you. But it\'s fun trying to figure it out anyway.',
     media: {
       type: 'image',
       url: 'https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=800&h=600&fit=crop'

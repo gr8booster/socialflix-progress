@@ -75,7 +75,7 @@ const Admin = () => {
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-white mb-2">SocialFlix Admin</h1>
+          <h1 className="text-4xl font-bold text-white mb-2">ChyllApp Admin</h1>
           <p className="text-gray-400">Manage viral content and scraper settings</p>
         </div>
 

@@ -42,11 +42,17 @@ const PostCarousel = ({ title, posts, onPostClick }) => {
       {/* Posts Container */}
       <div 
         ref={scrollRef}
-        className="flex gap-4 overflow-x-auto scrollbar-hide px-8 md:px-16 scroll-smooth"
+        className="flex gap-6 overflow-x-auto scrollbar-hide px-8 md:px-16 scroll-smooth"
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
-        {posts.map((post) => (
-          <PostCard key={post.id} post={post} onClick={onPostClick} />
+        {posts.map((post, index) => (
+          <div 
+            key={post.id}
+            className="animate-in fade-in slide-in-from-right"
+            style={{ animationDelay: `${index * 0.1}s`, animationFillMode: 'backwards' }}
+          >
+            <PostCard post={post} onClick={onPostClick} />
+          </div>
         ))}
       </div>
     </div>

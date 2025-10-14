@@ -26,33 +26,73 @@ const PostModal = ({ post, isOpen, onClose }) => {
 
   if (!post) return null;
 
-  const handleLike = () => {
-    setIsLiked(!isLiked);
-    setLocalLikes(prev => isLiked ? prev - 1 : prev + 1);
-    toast({
-      title: isLiked ? "Unliked" : "Liked!",
-      description: isLiked ? "Removed from your likes" : "Added to your likes",
-      duration: 2000,
-    });
-  };
-
-  const handleComment = () => {
-    if (comment.trim()) {
+  const handleLike = async () => {
+    try {
+      const response = await axios.post(`${API}/posts/${post.id}/like`, {
+        userId: 'demo-user'
+      });
+      setIsLiked(!isLiked);
+      setLocalLikes(response.data.likes);
       toast({
-        title: "Comment Posted!",
-        description: "Your comment has been added",
+        title: "Liked!",
+        description: "Added to your likes",
         duration: 2000,
       });
-      setComment('');
+    } catch (error) {
+      console.error('Error liking post:', error);
+      toast({
+        title: "Error",
+        description: "Failed to like post",
+        duration: 2000,
+        variant: "destructive"
+      });
     }
   };
 
-  const handleShare = () => {
-    toast({
-      title: "Link Copied!",
-      description: "Post link copied to clipboard",
-      duration: 2000,
-    });
+  const handleComment = async () => {
+    if (comment.trim()) {
+      try {
+        const response = await axios.post(`${API}/posts/${post.id}/comment`, {
+          userId: 'demo-user',
+          comment: comment
+        });
+        toast({
+          title: "Comment Posted!",
+          description: "Your comment has been added",
+          duration: 2000,
+        });
+        setComment('');
+      } catch (error) {
+        console.error('Error posting comment:', error);
+        toast({
+          title: "Error",
+          description: "Failed to post comment",
+          duration: 2000,
+          variant: "destructive"
+        });
+      }
+    }
+  };
+
+  const handleShare = async () => {
+    try {
+      const response = await axios.post(`${API}/posts/${post.id}/share`, {
+        userId: 'demo-user'
+      });
+      toast({
+        title: "Shared!",
+        description: "Post shared successfully",
+        duration: 2000,
+      });
+    } catch (error) {
+      console.error('Error sharing post:', error);
+      toast({
+        title: "Error",
+        description: "Failed to share post",
+        duration: 2000,
+        variant: "destructive"
+      });
+    }
   };
 
   return (

@@ -38,7 +38,7 @@ const PostCard = ({ post, onClick }) => {
           
           {/* Platform Badge */}
           <div 
-            className="absolute top-3 left-3 px-3 py-1 rounded-full text-white text-xs font-bold uppercase backdrop-blur-md"
+            className="absolute top-3 left-3 px-4 py-2 rounded-full text-white text-xs font-bold uppercase backdrop-blur-md shadow-lg transform group-hover:scale-110 transition-transform duration-300"
             style={{ backgroundColor: post.platformColor }}
           >
             {post.platform}

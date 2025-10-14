@@ -3,6 +3,8 @@ import logging
 from typing import List, Dict, Optional
 from datetime import datetime
 import time
+import os
+import base64
 
 logger = logging.getLogger(__name__)
 

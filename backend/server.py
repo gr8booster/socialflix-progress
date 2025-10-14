@@ -179,7 +179,79 @@ async def share_post(post_id: str, request: ShareRequest):
 @api_router.get("/platforms", response_model=List[PlatformInfo])
 async def get_platforms():
     """Get list of available platforms"""
-    return [PlatformInfo(**p) for p in platform_info]
+    platforms = platform_info + [
+        {"platform": "reddit", "name": "Reddit", "color": "#FF4500", "icon": "🔥"}
+    ]
+    return [PlatformInfo(**p) for p in platforms]
+
+
+@api_router.post("/scraper/fetch-reddit")
+async def fetch_reddit_posts(limit: int = 50):
+    """
+    Fetch viral posts from Reddit and save to database
+    
+    Args:
+        limit: Number of posts to fetch (default 50)
+    """
+    try:
+        logger.info(f"Fetching {limit} posts from Reddit...")
+        
+        # Fetch posts from Reddit
+        reddit_posts = reddit_scraper.fetch_viral_content(limit=limit)
+        
+        if not reddit_posts:
+            return {
+                "success": False,
+                "message": "No posts fetched from Reddit",
+                "posts_added": 0
+            }
+        
+        # Save posts to database (avoid duplicates)
+        posts_added = 0
+        for post_data in reddit_posts:
+            # Check if post already exists (by reddit_id if available)
+            existing_post = await db.posts.find_one({"reddit_id": post_data.get("reddit_id")})
+            
+            if not existing_post:
+                post = Post(**post_data)
+                await db.posts.insert_one(post.dict())
+                posts_added += 1
+        
+        logger.info(f"Successfully added {posts_added} new Reddit posts to database")
+        
+        return {
+            "success": True,
+            "message": f"Successfully fetched and saved {posts_added} Reddit posts",
+            "posts_added": posts_added,
+            "total_fetched": len(reddit_posts)
+        }
+        
+    except Exception as e:
+        logger.error(f"Error fetching Reddit posts: {e}")
+        raise HTTPException(status_code=500, detail=f"Error fetching Reddit posts: {str(e)}")
+
+
+@api_router.get("/scraper/status")
+async def scraper_status():
+    """Get status of scraper and database"""
+    try:
+        total_posts = await db.posts.count_documents({})
+        reddit_posts = await db.posts.count_documents({"platform": "reddit"})
+        mock_posts = total_posts - reddit_posts
+        
+        return {
+            "status": "active",
+            "total_posts": total_posts,
+            "reddit_posts": reddit_posts,
+            "mock_posts": mock_posts,
+            "scraper_ready": True
+        }
+    except Exception as e:
+        logger.error(f"Error getting scraper status: {e}")
+        return {
+            "status": "error",
+            "error": str(e)
+        }
 
 
 # Include the router in the main app

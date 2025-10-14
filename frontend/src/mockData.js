@@ -1,4 +1,4 @@
-// Mock viral social media content for SocialFlix
+// Mock viral social media content for ChyllApp
 
 export const mockViralPosts = [
   // Instagram Posts

@@ -18,13 +18,13 @@ const PostCard = ({ post, onClick }) => {
       onClick={() => onClick(post)}
     >
       {/* Card Container */}
-      <div className="relative rounded-lg overflow-hidden bg-gray-900 shadow-xl">
+      <div className="relative rounded-lg overflow-hidden bg-gray-900 shadow-2xl group-hover:shadow-[0_0_30px_rgba(255,255,255,0.3)] transition-all duration-500">
         {/* Image/Video Thumbnail */}
         <div className="relative aspect-[3/4] overflow-hidden">
           <img 
             src={post.media.type === 'video' ? post.media.thumbnail : post.media.url}
             alt={post.content}
-            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-125 group-hover:brightness-110"
           />
           
           {/* Play Button for Videos */}

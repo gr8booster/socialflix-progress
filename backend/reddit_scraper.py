@@ -23,8 +23,13 @@ class RedditScraper:
     
     def __init__(self):
         self.session = requests.Session()
+        # Use a more realistic user agent to avoid being blocked
         self.session.headers.update({
-            'User-Agent': 'SocialFlix/1.0 (Viral Content Aggregator)'
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'Accept': 'application/json',
+            'Accept-Language': 'en-US,en;q=0.9',
+            'Accept-Encoding': 'gzip, deflate',
+            'Connection': 'keep-alive'
         })
     
     def fetch_posts(self, subreddit: str = "popular", sort: str = "hot", limit: int = 25) -> List[Dict]:

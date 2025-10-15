@@ -116,43 +116,57 @@ const PostModal = ({ post, isOpen, onClose }) => {
           <div className="flex-1 bg-black flex items-center justify-center relative">
             {isYouTubeVideo ? (
               // YouTube video player
-              <iframe
-                width="100%"
-                height="100%"
-                src={youtubeEmbedUrl}
-                title={post.content}
-                frameBorder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-                className="w-full h-full"
-              />
+              <div className="w-full h-full relative">
+                <iframe
+                  width="100%"
+                  height="100%"
+                  src={youtubeEmbedUrl}
+                  title={post.content}
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                  className="w-full h-full"
+                />
+              </div>
             ) : isRedditVideo && post.media.url ? (
               // Reddit video player
               <video
                 controls
                 autoPlay
+                loop
                 className="max-w-full max-h-full"
                 poster={post.media.thumbnail}
               >
                 <source src={post.media.url} type="video/mp4" />
                 Your browser does not support the video tag.
               </video>
-            ) : (
-              // Regular image or thumbnail
-              <>
+            ) : isTikTokVideo || isAnyVideo ? (
+              // TikTok and other videos - show thumbnail with prominent play overlay
+              <div className="relative w-full h-full flex items-center justify-center">
                 <img 
-                  src={post.media.type === 'video' ? post.media.thumbnail : post.media.url}
+                  src={post.media.thumbnail || post.media.url}
                   alt={post.content}
                   className="max-w-full max-h-full object-contain"
                 />
-                {post.media.type === 'video' && !isYouTubeVideo && !isRedditVideo && (
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-20 h-20 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center cursor-pointer hover:bg-white/30 transition-colors">
-                      <div className="w-0 h-0 border-t-[15px] border-t-transparent border-l-[25px] border-l-white border-b-[15px] border-b-transparent ml-1" />
+                <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/40">
+                  {/* Large pulsing play button */}
+                  <div className="relative mb-4">
+                    <div className="absolute inset-0 w-24 h-24 rounded-full bg-red-600 opacity-30 animate-ping"></div>
+                    <div className="relative w-24 h-24 rounded-full bg-gradient-to-br from-red-600 to-red-700 flex items-center justify-center shadow-2xl border-4 border-white cursor-pointer hover:scale-110 transition-transform">
+                      <div className="w-0 h-0 border-t-[20px] border-t-transparent border-l-[32px] border-l-white border-b-[20px] border-b-transparent ml-2" />
                     </div>
                   </div>
-                )}
-              </>
+                  <div className="text-white text-xl font-bold tracking-wider">TAP TO PLAY</div>
+                  <div className="text-gray-300 text-sm mt-2">Video content from {post.platform}</div>
+                </div>
+              </div>
+            ) : (
+              // Regular image
+              <img 
+                src={post.media.url}
+                alt={post.content}
+                className="max-w-full max-h-full object-contain"
+              />
             )}
           </div>
 

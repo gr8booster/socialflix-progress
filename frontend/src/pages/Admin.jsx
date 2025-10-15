@@ -401,6 +401,43 @@ const Admin = () => {
             </CardContent>
           </Card>
 
+          {/* Instagram Scraper */}
+          <Card className="bg-gray-800 border-gray-700">
+            <CardHeader>
+              <CardTitle className="text-white flex items-center gap-2">
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-600 via-pink-600 to-orange-500 flex items-center justify-center text-white">
+                  📷
+                </div>
+                Instagram Scraper
+              </CardTitle>
+              <CardDescription className="text-gray-400">
+                Fetch trending posts from Instagram
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-gray-300 mb-4">
+                Click below to fetch the latest trending posts from Instagram with high engagement.
+              </p>
+              <Button 
+                onClick={fetchInstagramPosts}
+                disabled={fetchingInstagram}
+                className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+              >
+                {fetchingInstagram ? (
+                  <>
+                    <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                    Fetching...
+                  </>
+                ) : (
+                  <>
+                    <RefreshCw className="w-4 h-4 mr-2" />
+                    Fetch Instagram Posts
+                  </>
+                )}
+              </Button>
+            </CardContent>
+          </Card>
+
           {/* Database Info */}
           <Card className="bg-gray-800 border-gray-700">
             <CardHeader>

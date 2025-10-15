@@ -63,6 +63,9 @@ class User(BaseModel):
     name: str
     picture: Optional[str] = None
     google_id: Optional[str] = None
+    bio: Optional[str] = None
+    favorite_posts: List[str] = Field(default_factory=list)
+    favorite_platforms: List[str] = Field(default_factory=list)
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
@@ -81,3 +84,22 @@ class UserResponse(BaseModel):
     email: str
     name: str
     picture: Optional[str] = None
+    bio: Optional[str] = None
+    favorite_posts: List[str] = Field(default_factory=list)
+    favorite_platforms: List[str] = Field(default_factory=list)
+
+class UserProfileUpdate(BaseModel):
+    name: Optional[str] = None
+    bio: Optional[str] = None
+    picture: Optional[str] = None
+
+class UserPreferences(BaseModel):
+    favorite_platforms: List[str]
+
+class ActivityItem(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    user_id: str
+    action: str  # 'like', 'comment', 'share', 'favorite'
+    post_id: Optional[str] = None
+    details: Optional[str] = None
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))

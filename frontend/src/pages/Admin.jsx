@@ -314,6 +314,43 @@ const Admin = () => {
             </CardContent>
           </Card>
 
+          {/* Twitter Scraper */}
+          <Card className="bg-gray-800 border-gray-700">
+            <CardHeader>
+              <CardTitle className="text-white flex items-center gap-2">
+                <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white">
+                  𝕏
+                </div>
+                Twitter/X Scraper
+              </CardTitle>
+              <CardDescription className="text-gray-400">
+                Fetch trending tweets from Twitter/X
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-gray-300 mb-4">
+                Click below to fetch the latest trending tweets from Twitter/X with high engagement.
+              </p>
+              <Button 
+                onClick={fetchTwitterPosts}
+                disabled={fetchingTwitter}
+                className="w-full bg-blue-500 hover:bg-blue-600 text-white"
+              >
+                {fetchingTwitter ? (
+                  <>
+                    <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                    Fetching...
+                  </>
+                ) : (
+                  <>
+                    <RefreshCw className="w-4 h-4 mr-2" />
+                    Fetch Twitter Posts
+                  </>
+                )}
+              </Button>
+            </CardContent>
+          </Card>
+
           {/* Database Info */}
           <Card className="bg-gray-800 border-gray-700">
             <CardHeader>

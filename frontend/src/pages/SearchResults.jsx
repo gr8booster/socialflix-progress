@@ -159,6 +159,7 @@ const SearchResults = () => {
                 key={post.id}
                 post={post}
                 onClick={() => handleCardClick(post)}
+                isGridLayout={true}
               />
             ))}
           </div>

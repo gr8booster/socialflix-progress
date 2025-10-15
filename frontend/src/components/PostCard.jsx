@@ -12,10 +12,20 @@ const formatNumber = (num) => {
 };
 
 const PostCard = ({ post, onClick }) => {
+  const [isClicked, setIsClicked] = React.useState(false);
+  
+  const handleClick = () => {
+    setIsClicked(true);
+    setTimeout(() => {
+      onClick(post);
+      setIsClicked(false);
+    }, 200);
+  };
+
   return (
     <div 
-      className="group relative flex-shrink-0 w-[280px] md:w-[320px] cursor-pointer transition-all duration-500 hover:scale-110 hover:z-50"
-      onClick={() => onClick(post)}
+      className={`group relative flex-shrink-0 w-[280px] md:w-[320px] cursor-pointer transition-all duration-500 hover:scale-110 hover:z-50 ${isClicked ? 'scale-95' : ''}`}
+      onClick={handleClick}
     >
       {/* Card Container */}
       <div className="relative rounded-lg overflow-hidden bg-gray-900 shadow-2xl group-hover:shadow-[0_0_30px_rgba(255,255,255,0.3)] transition-all duration-500">

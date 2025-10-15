@@ -1,11 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Bell, User } from 'lucide-react';
+import { Search, Bell, User, LogOut } from 'lucide-react';
 import { Input } from './ui/input';
 import { Button } from './ui/button';
+import { useAuth } from '../contexts/AuthContext';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from './ui/dropdown-menu';
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const { user, login, logout, loading, processingSession } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -57,9 +67,48 @@ const Navbar = () => {
           <Button variant="ghost" size="icon" className="text-white hover:text-gray-300">
             <Bell className="w-5 h-5" />
           </Button>
-          <Button variant="ghost" size="icon" className="text-white hover:text-gray-300">
-            <User className="w-5 h-5" />
-          </Button>
+
+          {/* User Authentication */}
+          {processingSession ? (
+            <div className="text-white text-sm">Loading...</div>
+          ) : user ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="text-white hover:text-gray-300">
+                  {user.picture ? (
+                    <img 
+                      src={user.picture} 
+                      alt={user.name} 
+                      className="w-8 h-8 rounded-full object-cover border-2 border-red-500"
+                    />
+                  ) : (
+                    <User className="w-5 h-5" />
+                  )}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuLabel>
+                  <div className="flex flex-col">
+                    <span className="font-medium">{user.name}</span>
+                    <span className="text-xs text-gray-500">{user.email}</span>
+                  </div>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={logout} className="cursor-pointer">
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Logout</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <Button 
+              onClick={login} 
+              disabled={loading}
+              className="bg-red-600 hover:bg-red-700 text-white"
+            >
+              Sign in
+            </Button>
+          )}
         </div>
       </div>
     </nav>

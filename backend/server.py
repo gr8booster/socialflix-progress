@@ -13,7 +13,7 @@ from google.oauth2 import id_token
 from google.auth.transport import requests as google_requests
 from emergentintegrations.payments.stripe.checkout import StripeCheckout, CheckoutSessionResponse, CheckoutStatusResponse, CheckoutSessionRequest
 
-from models import Post, PostCreate, LikeRequest, CommentRequest, ShareRequest, PlatformInfo, User, Session, SessionCreate, UserResponse, UserProfileUpdate, UserPreferences, ActivityItem, CustomFeed, CustomFeedCreate, NotificationPreferences, NotificationPreferencesUpdate, PlatformConnection, SubscriptionTier, PaymentTransaction
+from models import Post, PostCreate, LikeRequest, CommentRequest, ShareRequest, PlatformInfo, User, Session, SessionCreate, UserResponse, UserProfileUpdate, UserPreferences, ActivityItem, CustomFeed, CustomFeedCreate, NotificationPreferences, NotificationPreferencesUpdate, PlatformConnection, SubscriptionTier, PaymentTransaction, ApiKey, ApiKeyCreate
 from seed_data import seed_posts, platform_info
 from reddit_scraper import RedditScraper
 from youtube_scraper import YouTubeScraper

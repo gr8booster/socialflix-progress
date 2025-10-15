@@ -644,12 +644,18 @@ metadata:
   run_ui: true
 
 test_plan:
-  current_focus: []
+  current_focus:
+    - "Profile Page - User Profile UI"
+    - "PostModal - Save/Favorite Button"
+    - "Navbar - Profile Link"
+    - "App.js - Profile Route"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
 
 agent_communication:
+  - agent: "main"
+    message: "Implemented Sprint 2.1: User Profiles & Favorites. Backend: 6 new endpoints for profile management, favorites, preferences, and activity history. Frontend: (1) Profile page with avatar, bio editing, tabs for Saved Posts/Favorite Platforms/Activity, (2) Save button in PostModal, (3) Profile link in Navbar dropdown, (4) /profile route with code splitting. Need to test: Profile page UI, save/favorite functionality, profile editing, preferences, activity history display."
   - agent: "main"
     message: "Implemented Sprint 1: Google OAuth Authentication using Emergent Auth. Backend has 3 new auth endpoints for session management. Frontend has AuthContext for state management and updated Navbar with login/logout UI. Authentication is optional - users can browse without login. Need to test: 1) Login flow (redirect to Emergent Auth, callback with session_id, session creation), 2) User data persistence, 3) Logout functionality, 4) Existing session restoration on page refresh."
   - agent: "testing"

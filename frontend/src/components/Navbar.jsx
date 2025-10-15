@@ -259,6 +259,14 @@ const Navbar = () => {
               {t('analytics')}
             </a>
             <a 
+              href="/premium" 
+              className="text-yellow-500 hover:text-yellow-400 transition-colors flex items-center gap-2 text-lg font-semibold"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              <Crown className="w-5 h-5" />
+              Premium
+            </a>
+            <a 
               href="#" 
               className="text-gray-300 hover:text-white transition-colors text-lg"
               onClick={() => setMobileMenuOpen(false)}

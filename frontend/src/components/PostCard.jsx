@@ -34,6 +34,7 @@ const PostCard = ({ post, onClick }) => {
           <img 
             src={post.media.type === 'video' ? post.media.thumbnail : post.media.url}
             alt={post.content}
+            loading="lazy"
             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-125 group-hover:brightness-110"
           />
           

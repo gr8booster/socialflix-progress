@@ -50,8 +50,19 @@ const PostModal = ({ post, isOpen, onClose }) => {
   const youtubeEmbedUrl = isYouTubeVideo ? `https://www.youtube.com/embed/${youtubeId}?autoplay=1&rel=0` : null;
   
   // Check if it's TikTok video
-  const isTikTokVideo = post.platform === 'tiktok' && post.tiktok_id;
-  const tiktokEmbedUrl = isTikTokVideo ? `https://www.tiktok.com/embed/v2/${post.tiktok_id}` : null;
+  const extractTikTokId = (url) => {
+    if (!url) return null;
+    // TikTok video URL formats:
+    // https://www.tiktok.com/@username/video/1234567890
+    // https://vm.tiktok.com/XXXXXX/ (short URL)
+    const match = url.match(/\/video\/(\d+)/);
+    if (match) return match[1];
+    return null;
+  };
+  
+  const tiktokId = post.platform === 'tiktok' ? (post.tiktok_id || extractTikTokId(post.media?.url)) : null;
+  const isTikTokVideo = post.platform === 'tiktok' && tiktokId && tiktokId !== 'tiktok_sample_0';
+  const tiktokEmbedUrl = isTikTokVideo ? `https://www.tiktok.com/embed/v2/${tiktokId}` : null;
   
   // Check if it's a Reddit video with actual video URL
   const isRedditVideo = post.platform === 'reddit' && post.media.type === 'video' && post.media.url && !post.media.url.includes('unsplash');

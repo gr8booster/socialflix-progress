@@ -411,8 +411,15 @@ const PostModal = ({ post, isOpen, onClose }) => {
                     controls
                     autoPlay
                     loop
+                    playsInline
+                    muted={false}
+                    volume={1.0}
                     className="max-w-full max-h-full"
                     poster={post.media.thumbnail}
+                    onLoadedMetadata={(e) => {
+                      e.target.muted = false;
+                      e.target.volume = 1.0;
+                    }}
                   >
                     <source src={post.media.url} type="video/mp4" />
                     Your browser does not support the video tag.

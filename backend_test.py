@@ -617,6 +617,22 @@ class ChyllAppAPITester:
         self.test_auth_session_missing_session_id()
         self.test_auth_session_invalid_session_id()
         
+        # Search endpoint tests (Sprint 1.2)
+        print("\n" + "=" * 60)
+        print("🔍 Testing Search Functionality (Sprint 1.2: Working Search)")
+        print("=" * 60)
+        self.test_search_basic_keyword()
+        self.test_search_with_platform_filter()
+        self.test_search_sort_by_date()
+        self.test_search_sort_by_likes()
+        self.test_search_sort_by_comments()
+        self.test_search_sort_by_relevance()
+        self.test_search_no_results()
+        self.test_search_missing_query_parameter()
+        self.test_search_empty_string()
+        self.test_search_special_characters()
+        self.test_search_case_insensitive()
+        
         # Summary
         print("=" * 60)
         passed = sum(1 for result in self.test_results if result["success"])

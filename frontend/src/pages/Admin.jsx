@@ -468,6 +468,10 @@ const Admin = () => {
                   <span className="text-blue-500 font-semibold">{status?.twitter_posts || 0}</span>
                 </div>
                 <div className="flex justify-between items-center p-3 bg-gray-900 rounded-lg">
+                  <span className="text-gray-300">Instagram Posts</span>
+                  <span className="text-pink-500 font-semibold">{status?.instagram_posts || 0}</span>
+                </div>
+                <div className="flex justify-between items-center p-3 bg-gray-900 rounded-lg">
                   <span className="text-gray-300">Mock Posts</span>
                   <span className="text-green-500 font-semibold">{status?.mock_posts || 0}</span>
                 </div>

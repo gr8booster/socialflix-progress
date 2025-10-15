@@ -77,7 +77,7 @@ const SearchResults = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen bg-black text-white overflow-x-hidden">
       <Navbar />
       
       <div className="pt-24 px-8 md:px-16 pb-16">

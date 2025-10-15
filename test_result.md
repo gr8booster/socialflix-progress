@@ -389,7 +389,11 @@ metadata:
   run_ui: true
 
 test_plan:
-  current_focus: []
+  current_focus:
+    - "GET /api/search - Search Posts Endpoint"
+    - "Search Bar - Functional Search Input"
+    - "SearchResults Page - Search Results UI"
+    - "App.js - Search Route"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
@@ -401,3 +405,5 @@ agent_communication:
     message: "Completed testing of Sprint 1: Google OAuth Authentication endpoints. All 3 authentication endpoints are working correctly: (1) GET /api/auth/me properly returns 401 for unauthenticated requests and invalid tokens, (2) POST /api/auth/logout successfully returns success message, (3) POST /api/auth/session correctly validates input and rejects invalid/missing session_id. Error handling is working properly. Note: Full OAuth flow requires browser interaction and cannot be fully tested via curl, but all testable aspects (authentication checks, error handling, response formats) are working correctly. All existing post endpoints remain functional."
   - agent: "testing"
     message: "Completed comprehensive UI testing of Sprint 1: Google OAuth Authentication frontend. ALL TESTS PASSED ✅. Results: (1) AuthContext properly integrated - checks existing session on mount, handles 401 responses correctly, login() redirects to OAuth provider successfully, (2) Navbar UI working perfectly - 'Sign in' button visible and clickable, all navbar elements present (logo, search, bell, nav links), scroll behavior working (gradient to solid black transition), (3) No breaking changes - all existing features work (Hero section, post carousels with 598+ elements), (4) No JavaScript errors detected, (5) API calls working correctly (/api/posts, /api/auth/me, /api/posts/featured). Testing limitations: Cannot test full OAuth callback flow or logged-in state UI (profile dropdown, logout) without real Google login. Ready for production."
+  - agent: "main"
+    message: "Implemented Sprint 1.2: Working Search Functionality. Backend has new /api/search endpoint with keyword search, platform filtering, and sorting. Frontend has: (1) Functional search bar in Navbar with recent searches dropdown, (2) SearchResults page with filters and sort options, (3) /search route added to App.js. Need to test: (1) Search endpoint with various queries, (2) Platform filtering, (3) Sort functionality, (4) Frontend search flow, (5) Recent searches persistence."

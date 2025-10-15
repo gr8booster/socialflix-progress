@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Search, Bell, User, LogOut } from 'lucide-react';
 import { Input } from './ui/input';
 import { Button } from './ui/button';
@@ -15,7 +16,12 @@ import {
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [recentSearches, setRecentSearches] = useState([]);
+  const [showRecentSearches, setShowRecentSearches] = useState(false);
   const { user, login, logout, loading, processingSession } = useAuth();
+  const navigate = useNavigate();
+  const searchRef = useRef(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -23,6 +29,56 @@ const Navbar = () => {
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Load recent searches from localStorage
+  useEffect(() => {
+    const saved = localStorage.getItem('recentSearches');
+    if (saved) {
+      setRecentSearches(JSON.parse(saved));
+    }
+  }, []);
+
+  // Handle search submission
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      // Save to recent searches
+      const updatedSearches = [
+        searchQuery,
+        ...recentSearches.filter(s => s !== searchQuery)
+      ].slice(0, 10); // Keep last 10 searches
+      
+      setRecentSearches(updatedSearches);
+      localStorage.setItem('recentSearches', JSON.stringify(updatedSearches));
+      
+      // Navigate to search results
+      navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
+      setSearchQuery('');
+      setShowRecentSearches(false);
+    }
+  };
+
+  const handleRecentSearchClick = (search) => {
+    setSearchQuery(search);
+    navigate(`/search?q=${encodeURIComponent(search)}`);
+    setShowRecentSearches(false);
+  };
+
+  const clearRecentSearches = () => {
+    setRecentSearches([]);
+    localStorage.removeItem('recentSearches');
+  };
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (searchRef.current && !searchRef.current.contains(event.target)) {
+        setShowRecentSearches(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   return (

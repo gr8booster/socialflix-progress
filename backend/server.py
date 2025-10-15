@@ -696,7 +696,12 @@ async def create_session(request: Request, response: Response, session_data: Ses
             expires_at=expires_at
         )
         
-        await db.sessions.insert_one(new_session.dict())
+        # Convert datetime to ISO string for MongoDB
+        session_dict = new_session.dict()
+        session_dict["expires_at"] = expires_at.isoformat()
+        session_dict["created_at"] = new_session.created_at.isoformat()
+        
+        await db.sessions.insert_one(session_dict)
         
         # Set httpOnly cookie
         response.set_cookie(

@@ -216,28 +216,28 @@ const PostModal = ({ post, isOpen, onClose }) => {
             {/* Actions */}
             <div className="border-t border-gray-800 p-4">
               {/* Stats */}
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-6">
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-8">
                   <button 
-                    className="flex items-center gap-2 text-white hover:text-red-500 transition-colors"
+                    className="flex flex-col items-center gap-1 text-white hover:text-red-500 transition-all transform hover:scale-110"
                     onClick={handleLike}
                   >
                     <Heart 
-                      className="w-6 h-6" 
+                      className="w-7 h-7" 
                       fill={isLiked ? "currentColor" : "none"}
                     />
-                    <span className="font-semibold">{formatNumber(localLikes)}</span>
+                    <span className="font-bold text-sm">{formatNumber(localLikes)}</span>
                   </button>
-                  <div className="flex items-center gap-2 text-white">
-                    <MessageCircle className="w-6 h-6" />
-                    <span className="font-semibold">{formatNumber(post.comments)}</span>
+                  <div className="flex flex-col items-center gap-1 text-white">
+                    <MessageCircle className="w-7 h-7" />
+                    <span className="font-bold text-sm">{formatNumber(post.comments || 0)}</span>
                   </div>
                   <button 
-                    className="flex items-center gap-2 text-white hover:text-blue-500 transition-colors"
+                    className="flex flex-col items-center gap-1 text-white hover:text-blue-500 transition-all transform hover:scale-110"
                     onClick={handleShare}
                   >
-                    <Share2 className="w-6 h-6" />
-                    <span className="font-semibold">{formatNumber(post.shares)}</span>
+                    <Share2 className="w-7 h-7" />
+                    <span className="font-bold text-sm">{formatNumber(post.shares || 0)}</span>
                   </button>
                 </div>
               </div>

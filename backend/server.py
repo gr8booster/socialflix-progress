@@ -14,6 +14,8 @@ from reddit_scraper import RedditScraper
 from youtube_scraper import YouTubeScraper
 from twitter_scraper import TwitterScraper
 from instagram_scraper import InstagramScraper
+from tiktok_scraper import TikTokScraper
+from facebook_scraper import FacebookScraper
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')

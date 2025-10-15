@@ -469,6 +469,18 @@ frontend:
         agent: "testing"
         comment: "Error Boundary properly implemented. Verified: (1) ErrorBoundary component wraps entire app in index.js, (2) No critical JavaScript errors detected during testing, (3) Component structure correct with error catching and user-friendly error display. Note: Cannot test crash behavior without triggering actual errors, but implementation is correct."
 
+  - task: "Infinite Scroll - Home Page"
+    implemented: true
+    working: "NA"
+    file: "frontend/src/pages/Home.jsx, backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Implemented infinite scroll for Home page. Backend: Added skip parameter to /api/posts endpoint for pagination. Frontend: Added scroll detection that loads more posts when user scrolls near bottom (1000px threshold). Loads 50 posts per page. Shows loading indicator while fetching more posts. Shows 'You've reached the end!' message when no more posts available. Maintains all existing carousel functionality."
+
 metadata:
   created_by: "main_agent"
   version: "2.5"

@@ -476,12 +476,7 @@ metadata:
   run_ui: true
 
 test_plan:
-  current_focus:
-    - "Code Splitting - React.lazy()"
-    - "Lazy Loading Images"
-    - "API Response Caching"
-    - "404 NotFound Page"
-    - "Error Boundary Implementation"
+  current_focus: []
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"

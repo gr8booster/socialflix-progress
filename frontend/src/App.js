@@ -7,6 +7,7 @@ import { AuthProvider } from "./contexts/AuthContext";
 const Home = lazy(() => import("./pages/Home"));
 const SearchResults = lazy(() => import("./pages/SearchResults"));
 const Admin = lazy(() => import("./pages/Admin"));
+const Profile = lazy(() => import("./pages/Profile"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 // Loading component
@@ -25,6 +26,7 @@ function App() {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/search" element={<SearchResults />} />
+              <Route path="/profile" element={<Profile />} />
               <Route path="/admin" element={<Admin />} />
               <Route path="*" element={<NotFound />} />
             </Routes>

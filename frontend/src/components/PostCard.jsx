@@ -77,6 +77,7 @@ const PostCard = ({ post, onClick }) => {
             <img 
               src={post.user.avatar}
               alt={post.user.name}
+              loading="lazy"
               className="w-8 h-8 rounded-full border-2 border-white/50"
             />
             <div className="flex-1 min-w-0">

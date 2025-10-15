@@ -288,6 +288,18 @@ backend:
         agent: "testing"
         comment: "POST /api/posts/{post_id}/share endpoint working correctly. Successfully increments share count (145000 → 145001) and returns proper response"
 
+  - task: "GET /api/search - Search Posts Endpoint"
+    implemented: true
+    working: "NA"
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Implemented search endpoint that searches posts by keywords in content and user names (case-insensitive). Supports platform filtering, sorting (relevance, date, likes, comments), and limit parameter."
+
 frontend:
   - task: "AuthContext - User State Management"
     implemented: true

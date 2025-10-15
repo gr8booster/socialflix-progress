@@ -1138,6 +1138,27 @@ class ChyllAppAPITester:
         self.test_get_activity_with_invalid_token()
         self.test_get_activity_with_limit_param()
         
+        # Advanced Filtering & Sorting tests (Sprint 2.2)
+        print("\n" + "=" * 60)
+        print("🔧 Testing Advanced Filtering & Sorting (Sprint 2.2)")
+        print("=" * 60)
+        self.test_multi_platform_filter()
+        self.test_multi_category_filter()
+        self.test_time_range_filter_today()
+        self.test_time_range_filter_week()
+        self.test_time_range_filter_month()
+        self.test_sort_by_likes()
+        self.test_sort_by_comments()
+        self.test_combined_filters()
+        
+        # Custom Feeds endpoint tests (Sprint 2.2)
+        print("\n" + "=" * 60)
+        print("📋 Testing Custom Feeds (Sprint 2.2)")
+        print("=" * 60)
+        self.test_create_custom_feed_without_auth()
+        self.test_get_custom_feeds_without_auth()
+        self.test_delete_custom_feed_without_auth()
+        
         # Summary
         print("=" * 60)
         passed = sum(1 for result in self.test_results if result["success"])

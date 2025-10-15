@@ -170,3 +170,18 @@ class PaymentTransaction(BaseModel):
     metadata: Optional[dict] = None
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class ApiKey(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    user_id: str
+    key: str
+    name: str
+    is_active: bool = True
+    rate_limit: int = 1000  # requests per hour
+    usage_count: int = 0
+    last_used: Optional[datetime] = None
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class ApiKeyCreate(BaseModel):
+    name: str
+    rate_limit: Optional[int] = 1000

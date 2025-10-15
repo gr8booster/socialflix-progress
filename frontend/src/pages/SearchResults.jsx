@@ -128,7 +128,7 @@ const SearchResults = () => {
           {/* Sort By */}
           <div>
             <h3 className="text-sm font-semibold text-gray-400 mb-3">SORT BY</h3>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               {['relevance', 'date', 'likes', 'comments'].map((sort) => (
                 <Button
                   key={sort}

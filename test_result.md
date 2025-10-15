@@ -167,15 +167,18 @@ backend:
 
   - task: "Authentication Helper Function"
     implemented: true
-    working: "NA"
+    working: true
     file: "backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Implemented get_current_user_from_token helper function that validates session_token and returns user data."
+      - working: true
+        agent: "testing"
+        comment: "Helper function working correctly. Properly validates session tokens, checks expiry dates, and returns user data. Used by /api/auth/me endpoint and working as expected."
 
   - task: "Welcome API Endpoint"
     implemented: true

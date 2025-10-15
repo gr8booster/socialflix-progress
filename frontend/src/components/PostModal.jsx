@@ -545,13 +545,10 @@ const PostModal = ({ post, isOpen, onClose }) => {
                     <MessageCircle className="w-7 h-7" />
                     <span className="font-bold text-sm">{formatNumber(post.comments || 0)}</span>
                   </div>
-                  <button 
-                    className="flex flex-col items-center gap-1 text-white hover:text-blue-500 transition-all transform hover:scale-110"
-                    onClick={handleShare}
-                  >
-                    <Share2 className="w-7 h-7" />
-                    <span className="font-bold text-sm">{formatNumber(post.shares || 0)}</span>
-                  </button>
+                  <div className="flex flex-col items-center gap-1">
+                    <ShareButton post={post} onShare={handleShare} />
+                    <span className="font-bold text-sm text-white">{formatNumber(post.shares || 0)}</span>
+                  </div>
                   <button 
                     className="flex flex-col items-center gap-1 text-white hover:text-yellow-500 transition-all transform hover:scale-110"
                     onClick={handleSave}

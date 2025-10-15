@@ -85,19 +85,61 @@ async def root():
 
 @api_router.get("/posts", response_model=List[Post])
 async def get_posts(
-    platform: Optional[str] = Query(None, description="Filter by platform"),
-    category: Optional[str] = Query(None, description="Filter by category"),
+    platform: Optional[str] = Query(None, description="Filter by platform (comma-separated for multiple)"),
+    category: Optional[str] = Query(None, description="Filter by category (comma-separated for multiple)"),
+    time_range: Optional[str] = Query(None, description="Time range: today, week, month, all"),
+    sort_by: Optional[str] = Query("date", description="Sort by: date, likes, comments, engagement"),
     limit: Optional[int] = Query(None, description="Limit number of results"),
     skip: Optional[int] = Query(0, description="Skip number of results for pagination")
 ):
-    """Get all posts with optional filters and pagination"""
+    """Get all posts with advanced filters and pagination"""
     query = {}
-    if platform:
-        query["platform"] = platform
-    if category:
-        query["category"] = category
     
-    posts_cursor = db.posts.find(query).sort("createdAt", -1).skip(skip)
+    # Multi-platform filter
+    if platform and platform != 'all':
+        platforms = [p.strip() for p in platform.split(',')]
+        if len(platforms) == 1:
+            query["platform"] = platforms[0]
+        else:
+            query["platform"] = {"$in": platforms}
+    
+    # Multi-category filter
+    if category and category != 'all':
+        categories = [c.strip() for c in category.split(',')]
+        if len(categories) == 1:
+            query["category"] = categories[0]
+        else:
+            query["category"] = {"$in": categories}
+    
+    # Time range filter
+    if time_range and time_range != 'all':
+        from datetime import timedelta
+        now = datetime.now(timezone.utc)
+        
+        if time_range == 'today':
+            start_time = now - timedelta(days=1)
+        elif time_range == 'week':
+            start_time = now - timedelta(days=7)
+        elif time_range == 'month':
+            start_time = now - timedelta(days=30)
+        else:
+            start_time = None
+        
+        if start_time:
+            query["createdAt"] = {"$gte": start_time.isoformat()}
+    
+    # Determine sort order
+    if sort_by == 'likes':
+        sort_order = [("likes", -1)]
+    elif sort_by == 'comments':
+        sort_order = [("comments", -1)]
+    elif sort_by == 'engagement':
+        # Sort by total engagement (likes + comments + shares)
+        sort_order = [("likes", -1)]  # Simplified, would need aggregation for true engagement
+    else:  # date (default)
+        sort_order = [("createdAt", -1)]
+    
+    posts_cursor = db.posts.find(query).sort(sort_order).skip(skip)
     
     if limit:
         posts_cursor = posts_cursor.limit(limit)

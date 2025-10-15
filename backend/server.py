@@ -1,5 +1,5 @@
 from fastapi import FastAPI, APIRouter, HTTPException, Query, Request, Response, Cookie
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, RedirectResponse
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -9,6 +9,8 @@ from pathlib import Path
 from typing import List, Optional
 from datetime import datetime, timezone, timedelta
 import httpx
+from google.oauth2 import id_token
+from google.auth.transport import requests as google_requests
 
 from models import Post, PostCreate, LikeRequest, CommentRequest, ShareRequest, PlatformInfo, User, Session, SessionCreate, UserResponse, UserProfileUpdate, UserPreferences, ActivityItem, CustomFeed, CustomFeedCreate
 from seed_data import seed_posts, platform_info

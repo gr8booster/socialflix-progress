@@ -259,6 +259,81 @@ class SocialFlixAPITester:
         except Exception as e:
             self.log_test("Share Post", False, f"Request failed: {str(e)}")
     
+    # ============ Authentication Endpoint Tests ============
+    
+    def test_auth_me_without_authentication(self):
+        """Test GET /api/auth/me without authentication - Should return 401"""
+        try:
+            response = requests.get(f"{self.base_url}/auth/me")
+            if response.status_code == 401:
+                self.log_test("Auth /me Without Authentication", True, "Correctly returned 401 Unauthorized")
+            else:
+                self.log_test("Auth /me Without Authentication", False, f"Expected 401, got HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("Auth /me Without Authentication", False, f"Request failed: {str(e)}")
+    
+    def test_auth_me_with_invalid_token(self):
+        """Test GET /api/auth/me with invalid session_token - Should return 401"""
+        try:
+            # Test with invalid cookie
+            cookies = {"session_token": "invalid_token_12345"}
+            response = requests.get(f"{self.base_url}/auth/me", cookies=cookies)
+            if response.status_code == 401:
+                self.log_test("Auth /me With Invalid Cookie Token", True, "Correctly returned 401 for invalid cookie token")
+            else:
+                self.log_test("Auth /me With Invalid Cookie Token", False, f"Expected 401, got HTTP {response.status_code}: {response.text}")
+            
+            # Test with invalid Authorization header
+            headers = {"Authorization": "Bearer invalid_token_67890"}
+            response = requests.get(f"{self.base_url}/auth/me", headers=headers)
+            if response.status_code == 401:
+                self.log_test("Auth /me With Invalid Bearer Token", True, "Correctly returned 401 for invalid bearer token")
+            else:
+                self.log_test("Auth /me With Invalid Bearer Token", False, f"Expected 401, got HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("Auth /me With Invalid Token", False, f"Request failed: {str(e)}")
+    
+    def test_auth_logout(self):
+        """Test POST /api/auth/logout - Should return success message"""
+        try:
+            response = requests.post(f"{self.base_url}/auth/logout")
+            if response.status_code == 200:
+                data = response.json()
+                if data.get("success") and "message" in data:
+                    self.log_test("Auth Logout", True, f"Logout successful: {data['message']}")
+                else:
+                    self.log_test("Auth Logout", False, f"Unexpected response format: {data}")
+            else:
+                self.log_test("Auth Logout", False, f"HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("Auth Logout", False, f"Request failed: {str(e)}")
+    
+    def test_auth_session_missing_session_id(self):
+        """Test POST /api/auth/session without session_id - Should return error"""
+        try:
+            # Test with empty body
+            response = requests.post(f"{self.base_url}/auth/session", json={})
+            if response.status_code in [400, 422]:  # 422 is Pydantic validation error
+                self.log_test("Auth Session Missing session_id", True, f"Correctly rejected empty session_id with HTTP {response.status_code}")
+            else:
+                self.log_test("Auth Session Missing session_id", False, f"Expected 400/422, got HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("Auth Session Missing session_id", False, f"Request failed: {str(e)}")
+    
+    def test_auth_session_invalid_session_id(self):
+        """Test POST /api/auth/session with invalid session_id - Should return error"""
+        try:
+            # Test with invalid session_id
+            session_data = {"session_id": "invalid_session_id_12345"}
+            response = requests.post(f"{self.base_url}/auth/session", json=session_data)
+            # Should fail when calling Emergent Auth API
+            if response.status_code in [400, 401, 500]:
+                self.log_test("Auth Session Invalid session_id", True, f"Correctly rejected invalid session_id with HTTP {response.status_code}")
+            else:
+                self.log_test("Auth Session Invalid session_id", False, f"Expected error status, got HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("Auth Session Invalid session_id", False, f"Request failed: {str(e)}")
+    
     def run_all_tests(self):
         """Run all API tests"""
         print(f"🚀 Starting SocialFlix Backend API Tests")

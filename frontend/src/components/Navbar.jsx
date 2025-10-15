@@ -106,15 +106,46 @@ const Navbar = () => {
         {/* Right Side */}
         <div className="flex items-center gap-4">
           {/* Search */}
-          <div className="hidden md:flex items-center relative">
-            <Search className={`absolute left-3 w-4 h-4 transition-colors ${isSearchFocused ? 'text-red-500' : 'text-gray-400'}`} />
+          <form onSubmit={handleSearch} className="hidden md:flex items-center relative" ref={searchRef}>
+            <Search className={`absolute left-3 w-4 h-4 transition-colors z-10 ${isSearchFocused ? 'text-red-500' : 'text-gray-400'}`} />
             <Input 
               placeholder="Search posts..."
-              onFocus={() => setIsSearchFocused(true)}
-              onBlur={() => setIsSearchFocused(false)}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onFocus={() => {
+                setIsSearchFocused(true);
+                setShowRecentSearches(true);
+              }}
               className="pl-10 bg-black/50 border-gray-700 text-white placeholder:text-gray-500 w-64 focus:w-80 focus:border-red-500 transition-all duration-300"
             />
-          </div>
+            
+            {/* Recent Searches Dropdown */}
+            {showRecentSearches && recentSearches.length > 0 && (
+              <div className="absolute top-full mt-2 w-full bg-gray-900 border border-gray-700 rounded-lg shadow-lg py-2 z-50">
+                <div className="flex items-center justify-between px-3 py-1 mb-1">
+                  <span className="text-xs text-gray-400 uppercase">Recent Searches</span>
+                  <button
+                    type="button"
+                    onClick={clearRecentSearches}
+                    className="text-xs text-red-500 hover:text-red-400"
+                  >
+                    Clear
+                  </button>
+                </div>
+                {recentSearches.map((search, index) => (
+                  <button
+                    key={index}
+                    type="button"
+                    onClick={() => handleRecentSearchClick(search)}
+                    className="w-full text-left px-3 py-2 hover:bg-gray-800 text-sm text-white transition-colors"
+                  >
+                    <Search className="w-3 h-3 inline mr-2 text-gray-500" />
+                    {search}
+                  </button>
+                ))}
+              </div>
+            )}
+          </form>
 
           {/* Icons */}
           <Button variant="ghost" size="icon" className="text-white hover:text-gray-300">

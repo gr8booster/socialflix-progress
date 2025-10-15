@@ -14,6 +14,7 @@ const Admin = () => {
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(false);
   const [fetchingYoutube, setFetchingYoutube] = useState(false);
+  const [fetchingTwitter, setFetchingTwitter] = useState(false);
 
   useEffect(() => {
     fetchStatus();

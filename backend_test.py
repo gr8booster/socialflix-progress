@@ -336,7 +336,7 @@ class SocialFlixAPITester:
     
     def run_all_tests(self):
         """Run all API tests"""
-        print(f"🚀 Starting SocialFlix Backend API Tests")
+        print(f"🚀 Starting ChyllApp Backend API Tests")
         print(f"📡 Backend URL: {self.base_url}")
         print("=" * 60)
         
@@ -353,6 +353,16 @@ class SocialFlixAPITester:
         self.test_comment_post()
         self.test_share_post()
         
+        # Authentication endpoint tests
+        print("\n" + "=" * 60)
+        print("🔐 Testing Authentication Endpoints (Sprint 1: Google OAuth)")
+        print("=" * 60)
+        self.test_auth_me_without_authentication()
+        self.test_auth_me_with_invalid_token()
+        self.test_auth_logout()
+        self.test_auth_session_missing_session_id()
+        self.test_auth_session_invalid_session_id()
+        
         # Summary
         print("=" * 60)
         passed = sum(1 for result in self.test_results if result["success"])
@@ -360,7 +370,7 @@ class SocialFlixAPITester:
         print(f"📊 Test Results: {passed}/{total} tests passed")
         
         if passed == total:
-            print("🎉 All tests passed! SocialFlix backend is working correctly.")
+            print("🎉 All tests passed! ChyllApp backend is working correctly.")
         else:
             print("⚠️  Some tests failed. Check the details above.")
             failed_tests = [result for result in self.test_results if not result["success"]]

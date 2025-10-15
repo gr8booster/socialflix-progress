@@ -163,9 +163,7 @@ const Navbar = () => {
           </Button>
 
           {/* User Authentication */}
-          {processingSession ? (
-            <div className="text-white text-sm">Loading...</div>
-          ) : user ? (
+          {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="text-white hover:text-gray-300">

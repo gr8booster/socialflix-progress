@@ -21,6 +21,19 @@ const Home = () => {
     fetchPosts();
   }, []);
 
+  // Show scroll to top button
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 500);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const fetchPosts = async () => {
     try {
       const response = await axios.get(`${API}/posts`);

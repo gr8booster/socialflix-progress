@@ -28,6 +28,7 @@ const Home = () => {
     timeRange: 'all',
     sortBy: 'date',
   });
+  const [lastCheckTime, setLastCheckTime] = useState(new Date().toISOString());
 
   const POSTS_PER_PAGE = 50;
 

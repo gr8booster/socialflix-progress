@@ -255,6 +255,31 @@ const Home = () => {
         </div>
       </footer>
 
+      {/* Infinite Scroll Loading Indicator */}
+      {loadingMore && (
+        <div className="py-12 flex items-center justify-center">
+          <div className="text-center">
+            <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-red-600 mb-3"></div>
+            <div className="text-white text-lg font-semibold">Loading more posts...</div>
+            <div className="text-gray-400 text-sm mt-1">Finding viral content</div>
+          </div>
+        </div>
+      )}
+
+      {/* End of Content Indicator */}
+      {!hasMore && allPosts.length > 0 && (
+        <div className="py-12 text-center">
+          <div className="text-gray-500 text-lg font-semibold mb-2">🎉 You've reached the end!</div>
+          <div className="text-gray-600 text-sm">You've seen all {allPosts.length} viral posts</div>
+          <button
+            onClick={scrollToTop}
+            className="mt-4 px-6 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg transition-colors"
+          >
+            Back to Top
+          </button>
+        </div>
+      )}
+
       {/* Post Modal */}
       <PostModal 
         post={selectedPost}

@@ -56,11 +56,13 @@ const PostCard = ({ post, onClick }) => {
           )}
           
           {/* Platform Badge */}
-          <div 
-            className="absolute top-3 left-3 px-4 py-2 rounded-full text-white text-xs font-bold uppercase backdrop-blur-md shadow-lg transform group-hover:scale-110 transition-transform duration-300"
-            style={{ backgroundColor: post.platformColor }}
-          >
-            {post.platform}
+          <div className="absolute top-3 left-3">
+            <div 
+              className="px-4 py-2 rounded-full text-white text-xs font-bold uppercase backdrop-blur-md shadow-2xl transform group-hover:scale-110 transition-all duration-300 border-2 border-white/30 group-hover:border-white/60"
+              style={{ backgroundColor: post.platformColor }}
+            >
+              <span className="drop-shadow-lg">{post.platform}</span>
+            </div>
           </div>
 
           {/* Gradient Overlay */}

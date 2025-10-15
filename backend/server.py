@@ -329,6 +329,52 @@ async def fetch_twitter_posts(limit: int = 50):
         raise HTTPException(status_code=500, detail=f"Error fetching Twitter posts: {str(e)}")
 
 
+@api_router.post("/scraper/fetch-instagram")
+async def fetch_instagram_posts(limit: int = 50):
+    """
+    Fetch trending posts from Instagram and save to database
+    
+    Args:
+        limit: Number of posts to fetch (default 50)
+    """
+    try:
+        logger.info(f"Fetching {limit} trending posts from Instagram...")
+        
+        # Fetch posts from Instagram
+        instagram_posts = instagram_scraper.fetch_trending_posts(max_results=limit)
+        
+        if not instagram_posts:
+            return {
+                "success": False,
+                "message": "No posts fetched from Instagram",
+                "posts_added": 0
+            }
+        
+        # Save posts to database (avoid duplicates)
+        posts_added = 0
+        for post_data in instagram_posts:
+            # Check if post already exists (by instagram_id)
+            existing_post = await db.posts.find_one({"instagram_id": post_data.get("instagram_id")})
+            
+            if not existing_post:
+                post = Post(**post_data)
+                await db.posts.insert_one(post.dict())
+                posts_added += 1
+        
+        logger.info(f"Successfully added {posts_added} new Instagram posts to database")
+        
+        return {
+            "success": True,
+            "message": f"Successfully fetched and saved {posts_added} Instagram posts",
+            "posts_added": posts_added,
+            "total_fetched": len(instagram_posts)
+        }
+        
+    except Exception as e:
+        logger.error(f"Error fetching Instagram posts: {e}")
+        raise HTTPException(status_code=500, detail=f"Error fetching Instagram posts: {str(e)}")
+
+
 @api_router.get("/scraper/status")
 async def scraper_status():
     """Get status of scraper and database"""
@@ -337,7 +383,8 @@ async def scraper_status():
         reddit_posts = await db.posts.count_documents({"platform": "reddit"})
         youtube_posts = await db.posts.count_documents({"platform": "youtube"})
         twitter_posts = await db.posts.count_documents({"platform": "twitter"})
-        mock_posts = total_posts - reddit_posts - youtube_posts - twitter_posts
+        instagram_posts = await db.posts.count_documents({"platform": "instagram"})
+        mock_posts = total_posts - reddit_posts - youtube_posts - twitter_posts - instagram_posts
         
         return {
             "status": "active",
@@ -345,6 +392,7 @@ async def scraper_status():
             "reddit_posts": reddit_posts,
             "youtube_posts": youtube_posts,
             "twitter_posts": twitter_posts,
+            "instagram_posts": instagram_posts,
             "mock_posts": mock_posts,
             "scraper_ready": True
         }

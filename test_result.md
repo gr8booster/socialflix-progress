@@ -303,6 +303,78 @@ backend:
         agent: "testing"
         comment: "Search endpoint fully functional. All 11 test scenarios passed: (1) Basic keyword search working - found 8 posts matching 'viral', (2) Platform filtering working - correctly filtered reddit posts, (3) Sort by date working - results sorted newest first, (4) Sort by likes working - results sorted highest likes first, (5) Sort by comments working - results sorted most commented first, (6) Sort by relevance working - returned 14 posts, (7) No results handling - correctly returned empty array for non-existent query, (8) Missing query parameter - correctly returned 422 validation error, (9) Empty string handling - returned 50 posts, (10) Special characters handling - returned 50 posts, (11) Case-insensitive search confirmed - 'VIRAL' and 'viral' returned same results. Search correctly searches in content, user names, and usernames. Response format matches Post model structure."
 
+  - task: "GET /api/user/profile - Get User Profile"
+    implemented: true
+    working: "NA"
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Implemented endpoint to get authenticated user's full profile including bio, favorite_posts, and favorite_platforms."
+
+  - task: "PUT /api/user/profile - Update User Profile"
+    implemented: true
+    working: "NA"
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Implemented endpoint to update user profile (name, bio, picture). Validates authentication and updates user document in MongoDB."
+
+  - task: "POST /api/user/favorites/{post_id} - Toggle Favorite"
+    implemented: true
+    working: "NA"
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Implemented endpoint to add/remove post from user's favorites. Logs activity to activities collection. Returns favorited status."
+
+  - task: "GET /api/user/favorites - Get Favorite Posts"
+    implemented: true
+    working: "NA"
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Implemented endpoint to get all user's favorite posts. Returns array of Post objects sorted by creation date."
+
+  - task: "PUT /api/user/preferences - Update Preferences"
+    implemented: true
+    working: "NA"
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Implemented endpoint to update user's favorite platforms list."
+
+  - task: "GET /api/user/activity - Get Activity History"
+    implemented: true
+    working: "NA"
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Implemented endpoint to get user's activity history (likes, comments, shares, favorites) with limit parameter."
+
 frontend:
   - task: "AuthContext - User State Management"
     implemented: true

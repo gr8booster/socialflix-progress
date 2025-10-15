@@ -6,6 +6,7 @@ import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { toast } from '../hooks/use-toast';
 import { useAuth } from '../contexts/AuthContext';
+import ShareButton from './ShareButton';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;

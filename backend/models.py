@@ -150,3 +150,23 @@ class PlatformConnection(BaseModel):
     platform_username: Optional[str] = None
     connected_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     last_synced: Optional[datetime] = None
+
+class SubscriptionTier(BaseModel):
+    id: str
+    name: str
+    price_monthly: float
+    price_yearly: float
+    features: List[str]
+
+class PaymentTransaction(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    user_id: str
+    session_id: str
+    payment_id: Optional[str] = None
+    amount: float
+    currency: str
+    package_id: str
+    payment_status: str  # 'pending', 'paid', 'failed', 'cancelled'
+    metadata: Optional[dict] = None
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))

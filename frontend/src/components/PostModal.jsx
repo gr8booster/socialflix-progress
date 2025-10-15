@@ -23,21 +23,29 @@ const PostModal = ({ post, isOpen, onClose }) => {
   const [isLiked, setIsLiked] = useState(false);
   const [comment, setComment] = useState('');
   const [localLikes, setLocalLikes] = useState(post?.likes || 0);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [showPlayButton, setShowPlayButton] = useState(true);
 
   if (!post) return null;
 
   // Check if it's a YouTube video
   const isYouTubeVideo = post.platform === 'youtube' && post.youtube_id;
-  const youtubeEmbedUrl = isYouTubeVideo ? `https://www.youtube.com/embed/${post.youtube_id}?autoplay=1&rel=0` : null;
+  const youtubeEmbedUrl = isYouTubeVideo ? `https://www.youtube.com/embed/${post.youtube_id}?autoplay=${isPlaying ? 1 : 0}&rel=0` : null;
   
   // Check if it's TikTok video
-  const isTikTokVideo = post.platform === 'tiktok' && post.media.type === 'video';
+  const isTikTokVideo = post.platform === 'tiktok' && post.tiktok_id;
+  const tiktokEmbedUrl = isTikTokVideo ? `https://www.tiktok.com/embed/v2/${post.tiktok_id}` : null;
   
   // Check if it's a Reddit video
   const isRedditVideo = post.platform === 'reddit' && post.media.type === 'video';
   
   // Check if any video type
   const isAnyVideo = post.media.type === 'video';
+
+  const handlePlayVideo = () => {
+    setIsPlaying(true);
+    setShowPlayButton(false);
+  };
 
   const handleLike = async () => {
     try {

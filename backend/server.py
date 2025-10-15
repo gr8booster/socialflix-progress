@@ -1801,6 +1801,135 @@ async def stripe_webhook(request: Request):
         raise HTTPException(status_code=400, detail=str(e))
 
 
+# ============ Developer API Endpoints ============
+
+@api_router.post("/developer/keys")
+async def create_api_key(
+    key_data: ApiKeyCreate,
+    request: Request,
+    session_token: Optional[str] = Cookie(None)
+):
+    """Generate a new API key for developer access"""
+    token = session_token or (request.headers.get("Authorization", "").replace("Bearer ", "") if request.headers.get("Authorization") else None)
+    
+    if not token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    user = await get_current_user_from_token(token)
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid session")
+    
+    # Generate API key
+    import secrets
+    api_key_value = f"ck_{secrets.token_urlsafe(32)}"
+    
+    new_key = ApiKey(
+        user_id=user["id"],
+        key=api_key_value,
+        name=key_data.name,
+        rate_limit=key_data.rate_limit or 1000
+    )
+    
+    key_dict = new_key.dict()
+    key_dict["created_at"] = new_key.created_at.isoformat()
+    
+    await db.api_keys.insert_one(key_dict)
+    
+    return {"api_key": api_key_value, "name": key_data.name, "rate_limit": new_key.rate_limit}
+
+
+@api_router.get("/developer/keys")
+async def get_api_keys(
+    request: Request,
+    session_token: Optional[str] = Cookie(None)
+):
+    """Get user's API keys (masked)"""
+    token = session_token or (request.headers.get("Authorization", "").replace("Bearer ", "") if request.headers.get("Authorization") else None)
+    
+    if not token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    user = await get_current_user_from_token(token)
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid session")
+    
+    keys = await db.api_keys.find({"user_id": user["id"]}).to_list(100)
+    
+    return [
+        {
+            "id": key["id"],
+            "name": key["name"],
+            "key": key["key"][:10] + "..." + key["key"][-4:],  # Masked
+            "is_active": key["is_active"],
+            "usage_count": key["usage_count"],
+            "rate_limit": key["rate_limit"],
+            "created_at": key["created_at"]
+        }
+        for key in keys
+    ]
+
+
+@api_router.delete("/developer/keys/{key_id}")
+async def revoke_api_key(
+    key_id: str,
+    request: Request,
+    session_token: Optional[str] = Cookie(None)
+):
+    """Revoke an API key"""
+    token = session_token or (request.headers.get("Authorization", "").replace("Bearer ", "") if request.headers.get("Authorization") else None)
+    
+    if not token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    user = await get_current_user_from_token(token)
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid session")
+    
+    result = await db.api_keys.delete_one({"id": key_id, "user_id": user["id"]})
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="API key not found")
+    
+    return {"success": True, "message": "API key revoked"}
+
+
+# ============ Content Creator Endpoints ============
+
+@api_router.get("/creator/stats")
+async def get_creator_stats(
+    request: Request,
+    session_token: Optional[str] = Cookie(None)
+):
+    """Get creator's content performance stats"""
+    token = session_token or (request.headers.get("Authorization", "").replace("Bearer ", "") if request.headers.get("Authorization") else None)
+    
+    if not token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    user = await get_current_user_from_token(token)
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid session")
+    
+    # Get user's saved/favorited posts as proxy for creator stats
+    favorite_count = len(user.get("favorite_posts", []))
+    
+    # Get activities
+    activities = await db.activities.find({"user_id": user["id"]}).to_list(1000)
+    
+    likes_given = len([a for a in activities if a["action"] == "like"])
+    comments_given = len([a for a in activities if a["action"] == "comment"])
+    shares_given = len([a for a in activities if a["action"] == "share"])
+    
+    return {
+        "total_engagement": likes_given + comments_given + shares_given,
+        "favorites": favorite_count,
+        "likes_given": likes_given,
+        "comments_given": comments_given,
+        "shares_given": shares_given,
+        "activity_count": len(activities)
+    }
+
+
 # Include the router in the main app
 app.include_router(api_router)
 

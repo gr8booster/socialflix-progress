@@ -107,15 +107,18 @@ user_problem_statement: "Implement Sprint 1: Google OAuth Authentication for Chy
 backend:
   - task: "User Model & Session Model"
     implemented: true
-    working: "NA"
+    working: true
     file: "backend/models.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Added User and Session Pydantic models with fields: id, email, name, picture, google_id, created_at, updated_at. Session model has user_id, session_token, expires_at."
+      - working: true
+        agent: "testing"
+        comment: "Models are correctly defined and used by authentication endpoints. All fields are properly structured with UUID generation and datetime handling."
 
   - task: "POST /api/auth/session - Create Session Endpoint"
     implemented: true

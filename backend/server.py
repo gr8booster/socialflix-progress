@@ -1470,6 +1470,112 @@ async def update_notification_preferences(
     return {"success": True, "message": "Notification preferences updated"}
 
 
+# ============ Platform OAuth Endpoints ============
+
+@api_router.get("/oauth/{platform}/login")
+async def platform_oauth_login(
+    platform: str,
+    request: Request,
+    session_token: Optional[str] = Cookie(None)
+):
+    """Initiate OAuth flow for a social media platform"""
+    # Check if user is authenticated
+    token = session_token or (request.headers.get("Authorization", "").replace("Bearer ", "") if request.headers.get("Authorization") else None)
+    
+    if not token:
+        raise HTTPException(status_code=401, detail="Must be logged in to connect platforms")
+    
+    user = await get_current_user_from_token(token)
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid session")
+    
+    # Platform-specific OAuth URLs
+    base_url = os.getenv('REACT_APP_BACKEND_URL', 'https://contentchill.preview.emergentagent.com')
+    redirect_uri = f"{base_url}/api/oauth/{platform}/callback"
+    
+    # Store user_id in state parameter for callback
+    state = f"{user['id']}_{platform}"
+    
+    oauth_urls = {
+        'tiktok': f"https://www.tiktok.com/v2/auth/authorize/?client_key={os.getenv('TIKTOK_CLIENT_ID')}&scope=user.info.basic,video.list&response_type=code&redirect_uri={redirect_uri}&state={state}",
+        'facebook': f"https://www.facebook.com/v18.0/dialog/oauth?client_id={os.getenv('FACEBOOK_CLIENT_ID')}&redirect_uri={redirect_uri}&state={state}&scope=public_profile,email",
+        'instagram': f"https://api.instagram.com/oauth/authorize?client_id={os.getenv('INSTAGRAM_CLIENT_ID')}&redirect_uri={redirect_uri}&scope=user_profile,user_media&response_type=code&state={state}",
+    }
+    
+    if platform not in oauth_urls:
+        raise HTTPException(status_code=400, detail=f"Platform {platform} OAuth not supported yet")
+    
+    return RedirectResponse(url=oauth_urls[platform])
+
+
+@api_router.get("/oauth/{platform}/callback")
+async def platform_oauth_callback(
+    platform: str,
+    code: str,
+    state: str,
+    response: Response
+):
+    """Handle OAuth callback from social media platform"""
+    try:
+        # Extract user_id from state
+        user_id = state.split('_')[0]
+        
+        # Exchange code for access token (platform-specific)
+        # For now, store the code (in production, exchange for actual token)
+        
+        # Store platform connection
+        connection = PlatformConnection(
+            user_id=user_id,
+            platform=platform,
+            access_token=code,  # In production, exchange code for actual token
+            platform_user_id="",  # Would get from platform API
+            platform_username=""  # Would get from platform API
+        )
+        
+        conn_dict = connection.dict()
+        conn_dict["connected_at"] = connection.connected_at.isoformat()
+        
+        await db.platform_connections.insert_one(conn_dict)
+        
+        logger.info(f"User {user_id} connected {platform}")
+        
+        # Redirect back to frontend with success message
+        frontend_url = os.getenv('REACT_APP_BACKEND_URL', 'https://contentchill.preview.emergentagent.com')
+        return RedirectResponse(url=f"{frontend_url}/?platform_connected={platform}")
+        
+    except Exception as e:
+        logger.error(f"Error in {platform} OAuth callback: {e}")
+        frontend_url = os.getenv('REACT_APP_BACKEND_URL', 'https://contentchill.preview.emergentagent.com')
+        return RedirectResponse(url=f"{frontend_url}/?error=oauth_failed")
+
+
+@api_router.get("/user/connected-platforms")
+async def get_connected_platforms(
+    request: Request,
+    session_token: Optional[str] = Cookie(None)
+):
+    """Get list of platforms user has connected"""
+    token = session_token or (request.headers.get("Authorization", "").replace("Bearer ", "") if request.headers.get("Authorization") else None)
+    
+    if not token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    user = await get_current_user_from_token(token)
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid session")
+    
+    connections = await db.platform_connections.find({"user_id": user["id"]}).to_list(100)
+    
+    return [
+        {
+            "platform": conn["platform"],
+            "connected_at": conn["connected_at"],
+            "platform_username": conn.get("platform_username", "")
+        }
+        for conn in connections
+    ]
+
+
 # Include the router in the main app
 app.include_router(api_router)
 

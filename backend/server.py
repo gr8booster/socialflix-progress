@@ -1,4 +1,5 @@
-from fastapi import FastAPI, APIRouter, HTTPException, Query
+from fastapi import FastAPI, APIRouter, HTTPException, Query, Request, Response, Cookie
+from fastapi.responses import JSONResponse
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -6,9 +7,10 @@ import os
 import logging
 from pathlib import Path
 from typing import List, Optional
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
+import httpx
 
-from models import Post, PostCreate, LikeRequest, CommentRequest, ShareRequest, PlatformInfo
+from models import Post, PostCreate, LikeRequest, CommentRequest, ShareRequest, PlatformInfo, User, Session, SessionCreate, UserResponse
 from seed_data import seed_posts, platform_info
 from reddit_scraper import RedditScraper
 from youtube_scraper import YouTubeScraper

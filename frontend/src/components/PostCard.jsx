@@ -39,9 +39,18 @@ const PostCard = ({ post, onClick }) => {
           
           {/* Play Button for Videos */}
           {post.media.type === 'video' && (
-            <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/40 transition-all duration-300">
-              <div className="w-16 h-16 rounded-full bg-white/90 flex items-center justify-center backdrop-blur-sm group-hover:scale-125 group-hover:bg-white transition-all duration-300 animate-pulse">
-                <Play className="w-8 h-8 text-black ml-1" fill="black" />
+            <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-t from-black/60 via-black/20 to-transparent group-hover:bg-black/50 transition-all duration-300">
+              <div className="relative">
+                {/* Pulsing ring effect */}
+                <div className="absolute inset-0 w-20 h-20 rounded-full bg-red-600 opacity-30 animate-ping"></div>
+                {/* Main play button */}
+                <div className="relative w-20 h-20 rounded-full bg-gradient-to-br from-red-600 to-red-700 flex items-center justify-center shadow-2xl group-hover:scale-125 transition-all duration-300 border-4 border-white">
+                  <Play className="w-10 h-10 text-white ml-1" fill="white" />
+                </div>
+              </div>
+              {/* "PLAY" text below */}
+              <div className="absolute bottom-8 left-0 right-0 text-center">
+                <span className="text-white font-bold text-xl tracking-wider drop-shadow-lg">PLAY</span>
               </div>
             </div>
           )}

@@ -146,7 +146,7 @@ const PostModal = ({ post, isOpen, onClose }) => {
             {isYouTubeVideo ? (
               // YouTube video player
               <div className="w-full h-full relative">
-                {!isPlaying && showPlayButton ? (
+                {!isPlaying && !isLoading && showPlayButton ? (
                   // Thumbnail with play button
                   <div 
                     className="w-full h-full relative cursor-pointer group"
@@ -158,7 +158,6 @@ const PostModal = ({ post, isOpen, onClose }) => {
                       className="w-full h-full object-cover"
                     />
                     <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/40 group-hover:bg-black/60 transition-colors">
-                      {/* Large pulsing play button */}
                       <div className="relative mb-4">
                         <div className="absolute inset-0 w-32 h-32 rounded-full bg-red-600 opacity-30 animate-ping"></div>
                         <div className="relative w-32 h-32 rounded-full bg-gradient-to-br from-red-600 to-red-700 flex items-center justify-center shadow-2xl border-4 border-white group-hover:scale-110 transition-transform">
@@ -167,6 +166,23 @@ const PostModal = ({ post, isOpen, onClose }) => {
                       </div>
                       <div className="text-white text-2xl font-bold tracking-wider">PLAY VIDEO</div>
                       <div className="text-gray-300 text-sm mt-2">YouTube</div>
+                    </div>
+                  </div>
+                ) : isLoading ? (
+                  // Loading/Buffering state
+                  <div className="w-full h-full relative flex items-center justify-center bg-black">
+                    <img 
+                      src={post.media.thumbnail || post.media.url}
+                      alt={post.content}
+                      className="w-full h-full object-cover opacity-30 blur-sm"
+                    />
+                    <div className="absolute inset-0 flex flex-col items-center justify-center">
+                      <div className="relative w-24 h-24 mb-4">
+                        <div className="absolute inset-0 w-24 h-24 rounded-full border-4 border-gray-600"></div>
+                        <div className="absolute inset-0 w-24 h-24 rounded-full border-4 border-t-red-600 border-r-red-600 border-b-transparent border-l-transparent animate-spin"></div>
+                      </div>
+                      <div className="text-white text-xl font-bold">Loading video...</div>
+                      <div className="text-gray-400 text-sm mt-2">Please wait</div>
                     </div>
                   </div>
                 ) : (
@@ -186,8 +202,7 @@ const PostModal = ({ post, isOpen, onClose }) => {
             ) : isTikTokVideo ? (
               // TikTok video player
               <div className="w-full h-full relative">
-                {!isPlaying && showPlayButton ? (
-                  // Thumbnail with play button
+                {!isPlaying && !isLoading && showPlayButton ? (
                   <div 
                     className="w-full h-full relative cursor-pointer group"
                     onClick={handlePlayVideo}
@@ -198,7 +213,6 @@ const PostModal = ({ post, isOpen, onClose }) => {
                       className="w-full h-full object-contain"
                     />
                     <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/40 group-hover:bg-black/60 transition-colors">
-                      {/* Large pulsing play button */}
                       <div className="relative mb-4">
                         <div className="absolute inset-0 w-32 h-32 rounded-full bg-red-600 opacity-30 animate-ping"></div>
                         <div className="relative w-32 h-32 rounded-full bg-gradient-to-br from-red-600 to-red-700 flex items-center justify-center shadow-2xl border-4 border-white group-hover:scale-110 transition-transform">
@@ -209,8 +223,23 @@ const PostModal = ({ post, isOpen, onClose }) => {
                       <div className="text-gray-300 text-sm mt-2">TikTok</div>
                     </div>
                   </div>
+                ) : isLoading ? (
+                  <div className="w-full h-full relative flex items-center justify-center bg-black">
+                    <img 
+                      src={post.media.thumbnail || post.media.url}
+                      alt={post.content}
+                      className="w-full h-full object-contain opacity-30 blur-sm"
+                    />
+                    <div className="absolute inset-0 flex flex-col items-center justify-center">
+                      <div className="relative w-24 h-24 mb-4">
+                        <div className="absolute inset-0 w-24 h-24 rounded-full border-4 border-gray-600"></div>
+                        <div className="absolute inset-0 w-24 h-24 rounded-full border-4 border-t-red-600 border-r-red-600 border-b-transparent border-l-transparent animate-spin"></div>
+                      </div>
+                      <div className="text-white text-xl font-bold">Loading video...</div>
+                      <div className="text-gray-400 text-sm mt-2">Please wait</div>
+                    </div>
+                  </div>
                 ) : (
-                  // TikTok iframe
                   <iframe
                     src={tiktokEmbedUrl}
                     className="w-full h-full"
@@ -234,10 +263,36 @@ const PostModal = ({ post, isOpen, onClose }) => {
                 Your browser does not support the video tag.
               </video>
             ) : isAnyVideo ? (
-              // Generic video - show with HTML5 video player
+              // Generic video or demo video placeholder
               <div className="w-full h-full relative">
-                {!isPlaying && showPlayButton ? (
-                  // Thumbnail with play button
+                {videoError ? (
+                  // Error state - video not available
+                  <div className="w-full h-full relative flex items-center justify-center">
+                    <img 
+                      src={post.media.thumbnail || post.media.url}
+                      alt={post.content}
+                      className="w-full h-full object-contain opacity-50"
+                    />
+                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/70">
+                      <div className="bg-red-600/20 border-2 border-red-600 rounded-full p-6 mb-4">
+                        <svg className="w-16 h-16 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </div>
+                      <div className="text-white text-xl font-bold mb-2">Video Demo Content</div>
+                      <div className="text-gray-300 text-sm text-center max-w-md px-4">
+                        This is a demonstration post. Connect real {post.platform} API to play actual videos.
+                      </div>
+                      <button
+                        onClick={resetVideoState}
+                        className="mt-6 px-6 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg transition-colors"
+                      >
+                        Back
+                      </button>
+                    </div>
+                  </div>
+                ) : !isPlaying && !isLoading && showPlayButton ? (
                   <div 
                     className="w-full h-full relative cursor-pointer group"
                     onClick={handlePlayVideo}
@@ -248,7 +303,6 @@ const PostModal = ({ post, isOpen, onClose }) => {
                       className="w-full h-full object-contain"
                     />
                     <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/40 group-hover:bg-black/60 transition-colors">
-                      {/* Large pulsing play button */}
                       <div className="relative mb-4">
                         <div className="absolute inset-0 w-32 h-32 rounded-full bg-red-600 opacity-30 animate-ping"></div>
                         <div className="relative w-32 h-32 rounded-full bg-gradient-to-br from-red-600 to-red-700 flex items-center justify-center shadow-2xl border-4 border-white group-hover:scale-110 transition-transform">
@@ -259,8 +313,23 @@ const PostModal = ({ post, isOpen, onClose }) => {
                       <div className="text-gray-300 text-sm mt-2 capitalize">{post.platform}</div>
                     </div>
                   </div>
-                ) : post.media.url ? (
-                  // HTML5 video player
+                ) : isLoading ? (
+                  <div className="w-full h-full relative flex items-center justify-center bg-black">
+                    <img 
+                      src={post.media.thumbnail || post.media.url}
+                      alt={post.content}
+                      className="w-full h-full object-contain opacity-30 blur-sm"
+                    />
+                    <div className="absolute inset-0 flex flex-col items-center justify-center">
+                      <div className="relative w-24 h-24 mb-4">
+                        <div className="absolute inset-0 w-24 h-24 rounded-full border-4 border-gray-600"></div>
+                        <div className="absolute inset-0 w-24 h-24 rounded-full border-4 border-t-red-600 border-r-red-600 border-b-transparent border-l-transparent animate-spin"></div>
+                      </div>
+                      <div className="text-white text-xl font-bold">Loading video...</div>
+                      <div className="text-gray-400 text-sm mt-2">Please wait</div>
+                    </div>
+                  </div>
+                ) : hasPlayableVideo && post.media.url ? (
                   <video
                     controls
                     autoPlay
@@ -271,14 +340,7 @@ const PostModal = ({ post, isOpen, onClose }) => {
                     <source src={post.media.url} type="video/mp4" />
                     Your browser does not support the video tag.
                   </video>
-                ) : (
-                  // Fallback - just show thumbnail
-                  <img 
-                    src={post.media.thumbnail || post.media.url}
-                    alt={post.content}
-                    className="max-w-full max-h-full object-contain"
-                  />
-                )}
+                ) : null}
               </div>
             ) : (
               // Regular image

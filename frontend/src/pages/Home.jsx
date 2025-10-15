@@ -16,7 +16,7 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
   const [showScrollTop, setShowScrollTop] = useState(false);
 
-  // Fetch all posts on component mount
+  // Fetch all posts on component mount with caching
   useEffect(() => {
     fetchPosts();
   }, []);
@@ -36,8 +36,29 @@ const Home = () => {
 
   const fetchPosts = async () => {
     try {
+      // Check cache first (valid for 5 minutes)
+      const cachedData = localStorage.getItem('chyllapp_posts');
+      const cacheTime = localStorage.getItem('chyllapp_posts_time');
+      const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
+      if (cachedData && cacheTime) {
+        const age = Date.now() - parseInt(cacheTime);
+        if (age < CACHE_DURATION) {
+          console.log('Using cached posts data');
+          setAllPosts(JSON.parse(cachedData));
+          setLoading(false);
+          return;
+        }
+      }
+
+      // Fetch from API if cache miss or expired
       const response = await axios.get(`${API}/posts`);
       setAllPosts(response.data);
+      
+      // Update cache
+      localStorage.setItem('chyllapp_posts', JSON.stringify(response.data));
+      localStorage.setItem('chyllapp_posts_time', Date.now().toString());
+      
       setLoading(false);
     } catch (error) {
       console.error('Error fetching posts:', error);

@@ -643,6 +643,14 @@ const Admin = () => {
                   <span className="text-pink-500 font-semibold">{status?.instagram_posts || 0}</span>
                 </div>
                 <div className="flex justify-between items-center p-3 bg-gray-900 rounded-lg">
+                  <span className="text-gray-300">TikTok Posts</span>
+                  <span className="text-cyan-400 font-semibold">{status?.tiktok_posts || 0}</span>
+                </div>
+                <div className="flex justify-between items-center p-3 bg-gray-900 rounded-lg">
+                  <span className="text-gray-300">Facebook Posts</span>
+                  <span className="text-blue-600 font-semibold">{status?.facebook_posts || 0}</span>
+                </div>
+                <div className="flex justify-between items-center p-3 bg-gray-900 rounded-lg">
                   <span className="text-gray-300">Mock Posts</span>
                   <span className="text-green-500 font-semibold">{status?.mock_posts || 0}</span>
                 </div>

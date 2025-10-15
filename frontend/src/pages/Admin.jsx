@@ -160,7 +160,6 @@ const Admin = () => {
           title: "Success!",
           description: `Added ${response.data.posts_added} new Instagram posts`,
         });
-        // Refresh status
         await fetchStatus();
       } else {
         toast({
@@ -177,6 +176,74 @@ const Admin = () => {
       });
     } finally {
       setFetchingInstagram(false);
+    }
+  };
+
+  const fetchTikTokVideos = async () => {
+    try {
+      setFetchingTiktok(true);
+      toast({
+        title: "Fetching TikTok Videos...",
+        description: "This may take a few seconds",
+      });
+
+      const response = await axios.post(`${API}/scraper/fetch-tiktok?limit=15`);
+      
+      if (response.data.success) {
+        toast({
+          title: "Success!",
+          description: `Added ${response.data.posts_added} new TikTok videos`,
+        });
+        await fetchStatus();
+      } else {
+        toast({
+          title: "No New Videos",
+          description: response.data.message,
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching TikTok videos:', error);
+      toast({
+        title: "Error",
+        description: "Failed to fetch TikTok videos",
+        variant: "destructive"
+      });
+    } finally {
+      setFetchingTiktok(false);
+    }
+  };
+
+  const fetchFacebookPosts = async () => {
+    try {
+      setFetchingFacebook(true);
+      toast({
+        title: "Fetching Facebook Posts...",
+        description: "This may take a few seconds",
+      });
+
+      const response = await axios.post(`${API}/scraper/fetch-facebook?limit=15`);
+      
+      if (response.data.success) {
+        toast({
+          title: "Success!",
+          description: `Added ${response.data.posts_added} new Facebook posts`,
+        });
+        await fetchStatus();
+      } else {
+        toast({
+          title: "No New Posts",
+          description: response.data.message,
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching Facebook posts:', error);
+      toast({
+        title: "Error",
+        description: "Failed to fetch Facebook posts",
+        variant: "destructive"
+      });
+    } finally {
+      setFetchingFacebook(false);
     }
   };
 

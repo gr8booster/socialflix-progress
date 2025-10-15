@@ -1278,6 +1278,136 @@ async def get_trending_topics(limit: int = Query(5, description="Number of topic
         return []
 
 
+# ============ Analytics Endpoints ============
+
+@api_router.get("/analytics/overview")
+async def get_analytics_overview():
+    """Get overall platform analytics"""
+    try:
+        total_posts = await db.posts.count_documents({})
+        
+        # Get platform breakdown
+        platform_pipeline = [
+            {"$group": {"_id": "$platform", "count": {"$sum": 1}}}
+        ]
+        platform_stats = await db.posts.aggregate(platform_pipeline).to_list(None)
+        
+        # Get category breakdown
+        category_pipeline = [
+            {"$group": {"_id": "$category", "count": {"$sum": 1}}}
+        ]
+        category_stats = await db.posts.aggregate(category_pipeline).to_list(None)
+        
+        # Get total engagement
+        total_likes = await db.posts.aggregate([
+            {"$group": {"_id": None, "total": {"$sum": "$likes"}}}
+        ]).to_list(1)
+        
+        total_comments = await db.posts.aggregate([
+            {"$group": {"_id": None, "total": {"$sum": "$comments"}}}
+        ]).to_list(1)
+        
+        total_shares = await db.posts.aggregate([
+            {"$group": {"_id": None, "total": {"$sum": "$shares"}}}
+        ]).to_list(1)
+        
+        # Get video count
+        video_count = await db.posts.count_documents({"media.type": "video"})
+        
+        return {
+            "total_posts": total_posts,
+            "total_videos": video_count,
+            "total_images": total_posts - video_count,
+            "total_likes": total_likes[0]["total"] if total_likes else 0,
+            "total_comments": total_comments[0]["total"] if total_comments else 0,
+            "total_shares": total_shares[0]["total"] if total_shares else 0,
+            "platforms": {stat["_id"]: stat["count"] for stat in platform_stats},
+            "categories": {stat["_id"]: stat["count"] for stat in category_stats}
+        }
+    except Exception as e:
+        logger.error(f"Error getting analytics overview: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@api_router.get("/analytics/platforms")
+async def get_platform_analytics():
+    """Get detailed platform performance metrics"""
+    try:
+        pipeline = [
+            {
+                "$group": {
+                    "_id": "$platform",
+                    "post_count": {"$sum": 1},
+                    "total_likes": {"$sum": "$likes"},
+                    "total_comments": {"$sum": "$comments"},
+                    "total_shares": {"$sum": "$shares"},
+                    "avg_likes": {"$avg": "$likes"},
+                    "avg_comments": {"$avg": "$comments"},
+                    "video_count": {
+                        "$sum": {"$cond": [{"$eq": ["$media.type", "video"]}, 1, 0]}
+                    }
+                }
+            },
+            {"$sort": {"total_likes": -1}}
+        ]
+        
+        stats = await db.posts.aggregate(pipeline).to_list(None)
+        
+        return [
+            {
+                "platform": stat["_id"],
+                "posts": stat["post_count"],
+                "videos": stat["video_count"],
+                "likes": stat["total_likes"],
+                "comments": stat["total_comments"],
+                "shares": stat["total_shares"],
+                "avg_likes": round(stat["avg_likes"], 2),
+                "avg_comments": round(stat["avg_comments"], 2)
+            }
+            for stat in stats
+        ]
+    except Exception as e:
+        logger.error(f"Error getting platform analytics: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@api_router.get("/analytics/export")
+async def export_analytics(format: str = Query("json", description="Export format: json or csv")):
+    """Export analytics data"""
+    try:
+        overview = await get_analytics_overview()
+        platforms = await get_platform_analytics()
+        
+        data = {
+            "overview": overview,
+            "platforms": platforms,
+            "exported_at": datetime.now(timezone.utc).isoformat()
+        }
+        
+        if format == "csv":
+            # Simple CSV export of platform stats
+            import io
+            import csv
+            
+            output = io.StringIO()
+            writer = csv.DictWriter(output, fieldnames=["platform", "posts", "videos", "likes", "comments", "shares"])
+            writer.writeheader()
+            writer.writerows(platforms)
+            
+            from fastapi.responses import StreamingResponse
+            return StreamingResponse(
+                iter([output.getvalue()]),
+                media_type="text/csv",
+                headers={"Content-Disposition": "attachment; filename=chyllapp_analytics.csv"}
+            )
+        else:
+            return data
+            
+    except Exception as e:
+        logger.error(f"Error exporting analytics: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 # Include the router in the main app
 app.include_router(api_router)
 

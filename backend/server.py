@@ -507,6 +507,66 @@ async def fetch_snapchat_content(limit: int = 50):
         raise HTTPException(status_code=500, detail=f"Error fetching Snapchat content: {str(e)}")
 
 
+@api_router.post("/scraper/fetch-pinterest")
+async def fetch_pinterest_pins(limit: int = 50):
+    """Fetch trending pins from Pinterest and save to database"""
+    try:
+        logger.info(f"Fetching {limit} trending pins from Pinterest...")
+        pinterest_pins = pinterest_scraper.fetch_trending_pins(max_results=limit)
+        
+        if not pinterest_pins:
+            return {"success": False, "message": "No pins fetched from Pinterest", "posts_added": 0}
+        
+        posts_added = 0
+        for pin_data in pinterest_pins:
+            existing_post = await db.posts.find_one({"pinterest_id": pin_data.get("pinterest_id")})
+            if not existing_post:
+                post = Post(**pin_data)
+                await db.posts.insert_one(post.dict())
+                posts_added += 1
+        
+        logger.info(f"Successfully added {posts_added} new Pinterest pins to database")
+        return {
+            "success": True,
+            "message": f"Successfully fetched and saved {posts_added} Pinterest pins",
+            "posts_added": posts_added,
+            "total_fetched": len(pinterest_pins)
+        }
+    except Exception as e:
+        logger.error(f"Error fetching Pinterest pins: {e}")
+        raise HTTPException(status_code=500, detail=f"Error fetching Pinterest pins: {str(e)}")
+
+
+@api_router.post("/scraper/fetch-linkedin")
+async def fetch_linkedin_posts(limit: int = 50):
+    """Fetch trending posts from LinkedIn and save to database"""
+    try:
+        logger.info(f"Fetching {limit} trending posts from LinkedIn...")
+        linkedin_posts = linkedin_scraper.fetch_trending_posts(max_results=limit)
+        
+        if not linkedin_posts:
+            return {"success": False, "message": "No posts fetched from LinkedIn", "posts_added": 0}
+        
+        posts_added = 0
+        for post_data in linkedin_posts:
+            existing_post = await db.posts.find_one({"linkedin_id": post_data.get("linkedin_id")})
+            if not existing_post:
+                post = Post(**post_data)
+                await db.posts.insert_one(post.dict())
+                posts_added += 1
+        
+        logger.info(f"Successfully added {posts_added} new LinkedIn posts to database")
+        return {
+            "success": True,
+            "message": f"Successfully fetched and saved {posts_added} LinkedIn posts",
+            "posts_added": posts_added,
+            "total_fetched": len(linkedin_posts)
+        }
+    except Exception as e:
+        logger.error(f"Error fetching LinkedIn posts: {e}")
+        raise HTTPException(status_code=500, detail=f"Error fetching LinkedIn posts: {str(e)}")
+
+
 @api_router.get("/scraper/status")
 async def scraper_status():
     """Get status of scraper and database"""
@@ -520,7 +580,9 @@ async def scraper_status():
         facebook_posts = await db.posts.count_documents({"platform": "facebook"})
         threads_posts = await db.posts.count_documents({"platform": "threads"})
         snapchat_posts = await db.posts.count_documents({"platform": "snapchat"})
-        mock_posts = total_posts - reddit_posts - youtube_posts - twitter_posts - instagram_posts - tiktok_posts - facebook_posts - threads_posts - snapchat_posts
+        pinterest_posts = await db.posts.count_documents({"platform": "pinterest"})
+        linkedin_posts = await db.posts.count_documents({"platform": "linkedin"})
+        mock_posts = total_posts - reddit_posts - youtube_posts - twitter_posts - instagram_posts - tiktok_posts - facebook_posts - threads_posts - snapchat_posts - pinterest_posts - linkedin_posts
         
         return {
             "status": "active",
@@ -533,6 +595,8 @@ async def scraper_status():
             "facebook_posts": facebook_posts,
             "threads_posts": threads_posts,
             "snapchat_posts": snapchat_posts,
+            "pinterest_posts": pinterest_posts,
+            "linkedin_posts": linkedin_posts,
             "mock_posts": mock_posts,
             "scraper_ready": True
         }

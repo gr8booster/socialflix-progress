@@ -56,7 +56,7 @@ const Hero = ({ onViewPost }) => {
       </div>
 
       {/* Content */}
-      <div className="relative z-10 flex h-full flex-col justify-center px-8 md:px-16 lg:px-24 max-w-3xl">
+      <div className="relative z-10 flex h-full flex-col justify-center px-8 md:px-16 lg:px-24 max-w-3xl animate-slide-in-up">
         {/* Platform Badge */}
         <div className="mb-4 inline-flex items-center gap-2 bg-white/10 backdrop-blur-md px-4 py-2 rounded-full w-fit">
           <div 

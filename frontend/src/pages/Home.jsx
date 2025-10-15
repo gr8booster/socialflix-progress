@@ -32,6 +32,31 @@ const Home = () => {
 
   const POSTS_PER_PAGE = 50;
 
+  // Check for OAuth callback success
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const platformConnected = urlParams.get('platform_connected');
+    const error = urlParams.get('error');
+    
+    if (platformConnected) {
+      toast({
+        title: "Platform Connected!",
+        description: `Successfully connected your ${platformConnected} account. You can now view content from ${platformConnected}!`,
+        duration: 5000,
+      });
+      // Clean URL
+      window.history.replaceState({}, '', '/');
+    } else if (error === 'oauth_failed') {
+      toast({
+        title: "Connection Failed",
+        description: "Failed to connect platform. Please try again.",
+        variant: "destructive",
+        duration: 5000,
+      });
+      window.history.replaceState({}, '', '/');
+    }
+  }, []);
+
   // Fetch initial posts on component mount with caching
   useEffect(() => {
     fetchInitialPosts();

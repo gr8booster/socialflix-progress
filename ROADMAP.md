@@ -212,7 +212,7 @@ ChyllApp is a comprehensive social media aggregator that brings viral content fr
 - Responsive design
 
 ### 🚧 In Progress
-- Sprint 1 features (see above)
+- Sprint 2 features (User Engagement)
 
 ### 📋 Backlog
 - Sprints 2, 3, 4 features

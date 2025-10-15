@@ -935,6 +935,51 @@ frontend:
         agent: "testing"
         comment: "NewPostsNotification component working correctly. Verified: (1) Component renders without errors, (2) Polling mechanism implemented with 30-second interval (setInterval), (3) API calls to /api/posts/new-count endpoint successful (previously failing with 404, now working after backend fix), (4) Component shows/hides based on showNotification state and newPostsCount, (5) Refresh button triggers onRefresh callback. Note: Notification banner only appears when new posts are detected (has_new: true), which is expected behavior. Component code is correct and functional."
 
+  - task: "Recommendations Page - AI-Powered 'For You' Feed"
+    implemented: true
+    working: false
+    file: "frontend/src/pages/Recommendations.jsx"
+    stuck_count: 1
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Created Recommendations page (/recommendations) with: (1) AI-powered 'For You' feed showing personalized recommendations, (2) Page title 'Trending Now' for non-logged-in users, 'For You' for authenticated users, (3) Subtitle explaining content source, (4) Sparkles icon in header, (5) Trending Topics card with AI-detected topics, (6) Grid of 20 recommended posts using PostCard component, (7) Post modal integration, (8) Loading states, (9) Empty state with helpful message. Fetches data from /api/recommendations and /api/trending/topics endpoints."
+      - working: false
+        agent: "testing"
+        comment: "CRITICAL BUG: Horizontal overflow on mobile (375px viewport). Page width is 476px causing 101px overflow. Investigation revealed PostCard components have fixed width 'w-[280px]' which is designed for carousel layouts but is being used in grid layout on Recommendations page. This causes cards to overflow on mobile. WORKING FEATURES: ✅ Page loads correctly, ✅ Title shows 'Trending Now' for non-logged-in users, ✅ Subtitle shows 'Popular content across all platforms', ✅ Sparkles icon visible in header, ✅ Trending Topics card visible with 5 topics, ✅ Topics display as pills with #TopicName (count) format, ✅ Topics have gradient background (red to pink), ✅ 'Most Engaging Posts' heading visible, ✅ 20 posts displayed in grid (xl:grid-cols-6), ✅ Posts are clickable, ✅ Modal opens with post details, ✅ Save/Like/Comment/Share buttons all visible and working in modal, ✅ API calls successful (/api/recommendations?limit=20, /api/trending/topics?limit=5), ✅ Navigation flow working. FIX NEEDED: PostCard component should not have fixed width when used in grid layouts. Need to make PostCard responsive or create separate component for grid layouts."
+
+  - task: "Navbar - 'For You' Link with Sparkles Icon"
+    implemented: true
+    working: true
+    file: "frontend/src/components/Navbar.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Added 'For You' link to Navbar with Sparkles icon. Link positioned between 'Home' and 'Viral'. Navigates to /recommendations page when clicked. Uses lucide-react Sparkles icon."
+      - working: true
+        agent: "testing"
+        comment: "Navbar 'For You' link fully functional. Tested: (1) 'For You' link visible in navbar, (2) Sparkles icon (✨) visible next to text, (3) Link text displays 'For You', (4) Link positioned between 'Home' and 'Viral' (verified order: Home, For You, Viral, My Feed), (5) Clicking link navigates to /recommendations page successfully, (6) Link has proper styling (text-gray-300 hover:text-white), (7) Navbar stays functional during navigation. All requirements met."
+
+  - task: "App.js - /recommendations Route"
+    implemented: true
+    working: true
+    file: "frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Added /recommendations route to App.js with code splitting via React.lazy(). Route renders Recommendations component wrapped in Suspense with LoadingFallback."
+      - working: true
+        agent: "testing"
+        comment: "/recommendations route correctly configured. Verified: (1) Route exists in App.js (line 30): <Route path='/recommendations' element={<Recommendations />} />, (2) Recommendations component lazy-loaded with React.lazy() (line 11), (3) Wrapped in Suspense with LoadingFallback component, (4) Route navigation working - tested by navigating to /recommendations URL, (5) Page loads correctly with all features. Code splitting and routing fully functional."
+
 
 metadata:
   created_by: "main_agent"

@@ -238,7 +238,7 @@ const Home = () => {
       <Hero onViewPost={handleViewPost} />
 
       {/* Filters Panel */}
-      <div className="relative z-10 -mt-24 px-8 md:px-16 mb-8">
+      <div className="relative z-20 -mt-24 px-8 md:px-16 mb-8">
         <FiltersPanel 
           onApplyFilters={handleApplyFilters}
           onSaveFilter={handleSaveFilter}

@@ -28,10 +28,16 @@ const PostModal = ({ post, isOpen, onClose }) => {
 
   // Check if it's a YouTube video
   const isYouTubeVideo = post.platform === 'youtube' && post.youtube_id;
-  const youtubeEmbedUrl = isYouTubeVideo ? `https://www.youtube.com/embed/${post.youtube_id}?autoplay=1` : null;
+  const youtubeEmbedUrl = isYouTubeVideo ? `https://www.youtube.com/embed/${post.youtube_id}?autoplay=1&rel=0` : null;
+  
+  // Check if it's TikTok video
+  const isTikTokVideo = post.platform === 'tiktok' && post.media.type === 'video';
   
   // Check if it's a Reddit video
   const isRedditVideo = post.platform === 'reddit' && post.media.type === 'video';
+  
+  // Check if any video type
+  const isAnyVideo = post.media.type === 'video';
 
   const handleLike = async () => {
     try {

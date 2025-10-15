@@ -167,6 +167,33 @@ async def get_featured_post():
     return Post(**post)
 
 
+@api_router.get("/posts/new-count")
+async def get_new_posts_count(
+    since: str = Query(..., description="ISO timestamp to check for new posts since"),
+    platform: Optional[str] = Query(None, description="Filter by platform"),
+    category: Optional[str] = Query(None, description="Filter by category")
+):
+    """Check how many new posts have been added since a given timestamp"""
+    try:
+        query = {"createdAt": {"$gt": since}}
+        
+        if platform:
+            query["platform"] = platform
+        if category:
+            query["category"] = category
+        
+        count = await db.posts.count_documents(query)
+        
+        return {
+            "new_count": count,
+            "since": since,
+            "has_new": count > 0
+        }
+    except Exception as e:
+        logger.error(f"Error checking new posts: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @api_router.get("/posts/{post_id}", response_model=Post)
 async def get_post(post_id: str):
     """Get a single post by ID"""

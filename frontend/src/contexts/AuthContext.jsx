@@ -82,7 +82,15 @@ export const AuthProvider = ({ children }) => {
   const login = () => {
     // Redirect to Emergent Auth with redirect_url pointing to main app
     const redirectUrl = window.location.origin;
-    window.location.href = `https://auth.emergentagent.com/?redirect=${encodeURIComponent(redirectUrl)}`;
+    const authUrl = `https://auth.emergentagent.com/?redirect=${encodeURIComponent(redirectUrl)}`;
+    
+    // For mobile browsers, ensure we're doing a full page redirect
+    // Use window.top to break out of any iframe context
+    if (window.top) {
+      window.top.location.href = authUrl;
+    } else {
+      window.location.href = authUrl;
+    }
   };
 
   const logout = async () => {

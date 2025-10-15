@@ -15,26 +15,41 @@ const Home = () => {
   const [allPosts, setAllPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const [page, setPage] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
 
-  // Fetch all posts on component mount with caching
+  const POSTS_PER_PAGE = 50;
+
+  // Fetch initial posts on component mount with caching
   useEffect(() => {
-    fetchPosts();
+    fetchInitialPosts();
   }, []);
 
-  // Show scroll to top button
+  // Infinite scroll detection
   useEffect(() => {
     const handleScroll = () => {
       setShowScrollTop(window.scrollY > 500);
+
+      // Check if user scrolled near bottom
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      const scrollHeight = document.documentElement.scrollHeight;
+      const clientHeight = document.documentElement.clientHeight;
+
+      if (scrollTop + clientHeight >= scrollHeight - 1000 && !loadingMore && hasMore) {
+        loadMorePosts();
+      }
     };
+
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [loadingMore, hasMore, page]);
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const fetchPosts = async () => {
+  const fetchInitialPosts = async () => {
     try {
       // Check cache first (valid for 5 minutes)
       const cachedData = localStorage.getItem('chyllapp_posts');
@@ -47,12 +62,13 @@ const Home = () => {
           console.log('Using cached posts data');
           setAllPosts(JSON.parse(cachedData));
           setLoading(false);
+          setPage(1);
           return;
         }
       }
 
       // Fetch from API if cache miss or expired
-      const response = await axios.get(`${API}/posts`);
+      const response = await axios.get(`${API}/posts?limit=${POSTS_PER_PAGE}`);
       setAllPosts(response.data);
       
       // Update cache
@@ -60,9 +76,34 @@ const Home = () => {
       localStorage.setItem('chyllapp_posts_time', Date.now().toString());
       
       setLoading(false);
+      setPage(1);
+      setHasMore(response.data.length === POSTS_PER_PAGE);
     } catch (error) {
       console.error('Error fetching posts:', error);
       setLoading(false);
+    }
+  };
+
+  const loadMorePosts = async () => {
+    if (loadingMore || !hasMore) return;
+
+    setLoadingMore(true);
+    try {
+      const response = await axios.get(`${API}/posts?limit=${POSTS_PER_PAGE}&skip=${page * POSTS_PER_PAGE}`);
+      
+      if (response.data.length > 0) {
+        setAllPosts(prev => [...prev, ...response.data]);
+        setPage(prev => prev + 1);
+        setHasMore(response.data.length === POSTS_PER_PAGE);
+        console.log(`Loaded ${response.data.length} more posts (page ${page + 1})`);
+      } else {
+        setHasMore(false);
+        console.log('No more posts to load');
+      }
+    } catch (error) {
+      console.error('Error loading more posts:', error);
+    } finally {
+      setLoadingMore(false);
     }
   };
 

@@ -92,11 +92,19 @@ const FiltersPanel = ({ onApplyFilters, onSaveFilter }) => {
   const activeFiltersCount = selectedPlatforms.length + selectedCategories.length + 
     (timeRange !== 'all' ? 1 : 0) + (sortBy !== 'date' ? 1 : 0);
 
+  const handleButtonClick = () => {
+    console.log('Filters button clicked, current isOpen:', isOpen);
+    setIsOpen(!isOpen);
+    console.log('Setting isOpen to:', !isOpen);
+  };
+
+  console.log('FiltersPanel render, isOpen:', isOpen);
+
   return (
     <>
       {/* Filter Button */}
       <Button
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={handleButtonClick}
         className="bg-gray-800 hover:bg-gray-700 border border-gray-700 relative"
       >
         <Filter className="w-4 h-4 mr-2" />

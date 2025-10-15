@@ -288,13 +288,21 @@ const PostModal = ({ post, isOpen, onClose }) => {
                 )}
               </div>
             ) : isRedditVideo && post.media.url ? (
-              // Reddit video player
+              // Reddit video player with audio
               <video
                 controls
                 autoPlay
                 loop
+                playsInline
+                muted={false}
+                volume={1.0}
                 className="max-w-full max-h-full"
                 poster={post.media.thumbnail}
+                onLoadedMetadata={(e) => {
+                  // Ensure audio is enabled when video loads
+                  e.target.muted = false;
+                  e.target.volume = 1.0;
+                }}
               >
                 <source src={post.media.url} type="video/mp4" />
                 Your browser does not support the video tag.

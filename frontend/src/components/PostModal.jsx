@@ -299,27 +299,55 @@ const PostModal = ({ post, isOpen, onClose }) => {
                       alt={post.content}
                       className="w-full h-full object-contain opacity-50"
                     />
-                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/70">
-                      <div className="bg-red-600/20 border-2 border-red-600 rounded-full p-6 mb-4">
-                        <svg className="w-16 h-16 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/70 px-8">
+                      <div className="bg-gradient-to-br from-blue-600/20 to-purple-600/20 border-2 border-blue-500 rounded-full p-6 mb-4">
+                        <svg className="w-16 h-16 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                         </svg>
                       </div>
-                      <div className="text-white text-xl font-bold mb-2 capitalize">{post.platform} Video Demo</div>
-                      <div className="text-gray-300 text-sm text-center max-w-md px-4">
-                        {post.platform === 'tiktok' ? (
-                          <>This is demonstration content. TikTok's API requires special authentication. Real TikTok videos coming soon!</>
-                        ) : (
-                          <>This is demonstration content. Real {post.platform} video integration coming soon!</>
-                        )}
+                      <div className="text-white text-2xl font-bold mb-3 capitalize text-center">
+                        {post.platform === 'tiktok' && 'Sign in with TikTok'}
+                        {post.platform === 'facebook' && 'Sign in with Facebook'}
+                        {post.platform === 'instagram' && 'Sign in with Instagram'}
+                        {post.platform === 'threads' && 'Sign in with Threads'}
+                        {post.platform === 'snapchat' && 'Sign in with Snapchat'}
+                        {post.platform === 'pinterest' && 'Sign in with Pinterest'}
+                        {post.platform === 'linkedin' && 'Sign in with LinkedIn'}
+                        {!['tiktok', 'facebook', 'instagram', 'threads', 'snapchat', 'pinterest', 'linkedin'].includes(post.platform) && 'Sign in Required'}
                       </div>
+                      <div className="text-gray-300 text-base text-center max-w-md mb-6 leading-relaxed">
+                        {post.platform === 'tiktok' && 'Connect your TikTok account to watch viral TikTok videos directly in ChyllApp!'}
+                        {post.platform === 'facebook' && 'Connect your Facebook account to view Facebook videos and posts!'}
+                        {post.platform === 'instagram' && 'Connect your Instagram account to watch Instagram Reels and videos!'}
+                        {post.platform === 'threads' && 'Connect your Threads account to view Threads content!'}
+                        {post.platform === 'snapchat' && 'Connect your Snapchat account to view Spotlight videos!'}
+                        {post.platform === 'pinterest' && 'Connect your Pinterest account to view Pin videos!'}
+                        {post.platform === 'linkedin' && 'Connect your LinkedIn account to view LinkedIn posts!'}
+                        {!['tiktok', 'facebook', 'instagram', 'threads', 'snapchat', 'pinterest', 'linkedin'].includes(post.platform) && 
+                          'Sign in with your social media account to unlock exclusive content from this platform.'}
+                      </div>
+                      
+                      {/* Sign In Button */}
+                      <button
+                        onClick={() => {
+                          // TODO: Implement OAuth flow for each platform
+                          alert(`OAuth integration for ${post.platform} coming soon! This will redirect you to ${post.platform} to authorize access.`);
+                        }}
+                        className="px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-lg transition-all transform hover:scale-105 shadow-lg mb-4 capitalize"
+                      >
+                        Connect {post.platform}
+                      </button>
+                      
                       <button
                         onClick={resetVideoState}
-                        className="mt-6 px-6 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg transition-colors"
+                        className="px-6 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg transition-colors text-sm"
                       >
                         Back
                       </button>
+                      
+                      <div className="mt-6 text-xs text-gray-500 text-center max-w-xs">
+                        🔒 Your privacy matters. We only request access to view content, never to post on your behalf.
+                      </div>
                     </div>
                   </div>
                 ) : !isPlaying && !isLoading && showPlayButton ? (

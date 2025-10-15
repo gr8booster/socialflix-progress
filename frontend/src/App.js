@@ -9,6 +9,7 @@ const SearchResults = lazy(() => import("./pages/SearchResults"));
 const Admin = lazy(() => import("./pages/Admin"));
 const Profile = lazy(() => import("./pages/Profile"));
 const Recommendations = lazy(() => import("./pages/Recommendations"));
+const Analytics = lazy(() => import("./pages/Analytics"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 // Loading component

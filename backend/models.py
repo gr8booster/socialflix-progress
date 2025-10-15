@@ -55,3 +55,29 @@ class PlatformInfo(BaseModel):
     name: str
     color: str
     icon: str
+
+# User Authentication Models
+class User(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    email: str
+    name: str
+    picture: Optional[str] = None
+    google_id: Optional[str] = None
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class Session(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    user_id: str
+    session_token: str
+    expires_at: datetime
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class SessionCreate(BaseModel):
+    session_id: str
+
+class UserResponse(BaseModel):
+    id: str
+    email: str
+    name: str
+    picture: Optional[str] = None

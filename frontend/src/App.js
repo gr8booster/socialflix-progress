@@ -34,6 +34,8 @@ function App() {
               <Route path="/recommendations" element={<Recommendations />} />
               <Route path="/analytics" element={<Analytics />} />
               <Route path="/premium" element={<Premium />} />
+              <Route path="/developer" element={<Developer />} />
+              <Route path="/creator" element={<Creator />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/admin" element={<Admin />} />
               <Route path="*" element={<NotFound />} />

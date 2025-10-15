@@ -199,17 +199,24 @@ ChyllApp is a comprehensive social media aggregator that brings viral content fr
 
 ## Current Status
 
-### ✅ Completed (MVP)
+### ✅ Completed (MVP + Sprint 1)
 - All 10 platform integrations (Reddit, YouTube, Twitter/X, Instagram, TikTok, Facebook, Threads, Snapchat, Pinterest, LinkedIn)
-- 185+ viral posts in database
+- 216+ posts in database (50 YouTube videos, 24 Reddit videos, 10 Twitter posts, etc.)
 - Beautiful Netflix-style UI
-- Video playback (YouTube embeds)
+- **Video playback with audio** (YouTube embeds, Reddit v.redd.it)
 - Interactive modals
 - Hover effects and animations
 - Admin panel with scrapers
 - Stats display (likes, comments, shares)
 - Platform-specific styling
-- Responsive design
+- Responsive design (mobile & tablet)
+- **Google OAuth Authentication** (Emergent Auth)
+- **Search functionality** (keywords, platform filter, sorting)
+- **Performance optimizations** (lazy loading, code splitting, caching)
+- **Infinite scroll** (50 posts per page)
+- **Error handling** (Error boundary, 404 page)
+- **OAuth messaging** for TikTok/Facebook/Instagram (Sign in with [Platform])
+- **Multi-platform video support** with audio enabled
 
 ### 🚧 In Progress
 - Sprint 2 features (User Engagement)

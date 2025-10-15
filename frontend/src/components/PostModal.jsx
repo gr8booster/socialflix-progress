@@ -164,24 +164,25 @@ const PostModal = ({ post, isOpen, onClose }) => {
     }
   };
 
-  const handleShare = async () => {
+  const handleShare = async (platform = 'generic') => {
     try {
       const response = await axios.post(`${API}/posts/${post.id}/share`, {
-        userId: 'demo-user'
+        userId: user?.id || 'anonymous',
+        platform: platform
       });
-      toast({
-        title: "Shared!",
-        description: "Post shared successfully",
-        duration: 2000,
-      });
+      
+      // Log share analytics
+      if (user) {
+        await axios.post(`${API}/user/activity`, {
+          action: 'share',
+          post_id: post.id,
+          details: `Shared via ${platform}`
+        }, { withCredentials: true }).catch(err => console.log('Activity logging failed'));
+      }
+      
+      console.log(`Shared to ${platform}`);
     } catch (error) {
-      console.error('Error sharing post:', error);
-      toast({
-        title: "Error",
-        description: "Failed to share post",
-        duration: 2000,
-        variant: "destructive"
-      });
+      console.error('Error tracking share:', error);
     }
   };
 

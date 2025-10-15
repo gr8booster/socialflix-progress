@@ -471,15 +471,18 @@ frontend:
 
   - task: "Infinite Scroll - Home Page"
     implemented: true
-    working: "NA"
+    working: true
     file: "frontend/src/pages/Home.jsx, backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Implemented infinite scroll for Home page. Backend: Added skip parameter to /api/posts endpoint for pagination. Frontend: Added scroll detection that loads more posts when user scrolls near bottom (1000px threshold). Loads 50 posts per page. Shows loading indicator while fetching more posts. Shows 'You've reached the end!' message when no more posts available. Maintains all existing carousel functionality."
+      - working: true
+        agent: "testing"
+        comment: "Infinite scroll fully functional. Tested: (1) Initial page load: First 50 posts load successfully with API call /api/posts?limit=50, (2) Scroll trigger: Scrolling near bottom (1000px threshold) triggers loading of more posts, (3) Backend pagination: API calls show proper pagination - /api/posts?limit=50&skip=50, skip=100, skip=150, skip=200, (4) Console logs confirm: 'Loaded 50 more posts (page 2)', 'Loaded 50 more posts (page 3)', 'Loaded 50 more posts (page 4)', 'Loaded 16 more posts (page 5)', (5) Loading indicator: 'Loading more posts...' with spinner and 'Finding viral content' text appears during fetch, (6) End message: '🎉 You've reached the end!' message displays with 'You've seen all 216 viral posts' and 'Back to Top' button, (7) Back to Top button: Successfully scrolls to top smoothly, (8) Post accumulation: Posts accumulate correctly (50, 100, 150, 200, 216 total), (9) No duplicate posts detected, (10) Works on mobile viewport (375px) - infinite scroll triggers correctly on mobile. All infinite scroll features working as specified."
 
 metadata:
   created_by: "main_agent"

@@ -58,31 +58,64 @@ const Home = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const buildFilterParams = (skipValue = 0) => {
+    const params = {
+      limit: POSTS_PER_PAGE,
+      skip: skipValue,
+    };
+
+    if (activeFilters.platforms.length > 0) {
+      params.platform = activeFilters.platforms.join(',');
+    }
+    if (activeFilters.categories.length > 0) {
+      params.category = activeFilters.categories.join(',');
+    }
+    if (activeFilters.timeRange && activeFilters.timeRange !== 'all') {
+      params.time_range = activeFilters.timeRange;
+    }
+    if (activeFilters.sortBy) {
+      params.sort_by = activeFilters.sortBy;
+    }
+
+    return params;
+  };
+
   const fetchInitialPosts = async () => {
     try {
-      // Check cache first (valid for 5 minutes)
-      const cachedData = localStorage.getItem('chyllapp_posts');
-      const cacheTime = localStorage.getItem('chyllapp_posts_time');
-      const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+      // Skip cache when filters are active
+      const hasActiveFilters = activeFilters.platforms.length > 0 || 
+                               activeFilters.categories.length > 0 ||
+                               activeFilters.timeRange !== 'all' ||
+                               activeFilters.sortBy !== 'date';
 
-      if (cachedData && cacheTime) {
-        const age = Date.now() - parseInt(cacheTime);
-        if (age < CACHE_DURATION) {
-          console.log('Using cached posts data');
-          setAllPosts(JSON.parse(cachedData));
-          setLoading(false);
-          setPage(1);
-          return;
+      if (!hasActiveFilters) {
+        // Check cache first (valid for 5 minutes)
+        const cachedData = localStorage.getItem('chyllapp_posts');
+        const cacheTime = localStorage.getItem('chyllapp_posts_time');
+        const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
+        if (cachedData && cacheTime) {
+          const age = Date.now() - parseInt(cacheTime);
+          if (age < CACHE_DURATION) {
+            console.log('Using cached posts data');
+            setAllPosts(JSON.parse(cachedData));
+            setLoading(false);
+            setPage(1);
+            return;
+          }
         }
       }
 
-      // Fetch from API if cache miss or expired
-      const response = await axios.get(`${API}/posts?limit=${POSTS_PER_PAGE}`);
+      // Fetch from API with filters
+      const params = buildFilterParams(0);
+      const response = await axios.get(`${API}/posts`, { params });
       setAllPosts(response.data);
       
-      // Update cache
-      localStorage.setItem('chyllapp_posts', JSON.stringify(response.data));
-      localStorage.setItem('chyllapp_posts_time', Date.now().toString());
+      // Update cache only if no filters
+      if (!hasActiveFilters) {
+        localStorage.setItem('chyllapp_posts', JSON.stringify(response.data));
+        localStorage.setItem('chyllapp_posts_time', Date.now().toString());
+      }
       
       setLoading(false);
       setPage(1);
@@ -92,6 +125,14 @@ const Home = () => {
       setLoading(false);
     }
   };
+
+  // Refetch when filters change
+  useEffect(() => {
+    setLoading(true);
+    setPage(0);
+    setAllPosts([]);
+    fetchInitialPosts();
+  }, [activeFilters]);
 
   const loadMorePosts = async () => {
     if (loadingMore || !hasMore) return;

@@ -120,6 +120,7 @@ const Recommendations = () => {
                   key={post.id}
                   post={post}
                   onClick={(p) => setSelectedPost(p)}
+                  isGridLayout={true}
                 />
               ))}
             </div>

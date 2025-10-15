@@ -138,3 +138,15 @@ class NotificationPreferencesUpdate(BaseModel):
     trending_alerts: Optional[bool] = None
     favorite_creator_updates: Optional[bool] = None
     daily_digest: Optional[bool] = None
+
+class PlatformConnection(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    user_id: str
+    platform: str  # 'tiktok', 'facebook', 'instagram', etc.
+    access_token: str
+    refresh_token: Optional[str] = None
+    token_expires_at: Optional[datetime] = None
+    platform_user_id: Optional[str] = None
+    platform_username: Optional[str] = None
+    connected_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    last_synced: Optional[datetime] = None

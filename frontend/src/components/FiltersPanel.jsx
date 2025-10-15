@@ -92,10 +92,13 @@ const FiltersPanel = ({ onApplyFilters, onSaveFilter }) => {
   const activeFiltersCount = selectedPlatforms.length + selectedCategories.length + 
     (timeRange !== 'all' ? 1 : 0) + (sortBy !== 'date' ? 1 : 0);
 
-  const handleButtonClick = () => {
+  const handleButtonClick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
     console.log('Filters button clicked, current isOpen:', isOpen);
-    setIsOpen(!isOpen);
-    console.log('Setting isOpen to:', !isOpen);
+    const newState = !isOpen;
+    setIsOpen(newState);
+    console.log('Setting isOpen to:', newState);
   };
 
   console.log('FiltersPanel render, isOpen:', isOpen);
@@ -105,12 +108,14 @@ const FiltersPanel = ({ onApplyFilters, onSaveFilter }) => {
       {/* Filter Button */}
       <button
         onClick={handleButtonClick}
-        className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 h-9 px-4 py-2 bg-gray-800 hover:bg-gray-700 border border-gray-700 relative"
+        onMouseDown={(e) => console.log('Button mouse down')}
+        type="button"
+        className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 h-9 px-4 py-2 bg-gray-800 hover:bg-gray-700 border border-gray-700 relative text-white"
       >
-        <Filter className="w-4 h-4 mr-2" />
-        Filters
+        <Filter className="w-4 h-4" />
+        <span>Filters</span>
         {activeFiltersCount > 0 && (
-          <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
+          <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold pointer-events-none">
             {activeFiltersCount}
           </span>
         )}

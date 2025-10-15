@@ -1075,6 +1075,143 @@ class ChyllAppAPITester:
         except Exception as e:
             self.log_test("Delete Custom Feed Without Auth", False, f"Request failed: {str(e)}")
     
+    # ============ AI Recommendations Endpoint Tests (Sprint 3.1) ============
+    
+    def test_recommendations_not_authenticated(self):
+        """Test GET /api/recommendations without authentication - Should return engagement-based recommendations"""
+        try:
+            response = requests.get(f"{self.base_url}/recommendations")
+            if response.status_code == 200:
+                posts = response.json()
+                if isinstance(posts, list):
+                    # Verify default limit is 20
+                    if len(posts) <= 20:
+                        self.log_test("Recommendations Not Authenticated", True, 
+                                    f"Retrieved {len(posts)} recommendations (default limit 20)")
+                        
+                        # Verify posts are sorted by engagement (likes + comments*2 + shares*3)
+                        if len(posts) >= 2:
+                            engagement_sorted = True
+                            for i in range(len(posts) - 1):
+                                current_engagement = (posts[i].get("likes", 0) + 
+                                                    posts[i].get("comments", 0) * 2 + 
+                                                    posts[i].get("shares", 0) * 3)
+                                next_engagement = (posts[i + 1].get("likes", 0) + 
+                                                 posts[i + 1].get("comments", 0) * 2 + 
+                                                 posts[i + 1].get("shares", 0) * 3)
+                                if current_engagement < next_engagement:
+                                    engagement_sorted = False
+                                    break
+                            
+                            if engagement_sorted:
+                                self.log_test("Recommendations Engagement Sorting", True, 
+                                            "Posts correctly sorted by engagement score")
+                            else:
+                                self.log_test("Recommendations Engagement Sorting", False, 
+                                            "Posts not properly sorted by engagement")
+                        
+                        # Verify Post structure
+                        if posts:
+                            post = posts[0]
+                            required_fields = ["id", "platform", "user", "content", "likes", "comments", "shares"]
+                            missing_fields = [field for field in required_fields if field not in post]
+                            if not missing_fields:
+                                self.log_test("Recommendations Post Structure", True, 
+                                            "Recommendations have correct Post structure")
+                            else:
+                                self.log_test("Recommendations Post Structure", False, 
+                                            f"Missing fields: {missing_fields}")
+                    else:
+                        self.log_test("Recommendations Not Authenticated", False, 
+                                    f"Expected max 20 posts, got {len(posts)}")
+                else:
+                    self.log_test("Recommendations Not Authenticated", False, 
+                                f"Expected list, got {type(posts)}")
+            else:
+                self.log_test("Recommendations Not Authenticated", False, 
+                            f"HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("Recommendations Not Authenticated", False, f"Request failed: {str(e)}")
+    
+    def test_recommendations_custom_limit(self):
+        """Test GET /api/recommendations?limit=5 - Custom limit parameter"""
+        try:
+            response = requests.get(f"{self.base_url}/recommendations?limit=5")
+            if response.status_code == 200:
+                posts = response.json()
+                if isinstance(posts, list):
+                    if len(posts) <= 5:
+                        self.log_test("Recommendations Custom Limit", True, 
+                                    f"Retrieved {len(posts)} recommendations with limit=5")
+                    else:
+                        self.log_test("Recommendations Custom Limit", False, 
+                                    f"Expected max 5 posts, got {len(posts)}")
+                else:
+                    self.log_test("Recommendations Custom Limit", False, 
+                                f"Expected list, got {type(posts)}")
+            else:
+                self.log_test("Recommendations Custom Limit", False, 
+                            f"HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("Recommendations Custom Limit", False, f"Request failed: {str(e)}")
+    
+    def test_trending_topics_default(self):
+        """Test GET /api/trending/topics - AI-detected trending topics"""
+        try:
+            response = requests.get(f"{self.base_url}/trending/topics")
+            if response.status_code == 200:
+                topics = response.json()
+                if isinstance(topics, list):
+                    # Verify default limit is 5
+                    if len(topics) <= 5:
+                        self.log_test("Trending Topics Default", True, 
+                                    f"Retrieved {len(topics)} trending topics (default limit 5)")
+                        
+                        # Verify topic structure
+                        if topics:
+                            topic = topics[0]
+                            required_fields = ["topic", "count", "platforms"]
+                            missing_fields = [field for field in required_fields if field not in topic]
+                            if not missing_fields:
+                                self.log_test("Trending Topics Structure", True, 
+                                            f"Topics have correct structure: {topic}")
+                            else:
+                                self.log_test("Trending Topics Structure", False, 
+                                            f"Missing fields: {missing_fields}")
+                    else:
+                        self.log_test("Trending Topics Default", False, 
+                                    f"Expected max 5 topics, got {len(topics)}")
+                else:
+                    self.log_test("Trending Topics Default", False, 
+                                f"Expected list, got {type(topics)}")
+            else:
+                self.log_test("Trending Topics Default", False, 
+                            f"HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("Trending Topics Default", False, f"Request failed: {str(e)}")
+    
+    def test_trending_topics_custom_limit(self):
+        """Test GET /api/trending/topics?limit=3 - Custom limit parameter"""
+        try:
+            response = requests.get(f"{self.base_url}/trending/topics?limit=3")
+            if response.status_code == 200:
+                topics = response.json()
+                if isinstance(topics, list):
+                    if len(topics) <= 3:
+                        self.log_test("Trending Topics Custom Limit", True, 
+                                    f"Retrieved {len(topics)} trending topics with limit=3")
+                    else:
+                        self.log_test("Trending Topics Custom Limit", False, 
+                                    f"Expected max 3 topics, got {len(topics)}")
+                else:
+                    self.log_test("Trending Topics Custom Limit", False, 
+                                f"Expected list, got {type(topics)}")
+            else:
+                self.log_test("Trending Topics Custom Limit", False, 
+                            f"HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("Trending Topics Custom Limit", False, f"Request failed: {str(e)}")
+    
     def run_all_tests(self):
         """Run all API tests"""
         print(f"🚀 Starting ChyllApp Backend API Tests")

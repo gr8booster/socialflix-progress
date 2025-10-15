@@ -40,6 +40,7 @@ const Home = () => {
   };
 
   const handleViewPost = (post) => {
+    console.log('Opening post:', post);
     setSelectedPost(post);
     setIsModalOpen(true);
   };

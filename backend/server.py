@@ -73,6 +73,7 @@ threads_scraper = ThreadsScraper()
 snapchat_scraper = SnapchatScraper()
 pinterest_scraper = PinterestScraper()
 linkedin_scraper = LinkedInScraper()
+recommendation_engine = RecommendationEngine()
 
 # Startup event to seed database
 @app.on_event("startup")

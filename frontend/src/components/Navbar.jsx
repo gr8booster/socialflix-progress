@@ -240,7 +240,7 @@ const Navbar = () => {
               className="text-white hover:text-red-500 transition-colors font-medium text-lg"
               onClick={() => setMobileMenuOpen(false)}
             >
-              Home
+              {t('home')}
             </a>
             <a 
               href="/recommendations" 
@@ -248,7 +248,7 @@ const Navbar = () => {
               onClick={() => setMobileMenuOpen(false)}
             >
               <Sparkles className="w-5 h-5" />
-              For You
+              {t('forYou')}
             </a>
             <a 
               href="/analytics" 
@@ -256,14 +256,14 @@ const Navbar = () => {
               onClick={() => setMobileMenuOpen(false)}
             >
               <TrendingUp className="w-5 h-5" />
-              Analytics
+              {t('analytics')}
             </a>
             <a 
               href="#" 
               className="text-gray-300 hover:text-white transition-colors text-lg"
               onClick={() => setMobileMenuOpen(false)}
             >
-              Viral
+              {t('viral')}
             </a>
             {user ? (
               <a 
@@ -271,7 +271,7 @@ const Navbar = () => {
                 className="text-gray-300 hover:text-white transition-colors text-lg"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                My Profile
+                {t('myProfile')}
               </a>
             ) : (
               <a 
@@ -279,7 +279,7 @@ const Navbar = () => {
                 className="text-gray-300 hover:text-white transition-colors text-lg"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                My Feed
+                {t('myFeed')}
               </a>
             )}
           </div>

@@ -55,6 +55,7 @@ async def seed_database():
 reddit_scraper = RedditScraper()
 youtube_scraper = YouTubeScraper()
 twitter_scraper = TwitterScraper()
+instagram_scraper = InstagramScraper()
 
 # Startup event to seed database
 @app.on_event("startup")

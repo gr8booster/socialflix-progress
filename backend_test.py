@@ -1296,6 +1296,15 @@ class ChyllAppAPITester:
         self.test_get_custom_feeds_without_auth()
         self.test_delete_custom_feed_without_auth()
         
+        # AI Recommendations endpoint tests (Sprint 3.1)
+        print("\n" + "=" * 60)
+        print("🤖 Testing AI Recommendations (Sprint 3.1)")
+        print("=" * 60)
+        self.test_recommendations_not_authenticated()
+        self.test_recommendations_custom_limit()
+        self.test_trending_topics_default()
+        self.test_trending_topics_custom_limit()
+        
         # Summary
         print("=" * 60)
         passed = sum(1 for result in self.test_results if result["success"])

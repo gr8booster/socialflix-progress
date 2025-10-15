@@ -250,6 +250,7 @@ const Profile = () => {
                     key={post.id}
                     post={post}
                     onClick={(p) => setSelectedPost(p)}
+                    isGridLayout={true}
                   />
                 ))}
               </div>

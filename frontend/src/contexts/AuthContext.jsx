@@ -14,12 +14,19 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [processingSession, setProcessingSession] = useState(false);
 
   const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
-  // Check for existing session on mount
   useEffect(() => {
     checkExistingSession();
+  }, []);
+
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (hash && hash.includes('session_id=')) {
+      processSessionId(hash);
+    }
   }, []);
 
   const checkExistingSession = async () => {
@@ -29,16 +36,45 @@ export const AuthProvider = ({ children }) => {
       });
       setUser(response.data);
     } catch (error) {
-      console.log('No existing session');
       setUser(null);
     } finally {
       setLoading(false);
     }
   };
 
+  const processSessionId = async (hash) => {
+    setProcessingSession(true);
+    
+    try {
+      const params = new URLSearchParams(hash.substring(1));
+      const sessionId = params.get('session_id');
+
+      if (!sessionId) {
+        setProcessingSession(false);
+        return;
+      }
+
+      const response = await axios.post(
+        `${BACKEND_URL}/api/auth/session`,
+        { session_id: sessionId },
+        { withCredentials: true }
+      );
+
+      if (response.data.success) {
+        setUser(response.data.user);
+        window.history.replaceState(null, '', window.location.pathname);
+      }
+    } catch (error) {
+      console.error('Session error:', error);
+      window.history.replaceState(null, '', window.location.pathname);
+    } finally {
+      setProcessingSession(false);
+    }
+  };
+
   const login = () => {
-    // Redirect to backend Google OAuth endpoint
-    window.location.href = `${BACKEND_URL}/api/auth/google/login`;
+    const redirectUrl = window.location.origin;
+    window.location.href = `https://auth.emergentagent.com/?redirect=${encodeURIComponent(redirectUrl)}`;
   };
 
   const logout = async () => {
@@ -55,6 +91,7 @@ export const AuthProvider = ({ children }) => {
   const value = {
     user,
     loading,
+    processingSession,
     login,
     logout,
   };

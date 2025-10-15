@@ -37,7 +37,7 @@ class ChyllAppAPITester:
             response = requests.get(f"{self.base_url}/")
             if response.status_code == 200:
                 data = response.json()
-                if "message" in data and "SocialFlix" in data["message"]:
+                if "message" in data and "ChyllApp" in data["message"]:
                     self.log_test("Welcome Endpoint", True, f"Got welcome message: {data['message']}")
                 else:
                     self.log_test("Welcome Endpoint", False, f"Unexpected response format: {data}")

@@ -41,10 +41,12 @@ const Navbar = () => {
         <div className="flex items-center gap-4">
           {/* Search */}
           <div className="hidden md:flex items-center relative">
-            <Search className="absolute left-3 w-4 h-4 text-gray-400" />
+            <Search className={`absolute left-3 w-4 h-4 transition-colors ${isSearchFocused ? 'text-red-500' : 'text-gray-400'}`} />
             <Input 
               placeholder="Search posts..."
-              className="pl-10 bg-black/50 border-gray-700 text-white placeholder:text-gray-500 w-64 focus:w-80 transition-all"
+              onFocus={() => setIsSearchFocused(true)}
+              onBlur={() => setIsSearchFocused(false)}
+              className="pl-10 bg-black/50 border-gray-700 text-white placeholder:text-gray-500 w-64 focus:w-80 focus:border-red-500 transition-all duration-300"
             />
           </div>
 

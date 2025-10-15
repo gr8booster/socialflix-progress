@@ -81,6 +81,10 @@ const PostModal = ({ post, isOpen, onClose }) => {
   const needsOAuth = isTwitterVideo || (isAnyVideo && !hasPlayableVideo && ['tiktok', 'facebook', 'instagram', 'threads', 'snapchat', 'pinterest', 'linkedin'].includes(post.platform));
 
   const handlePlayVideo = () => {
+    if (needsOAuth) {
+      setVideoError(true);
+      return;
+    }
     if (!hasPlayableVideo) {
       setVideoError(true);
       return;

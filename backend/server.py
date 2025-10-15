@@ -205,6 +205,61 @@ async def get_platforms():
     return [PlatformInfo(**p) for p in platforms]
 
 
+@api_router.get("/search", response_model=List[Post])
+async def search_posts(
+    q: str = Query(..., description="Search query"),
+    platform: Optional[str] = Query(None, description="Filter by platform"),
+    sort_by: Optional[str] = Query("relevance", description="Sort by: relevance, date, likes, comments"),
+    limit: Optional[int] = Query(50, description="Limit number of results")
+):
+    """
+    Search posts by keywords in content and user names
+    
+    Args:
+        q: Search query string
+        platform: Optional platform filter
+        sort_by: Sort order (relevance, date, likes, comments)
+        limit: Maximum number of results
+    """
+    try:
+        # Build search query
+        search_query = {
+            "$or": [
+                {"content": {"$regex": q, "$options": "i"}},  # Case-insensitive search in content
+                {"user.name": {"$regex": q, "$options": "i"}},  # Search in user names
+                {"user.username": {"$regex": q, "$options": "i"}}  # Search in usernames
+            ]
+        }
+        
+        # Add platform filter if specified
+        if platform:
+            search_query["platform"] = platform
+        
+        # Define sort order
+        sort_order = []
+        if sort_by == "date":
+            sort_order = [("createdAt", -1)]
+        elif sort_by == "likes":
+            sort_order = [("likes", -1)]
+        elif sort_by == "comments":
+            sort_order = [("comments", -1)]
+        else:  # relevance (default)
+            # For relevance, we'll just use creation date as a proxy
+            sort_order = [("createdAt", -1)]
+        
+        # Execute search
+        posts_cursor = db.posts.find(search_query).sort(sort_order).limit(limit)
+        posts = await posts_cursor.to_list(limit)
+        
+        logger.info(f"Search query: '{q}', platform: {platform}, found: {len(posts)} results")
+        
+        return [Post(**post) for post in posts]
+        
+    except Exception as e:
+        logger.error(f"Error searching posts: {e}")
+        raise HTTPException(status_code=500, detail=f"Error searching posts: {str(e)}")
+
+
 @api_router.post("/scraper/fetch-reddit")
 async def fetch_reddit_posts(limit: int = 50):
     """

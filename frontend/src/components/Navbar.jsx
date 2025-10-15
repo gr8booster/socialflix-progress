@@ -103,16 +103,16 @@ const Navbar = () => {
           
           {/* Navigation Links */}
           <div className="hidden md:flex items-center gap-6">
-            <a href="/" className="text-white hover:text-gray-300 transition-colors font-medium">Home</a>
+            <a href="/" className="text-white hover:text-gray-300 transition-colors font-medium">{t('home')}</a>
             <a href="/recommendations" className="text-gray-300 hover:text-white transition-colors flex items-center gap-1">
               <Sparkles className="w-4 h-4" />
-              For You
+              {t('forYou')}
             </a>
-            <a href="#" className="text-gray-300 hover:text-white transition-colors">Viral</a>
+            <a href="#" className="text-gray-300 hover:text-white transition-colors">{t('viral')}</a>
             {user ? (
-              <a href="/profile" className="text-gray-300 hover:text-white transition-colors">My Profile</a>
+              <a href="/profile" className="text-gray-300 hover:text-white transition-colors">{t('myProfile')}</a>
             ) : (
-              <a href="#" className="text-gray-300 hover:text-white transition-colors">My Feed</a>
+              <a href="#" className="text-gray-300 hover:text-white transition-colors">{t('myFeed')}</a>
             )}
           </div>
         </div>

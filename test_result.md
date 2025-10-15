@@ -855,6 +855,37 @@ backend:
         agent: "testing"
         comment: "FIXED: Moved /posts/new-count route definition to line 169 (before /posts/{post_id} at line 197). Endpoint now working correctly. Tested: curl request returns {\"new_count\":0,\"since\":\"2025-01-01T00:00:00.000Z\",\"has_new\":false}. Route order is critical in FastAPI - specific routes must come before parameterized routes."
 
+  - task: "GET /api/recommendations - AI-Powered Personalized Recommendations"
+    implemented: true
+    working: true
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Implemented AI-powered recommendations endpoint using Emergent LLM Key with emergentintegrations library. For authenticated users, uses AI to analyze user profile (favorite_platforms, favorite_posts, recent_likes) and recommend relevant posts. For unauthenticated users, falls back to engagement algorithm (likes + comments*2 + shares*3). Supports custom limit parameter (default 20). Uses gpt-4o-mini model via LiteLLM."
+      - working: true
+        agent: "testing"
+        comment: "Endpoint fully functional. Tested: (1) Without authentication returns 20 recommendations using engagement algorithm fallback, (2) Posts correctly sorted by engagement score (likes + comments*2 + shares*3) in descending order, (3) Returns array of Post objects with correct structure (id, platform, user, content, likes, comments, shares), (4) Custom limit parameter works (limit=5 returns 5 posts), (5) Backend logs confirm LiteLLM successfully calling gpt-4o-mini model, (6) EMERGENT_LLM_KEY properly configured and working. All test scenarios passed."
+
+  - task: "GET /api/trending/topics - AI-Detected Trending Topics"
+    implemented: true
+    working: true
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Implemented AI-powered trending topics detection endpoint. Uses Emergent LLM Key with emergentintegrations library to analyze recent high-engagement posts and identify trending themes/topics. Returns array of topics with format: {topic, count, platforms}. Supports custom limit parameter (default 5). Uses gpt-4o-mini model via LiteLLM."
+      - working: true
+        agent: "testing"
+        comment: "Endpoint fully functional. Tested: (1) Returns 5 trending topics by default, (2) AI successfully detects trending topics using LLM analysis, (3) Returns array with correct structure: {topic: 'topic name', count: number, platforms: ['platform1', 'platform2']}, (4) Example topic: {'topic': 'Viral Content', 'count': 10, 'platforms': ['twitter', 'reddit']}, (5) Custom limit parameter works (limit=3 returns 3 topics), (6) Backend logs confirm LiteLLM successfully calling gpt-4o-mini model. All test scenarios passed."
+        comment: "FIXED: Moved /posts/new-count route definition to line 169 (before /posts/{post_id} at line 197). Endpoint now working correctly. Tested: curl request returns {\"new_count\":0,\"since\":\"2025-01-01T00:00:00.000Z\",\"has_new\":false}. Route order is critical in FastAPI - specific routes must come before parameterized routes."
+
 frontend:
   - task: "ShareButton Component - Social Sharing Dropdown"
     implemented: true

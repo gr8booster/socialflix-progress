@@ -30,9 +30,24 @@ const PostModal = ({ post, isOpen, onClose }) => {
 
   if (!post) return null;
 
-  // Check if it's a YouTube video
-  const isYouTubeVideo = post.platform === 'youtube' && post.youtube_id;
-  const youtubeEmbedUrl = isYouTubeVideo ? `https://www.youtube.com/embed/${post.youtube_id}?autoplay=1&rel=0` : null;
+  // Check if it's a YouTube video and extract video ID
+  const extractYouTubeId = (url) => {
+    if (!url) return null;
+    // Handle youtube.com/watch?v=VIDEO_ID format
+    const watchMatch = url.match(/[?&]v=([^&]+)/);
+    if (watchMatch) return watchMatch[1];
+    // Handle youtu.be/VIDEO_ID format
+    const shortMatch = url.match(/youtu\.be\/([^?]+)/);
+    if (shortMatch) return shortMatch[1];
+    // Handle youtube.com/embed/VIDEO_ID format
+    const embedMatch = url.match(/youtube\.com\/embed\/([^?]+)/);
+    if (embedMatch) return embedMatch[1];
+    return null;
+  };
+  
+  const youtubeId = post.platform === 'youtube' ? (post.youtube_id || extractYouTubeId(post.media?.url)) : null;
+  const isYouTubeVideo = post.platform === 'youtube' && youtubeId;
+  const youtubeEmbedUrl = isYouTubeVideo ? `https://www.youtube.com/embed/${youtubeId}?autoplay=1&rel=0` : null;
   
   // Check if it's TikTok video
   const isTikTokVideo = post.platform === 'tiktok' && post.tiktok_id;

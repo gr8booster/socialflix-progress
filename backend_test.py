@@ -588,6 +588,179 @@ class ChyllAppAPITester:
         except Exception as e:
             self.log_test("Search Case Insensitive", False, f"Request failed: {str(e)}")
     
+    # ============ User Profile & Favorites Endpoint Tests (Sprint 2.1) ============
+    
+    def test_user_profile_without_auth(self):
+        """Test GET /api/user/profile without authentication - Should return 401"""
+        try:
+            response = requests.get(f"{self.base_url}/user/profile")
+            if response.status_code == 401:
+                data = response.json()
+                self.log_test("User Profile Without Auth", True, f"Correctly returned 401: {data.get('detail', 'Not authenticated')}")
+            else:
+                self.log_test("User Profile Without Auth", False, f"Expected 401, got HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("User Profile Without Auth", False, f"Request failed: {str(e)}")
+    
+    def test_user_profile_with_invalid_token(self):
+        """Test GET /api/user/profile with invalid token - Should return 401"""
+        try:
+            # Test with invalid cookie
+            cookies = {"session_token": "invalid_token_profile_test"}
+            response = requests.get(f"{self.base_url}/user/profile", cookies=cookies)
+            if response.status_code == 401:
+                self.log_test("User Profile With Invalid Cookie", True, "Correctly returned 401 for invalid cookie token")
+            else:
+                self.log_test("User Profile With Invalid Cookie", False, f"Expected 401, got HTTP {response.status_code}: {response.text}")
+            
+            # Test with invalid Authorization header
+            headers = {"Authorization": "Bearer invalid_bearer_token_profile"}
+            response = requests.get(f"{self.base_url}/user/profile", headers=headers)
+            if response.status_code == 401:
+                self.log_test("User Profile With Invalid Bearer", True, "Correctly returned 401 for invalid bearer token")
+            else:
+                self.log_test("User Profile With Invalid Bearer", False, f"Expected 401, got HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("User Profile With Invalid Token", False, f"Request failed: {str(e)}")
+    
+    def test_update_profile_without_auth(self):
+        """Test PUT /api/user/profile without authentication - Should return 401"""
+        try:
+            profile_data = {"name": "John Doe", "bio": "Love viral content!"}
+            response = requests.put(f"{self.base_url}/user/profile", json=profile_data)
+            if response.status_code == 401:
+                data = response.json()
+                self.log_test("Update Profile Without Auth", True, f"Correctly returned 401: {data.get('detail', 'Not authenticated')}")
+            else:
+                self.log_test("Update Profile Without Auth", False, f"Expected 401, got HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("Update Profile Without Auth", False, f"Request failed: {str(e)}")
+    
+    def test_update_profile_with_invalid_token(self):
+        """Test PUT /api/user/profile with invalid token - Should return 401"""
+        try:
+            profile_data = {"name": "Jane Smith", "bio": "Testing profile update"}
+            cookies = {"session_token": "invalid_token_update_profile"}
+            response = requests.put(f"{self.base_url}/user/profile", json=profile_data, cookies=cookies)
+            if response.status_code == 401:
+                self.log_test("Update Profile With Invalid Token", True, "Correctly returned 401 for invalid token")
+            else:
+                self.log_test("Update Profile With Invalid Token", False, f"Expected 401, got HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("Update Profile With Invalid Token", False, f"Request failed: {str(e)}")
+    
+    def test_toggle_favorite_without_auth(self):
+        """Test POST /api/user/favorites/{post_id} without authentication - Should return 401"""
+        try:
+            # Use a valid post_id format (UUID)
+            test_post_id = "test-post-id-12345"
+            response = requests.post(f"{self.base_url}/user/favorites/{test_post_id}")
+            if response.status_code == 401:
+                data = response.json()
+                self.log_test("Toggle Favorite Without Auth", True, f"Correctly returned 401: {data.get('detail', 'Not authenticated')}")
+            else:
+                self.log_test("Toggle Favorite Without Auth", False, f"Expected 401, got HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("Toggle Favorite Without Auth", False, f"Request failed: {str(e)}")
+    
+    def test_toggle_favorite_with_invalid_token(self):
+        """Test POST /api/user/favorites/{post_id} with invalid token - Should return 401"""
+        try:
+            test_post_id = "test-post-id-67890"
+            cookies = {"session_token": "invalid_token_favorite"}
+            response = requests.post(f"{self.base_url}/user/favorites/{test_post_id}", cookies=cookies)
+            if response.status_code == 401:
+                self.log_test("Toggle Favorite With Invalid Token", True, "Correctly returned 401 for invalid token")
+            else:
+                self.log_test("Toggle Favorite With Invalid Token", False, f"Expected 401, got HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("Toggle Favorite With Invalid Token", False, f"Request failed: {str(e)}")
+    
+    def test_get_favorites_without_auth(self):
+        """Test GET /api/user/favorites without authentication - Should return 401"""
+        try:
+            response = requests.get(f"{self.base_url}/user/favorites")
+            if response.status_code == 401:
+                data = response.json()
+                self.log_test("Get Favorites Without Auth", True, f"Correctly returned 401: {data.get('detail', 'Not authenticated')}")
+            else:
+                self.log_test("Get Favorites Without Auth", False, f"Expected 401, got HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("Get Favorites Without Auth", False, f"Request failed: {str(e)}")
+    
+    def test_get_favorites_with_invalid_token(self):
+        """Test GET /api/user/favorites with invalid token - Should return 401"""
+        try:
+            cookies = {"session_token": "invalid_token_get_favorites"}
+            response = requests.get(f"{self.base_url}/user/favorites", cookies=cookies)
+            if response.status_code == 401:
+                self.log_test("Get Favorites With Invalid Token", True, "Correctly returned 401 for invalid token")
+            else:
+                self.log_test("Get Favorites With Invalid Token", False, f"Expected 401, got HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("Get Favorites With Invalid Token", False, f"Request failed: {str(e)}")
+    
+    def test_update_preferences_without_auth(self):
+        """Test PUT /api/user/preferences without authentication - Should return 401"""
+        try:
+            preferences_data = {"favorite_platforms": ["youtube", "reddit", "tiktok"]}
+            response = requests.put(f"{self.base_url}/user/preferences", json=preferences_data)
+            if response.status_code == 401:
+                data = response.json()
+                self.log_test("Update Preferences Without Auth", True, f"Correctly returned 401: {data.get('detail', 'Not authenticated')}")
+            else:
+                self.log_test("Update Preferences Without Auth", False, f"Expected 401, got HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("Update Preferences Without Auth", False, f"Request failed: {str(e)}")
+    
+    def test_update_preferences_with_invalid_token(self):
+        """Test PUT /api/user/preferences with invalid token - Should return 401"""
+        try:
+            preferences_data = {"favorite_platforms": ["instagram", "twitter"]}
+            cookies = {"session_token": "invalid_token_preferences"}
+            response = requests.put(f"{self.base_url}/user/preferences", json=preferences_data, cookies=cookies)
+            if response.status_code == 401:
+                self.log_test("Update Preferences With Invalid Token", True, "Correctly returned 401 for invalid token")
+            else:
+                self.log_test("Update Preferences With Invalid Token", False, f"Expected 401, got HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("Update Preferences With Invalid Token", False, f"Request failed: {str(e)}")
+    
+    def test_get_activity_without_auth(self):
+        """Test GET /api/user/activity without authentication - Should return 401"""
+        try:
+            response = requests.get(f"{self.base_url}/user/activity")
+            if response.status_code == 401:
+                data = response.json()
+                self.log_test("Get Activity Without Auth", True, f"Correctly returned 401: {data.get('detail', 'Not authenticated')}")
+            else:
+                self.log_test("Get Activity Without Auth", False, f"Expected 401, got HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("Get Activity Without Auth", False, f"Request failed: {str(e)}")
+    
+    def test_get_activity_with_invalid_token(self):
+        """Test GET /api/user/activity with invalid token - Should return 401"""
+        try:
+            cookies = {"session_token": "invalid_token_activity"}
+            response = requests.get(f"{self.base_url}/user/activity", cookies=cookies)
+            if response.status_code == 401:
+                self.log_test("Get Activity With Invalid Token", True, "Correctly returned 401 for invalid token")
+            else:
+                self.log_test("Get Activity With Invalid Token", False, f"Expected 401, got HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("Get Activity With Invalid Token", False, f"Request failed: {str(e)}")
+    
+    def test_get_activity_with_limit_param(self):
+        """Test GET /api/user/activity with limit parameter (without auth) - Should return 401"""
+        try:
+            response = requests.get(f"{self.base_url}/user/activity?limit=10")
+            if response.status_code == 401:
+                self.log_test("Get Activity With Limit Param (No Auth)", True, "Correctly returned 401 even with valid limit parameter")
+            else:
+                self.log_test("Get Activity With Limit Param (No Auth)", False, f"Expected 401, got HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("Get Activity With Limit Param (No Auth)", False, f"Request failed: {str(e)}")
+    
     def run_all_tests(self):
         """Run all API tests"""
         print(f"🚀 Starting ChyllApp Backend API Tests")

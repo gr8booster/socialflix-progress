@@ -76,6 +76,27 @@ pinterest_scraper = PinterestScraper()
 linkedin_scraper = LinkedInScraper()
 recommendation_engine = RecommendationEngine()
 
+# Stripe configuration
+STRIPE_API_KEY = os.getenv('STRIPE_API_KEY')
+
+# Premium subscription packages (server-side only - never expose to frontend)
+SUBSCRIPTION_PACKAGES = {
+    "premium_monthly": {
+        "name": "Premium Monthly",
+        "price": 9.99,
+        "currency": "usd",
+        "interval": "monthly",
+        "features": ["ad_free", "early_access", "advanced_filters", "download_content", "priority_support"]
+    },
+    "premium_yearly": {
+        "name": "Premium Yearly",
+        "price": 99.99,
+        "currency": "usd",
+        "interval": "yearly",
+        "features": ["ad_free", "early_access", "advanced_filters", "download_content", "priority_support", "yearly_discount"]
+    }
+}
+
 # Startup event to seed database
 @app.on_event("startup")
 async def startup_db():

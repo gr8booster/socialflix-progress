@@ -223,6 +223,53 @@ const Navbar = () => {
           )}
         </div>
       </div>
+      
+      {/* Mobile Menu */}
+      {mobileMenuOpen && (
+        <div className="md:hidden bg-black border-t border-gray-800 py-4 px-8">
+          <div className="flex flex-col gap-4">
+            <a 
+              href="/" 
+              className="text-white hover:text-red-500 transition-colors font-medium text-lg"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Home
+            </a>
+            <a 
+              href="/recommendations" 
+              className="text-gray-300 hover:text-white transition-colors flex items-center gap-2 text-lg"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              <Sparkles className="w-5 h-5" />
+              For You
+            </a>
+            <a 
+              href="#" 
+              className="text-gray-300 hover:text-white transition-colors text-lg"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Viral
+            </a>
+            {user ? (
+              <a 
+                href="/profile" 
+                className="text-gray-300 hover:text-white transition-colors text-lg"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                My Profile
+              </a>
+            ) : (
+              <a 
+                href="#" 
+                className="text-gray-300 hover:text-white transition-colors text-lg"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                My Feed
+              </a>
+            )}
+          </div>
+        </div>
+      )}
     </nav>
   );
 };

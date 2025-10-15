@@ -120,3 +120,21 @@ class CustomFeedCreate(BaseModel):
     categories: List[str] = Field(default_factory=list)
     time_range: Optional[str] = None
     sort_by: str = "date"
+
+class NotificationPreferences(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    user_id: str
+    email_notifications: bool = True
+    push_notifications: bool = False
+    trending_alerts: bool = True
+    favorite_creator_updates: bool = True
+    daily_digest: bool = False
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class NotificationPreferencesUpdate(BaseModel):
+    email_notifications: Optional[bool] = None
+    push_notifications: Optional[bool] = None
+    trending_alerts: Optional[bool] = None
+    favorite_creator_updates: Optional[bool] = None
+    daily_digest: Optional[bool] = None

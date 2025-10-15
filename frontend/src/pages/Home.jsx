@@ -139,7 +139,8 @@ const Home = () => {
 
     setLoadingMore(true);
     try {
-      const response = await axios.get(`${API}/posts?limit=${POSTS_PER_PAGE}&skip=${page * POSTS_PER_PAGE}`);
+      const params = buildFilterParams(page * POSTS_PER_PAGE);
+      const response = await axios.get(`${API}/posts`, { params });
       
       if (response.data.length > 0) {
         setAllPosts(prev => [...prev, ...response.data]);
@@ -154,6 +155,27 @@ const Home = () => {
       console.error('Error loading more posts:', error);
     } finally {
       setLoadingMore(false);
+    }
+  };
+
+  const handleApplyFilters = (filters) => {
+    setActiveFilters(filters);
+  };
+
+  const handleSaveFilter = async (filterData) => {
+    try {
+      await axios.post(`${API}/user/feeds`, filterData, { withCredentials: true });
+      toast({
+        title: "Filter Saved!",
+        description: `"${filterData.name}" has been saved to your feeds`,
+      });
+    } catch (error) {
+      console.error('Error saving filter:', error);
+      toast({
+        title: "Error",
+        description: error.response?.status === 401 ? "Please sign in to save filters" : "Failed to save filter",
+        variant: "destructive"
+      });
     }
   };
 

@@ -778,19 +778,25 @@ async def create_session(request: Request, response: Response, session_data: Ses
     try:
         # Call Emergent Auth API to get session data
         async with httpx.AsyncClient() as client:
+            logger.info(f"Validating session_id with Emergent Auth API...")
+            
             auth_response = await client.get(
                 "https://demobackend.emergentagent.com/auth/v1/env/oauth/session-data",
                 headers={"X-Session-ID": session_data.session_id},
-                timeout=10.0
+                timeout=15.0
             )
             
+            logger.info(f"Auth API response status: {auth_response.status_code}")
+            
             if auth_response.status_code != 200:
+                logger.error(f"Auth API error: {auth_response.text}")
                 raise HTTPException(
                     status_code=auth_response.status_code,
-                    detail="Failed to validate session with auth provider"
+                    detail=f"Failed to validate session with auth provider: {auth_response.text[:100]}"
                 )
             
             auth_data = auth_response.json()
+            logger.info(f"Successfully validated session for email: {auth_data.get('email', 'unknown')}")
         
         # Check if user exists
         existing_user = await db.users.find_one({"email": auth_data["email"]})

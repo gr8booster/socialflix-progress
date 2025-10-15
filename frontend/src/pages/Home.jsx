@@ -52,7 +52,11 @@ const Home = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="text-white text-2xl">Loading...</div>
+        <div className="text-center">
+          <div className="inline-block animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-red-600 mb-4"></div>
+          <div className="text-white text-2xl font-bold">Loading ChyllApp...</div>
+          <div className="text-gray-400 text-sm mt-2">Fetching viral content from all platforms</div>
+        </div>
       </div>
     );
   }

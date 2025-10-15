@@ -739,12 +739,6 @@ async def scraper_status():
 
 # ============ Authentication Endpoints ============
 
-GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID')
-GOOGLE_CLIENT_SECRET = os.getenv('GOOGLE_CLIENT_SECRET')
-# Redirect URI should be the backend callback URL
-BACKEND_BASE_URL = os.getenv('REACT_APP_BACKEND_URL', 'https://contentchill.preview.emergentagent.com')
-REDIRECT_URI = f"{BACKEND_BASE_URL}/api/auth/google/callback"
-
 async def get_current_user_from_token(session_token: Optional[str] = None) -> Optional[dict]:
     """
     Helper function to get current user from session_token
@@ -771,97 +765,57 @@ async def get_current_user_from_token(session_token: Optional[str] = None) -> Op
         return None
 
 
-@api_router.get("/auth/google/login")
-async def google_login():
+@api_router.post("/auth/session")
+async def create_session(request: Request, response: Response, session_data: SessionCreate):
     """
-    Initiate Google OAuth flow
-    Redirects user to Google's OAuth consent screen
-    """
-    google_oauth_url = (
-        f"https://accounts.google.com/o/oauth2/v2/auth?"
-        f"client_id={GOOGLE_CLIENT_ID}&"
-        f"response_type=code&"
-        f"scope=openid%20email%20profile&"
-        f"redirect_uri={REDIRECT_URI}&"
-        f"access_type=offline&"
-        f"prompt=consent"
-    )
-    
-    return RedirectResponse(url=google_oauth_url)
-
-
-@api_router.get("/auth/google/callback")
-async def google_callback(code: str, response: Response):
-    """
-    Google OAuth callback endpoint
-    Exchanges authorization code for user info and creates session
+    Process session_id from Emergent OAuth and create user session
     """
     try:
-        # Exchange code for tokens
+        # Call Emergent Auth API to get session data
         async with httpx.AsyncClient() as client:
-            token_response = await client.post(
-                "https://oauth2.googleapis.com/token",
-                data={
-                    "code": code,
-                    "client_id": GOOGLE_CLIENT_ID,
-                    "client_secret": GOOGLE_CLIENT_SECRET,
-                    "redirect_uri": REDIRECT_URI,
-                    "grant_type": "authorization_code"
-                },
+            logger.info(f"Validating session with Emergent Auth...")
+            
+            auth_response = await client.get(
+                "https://demobackend.emergentagent.com/auth/v1/env/oauth/session-data",
+                headers={"X-Session-ID": session_data.session_id},
                 timeout=15.0
             )
             
-            if token_response.status_code != 200:
-                logger.error(f"Token exchange failed: {token_response.text}")
-                raise HTTPException(status_code=400, detail="Failed to exchange code for tokens")
+            logger.info(f"Auth response status: {auth_response.status_code}")
             
-            tokens = token_response.json()
-            id_token_jwt = tokens.get('id_token')
-            
-            # Verify and decode ID token
-            try:
-                idinfo = id_token.verify_oauth2_token(
-                    id_token_jwt, 
-                    google_requests.Request(), 
-                    GOOGLE_CLIENT_ID
+            if auth_response.status_code != 200:
+                logger.error(f"Auth error: {auth_response.text}")
+                raise HTTPException(
+                    status_code=400,
+                    detail="Invalid or expired session"
                 )
-                
-                # Get user info from ID token
-                email = idinfo['email']
-                name = idinfo.get('name', '')
-                picture = idinfo.get('picture', '')
-                google_id = idinfo['sub']
-                
-            except ValueError as e:
-                logger.error(f"Invalid ID token: {e}")
-                raise HTTPException(status_code=400, detail="Invalid ID token")
+            
+            auth_data = auth_response.json()
         
         # Check if user exists
-        existing_user = await db.users.find_one({"email": email})
+        existing_user = await db.users.find_one({"email": auth_data["email"]})
         
         if existing_user:
             user_id = existing_user["id"]
-            logger.info(f"Existing user logged in: {email}")
+            logger.info(f"User logged in: {auth_data['email']}")
         else:
             # Create new user
             new_user = User(
-                email=email,
-                name=name,
-                picture=picture,
-                google_id=google_id
+                email=auth_data["email"],
+                name=auth_data["name"],
+                picture=auth_data.get("picture"),
+                google_id=auth_data.get("id")
             )
-            # Convert datetime to ISO string for MongoDB
             user_dict = new_user.dict()
             user_dict["created_at"] = new_user.created_at.isoformat()
             user_dict["updated_at"] = new_user.updated_at.isoformat()
             
             await db.users.insert_one(user_dict)
             user_id = new_user.id
-            logger.info(f"New user created: {email}")
+            logger.info(f"New user created: {auth_data['email']}")
         
-        # Create session with 7-day expiry
-        import secrets
-        session_token = secrets.token_urlsafe(32)
+        # Create session
+        session_token = auth_data["session_token"]
         expires_at = datetime.now(timezone.utc) + timedelta(days=7)
         
         new_session = Session(
@@ -870,39 +824,33 @@ async def google_callback(code: str, response: Response):
             expires_at=expires_at
         )
         
-        # Convert datetime to ISO string for MongoDB
         session_dict = new_session.dict()
         session_dict["expires_at"] = expires_at.isoformat()
         session_dict["created_at"] = new_session.created_at.isoformat()
         
         await db.sessions.insert_one(session_dict)
         
-        # Set httpOnly cookie
+        # Set cookie
         response.set_cookie(
             key="session_token",
             value=session_token,
             httponly=True,
             secure=True,
             samesite="none",
-            max_age=7 * 24 * 60 * 60,  # 7 days in seconds
+            max_age=7 * 24 * 60 * 60,
             path="/"
         )
         
-        logger.info(f"Session created for user: {email}")
+        user = await db.users.find_one({"id": user_id})
         
-        # Redirect back to frontend
-        frontend_url = os.getenv('CORS_ORIGINS', 'http://localhost:3000')
-        if frontend_url == '*':
-            frontend_url = 'https://contentchill.preview.emergentagent.com'
+        return {
+            "success": True,
+            "user": UserResponse(**user).dict()
+        }
         
-        return RedirectResponse(url=frontend_url)
-        
-    except httpx.TimeoutException:
-        logger.error("Timeout connecting to Google OAuth")
-        raise HTTPException(status_code=504, detail="Google OAuth timeout - please try again")
     except Exception as e:
-        logger.error(f"Error in Google OAuth callback: {e}", exc_info=True)
-        raise HTTPException(status_code=500, detail=f"OAuth failed: {str(e)}")
+        logger.error(f"Session error: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @api_router.get("/auth/me", response_model=UserResponse)

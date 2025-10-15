@@ -1408,6 +1408,68 @@ async def export_analytics(format: str = Query("json", description="Export forma
         raise HTTPException(status_code=500, detail=str(e))
 
 
+# ============ Notification Endpoints ============
+
+@api_router.get("/notifications/preferences")
+async def get_notification_preferences(
+    request: Request,
+    session_token: Optional[str] = Cookie(None)
+):
+    """Get user's notification preferences"""
+    token = session_token or (request.headers.get("Authorization", "").replace("Bearer ", "") if request.headers.get("Authorization") else None)
+    
+    if not token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    user = await get_current_user_from_token(token)
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid or expired session")
+    
+    # Get preferences or create default
+    prefs = await db.notification_preferences.find_one({"user_id": user["id"]})
+    
+    if not prefs:
+        # Create default preferences
+        default_prefs = NotificationPreferences(user_id=user["id"])
+        prefs_dict = default_prefs.dict()
+        prefs_dict["created_at"] = default_prefs.created_at.isoformat()
+        prefs_dict["updated_at"] = default_prefs.updated_at.isoformat()
+        
+        await db.notification_preferences.insert_one(prefs_dict)
+        return default_prefs.dict()
+    
+    return prefs
+
+
+@api_router.put("/notifications/preferences")
+async def update_notification_preferences(
+    preferences: NotificationPreferencesUpdate,
+    request: Request,
+    session_token: Optional[str] = Cookie(None)
+):
+    """Update user's notification preferences"""
+    token = session_token or (request.headers.get("Authorization", "").replace("Bearer ", "") if request.headers.get("Authorization") else None)
+    
+    if not token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    user = await get_current_user_from_token(token)
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid or expired session")
+    
+    # Update preferences
+    update_data = preferences.dict(exclude_unset=True)
+    update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+    
+    await db.notification_preferences.update_one(
+        {"user_id": user["id"]},
+        {"$set": update_data},
+        upsert=True
+    )
+    
+    return {"success": True, "message": "Notification preferences updated"}
+
+
 # Include the router in the main app
 app.include_router(api_router)
 

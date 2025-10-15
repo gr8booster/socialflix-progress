@@ -1194,6 +1194,90 @@ async def delete_custom_feed(
     return {"success": True, "message": "Feed deleted"}
 
 
+# ============ AI Recommendations Endpoints ============
+
+@api_router.get("/recommendations")
+async def get_personalized_recommendations(
+    request: Request,
+    session_token: Optional[str] = Cookie(None),
+    limit: int = Query(20, description="Number of recommendations")
+):
+    """Get AI-powered personalized recommendations for the user"""
+    # Check if user is authenticated
+    token = session_token or (request.headers.get("Authorization", "").replace("Bearer ", "") if request.headers.get("Authorization") else None)
+    
+    user = None
+    if token:
+        user = await get_current_user_from_token(token)
+    
+    try:
+        # Get available posts (exclude already seen if user is logged in)
+        query = {}
+        if user and user.get("favorite_posts"):
+            query["id"] = {"$nin": user["favorite_posts"]}
+        
+        available_posts = await db.posts.find(query).sort("createdAt", -1).limit(100).to_list(100)
+        
+        if user:
+            # AI-powered recommendations for logged-in users
+            user_profile = {
+                "user_id": user["id"],
+                "favorite_platforms": user.get("favorite_platforms", []),
+                "favorite_posts": user.get("favorite_posts", []),
+                "recent_likes": [],  # Would get from activities collection
+                "preferred_categories": []  # Would analyze from saved posts
+            }
+            
+            # Get AI recommendations
+            recommended_ids = await recommendation_engine.get_recommendations(
+                user_profile,
+                [p for p in available_posts],
+                limit=limit
+            )
+            
+            # If AI returns recommendations, use them; otherwise fallback
+            if recommended_ids:
+                # Get posts in recommended order
+                id_to_post = {p["id"]: p for p in available_posts}
+                recommended_posts = [id_to_post[pid] for pid in recommended_ids if pid in id_to_post]
+                return [Post(**post) for post in recommended_posts]
+        
+        # Fallback: Trending algorithm for non-logged-in users or if AI fails
+        # Sort by engagement score (likes + comments * 2 + shares * 3)
+        for post in available_posts:
+            post["engagement_score"] = post["likes"] + (post["comments"] * 2) + (post["shares"] * 3)
+        
+        available_posts.sort(key=lambda x: x["engagement_score"], reverse=True)
+        
+        return [Post(**post) for post in available_posts[:limit]]
+        
+    except Exception as e:
+        logger.error(f"Error generating recommendations: {e}")
+        # Fallback to recent viral posts
+        posts = await db.posts.find({"category": "viral"}).sort("likes", -1).limit(limit).to_list(limit)
+        return [Post(**post) for post in posts]
+
+
+@api_router.get("/trending/topics")
+async def get_trending_topics(limit: int = Query(5, description="Number of topics")):
+    """Get AI-detected trending topics from recent posts"""
+    try:
+        # Get recent high-engagement posts
+        posts = await db.posts.find().sort("createdAt", -1).limit(50).to_list(50)
+        
+        if not posts:
+            return []
+        
+        # Use AI to detect trends
+        topics = await recommendation_engine.detect_trending_topics([p for p in posts])
+        
+        return topics[:limit]
+        
+    except Exception as e:
+        logger.error(f"Error detecting trending topics: {e}")
+        return []
+
+
 # Include the router in the main app
 app.include_router(api_router)
 

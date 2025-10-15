@@ -496,13 +496,51 @@ const PostModal = ({ post, isOpen, onClose }) => {
                 ) : null}
               </div>
             ) : (
-              // Regular image
-              <img 
-                src={post.media.url}
-                alt={post.content}
-                loading="lazy"
-                className="max-w-full max-h-full object-contain"
-              />
+              // Regular image OR OAuth-required platform
+              <div className="w-full h-full relative flex items-center justify-center">
+                <img 
+                  src={post.media.url}
+                  alt={post.content}
+                  loading="lazy"
+                  className="max-w-full max-h-full object-contain"
+                />
+                
+                {/* Show OAuth overlay for demo platforms */}
+                {['tiktok', 'facebook', 'instagram', 'threads', 'snapchat', 'pinterest', 'linkedin'].includes(post.platform) && (
+                  <div 
+                    className="absolute inset-0 bg-black/60 hover:bg-black/70 transition-all cursor-pointer group"
+                    onClick={() => {
+                      if (!user) {
+                        toast({
+                          title: "Login Required",
+                          description: "Please sign in to ChyllApp first",
+                          duration: 3000,
+                        });
+                        return;
+                      }
+                      const platformName = post.platform.charAt(0).toUpperCase() + post.platform.slice(1);
+                      const confirmed = confirm(`Connect your ${platformName} account to view real ${platformName} content?`);
+                      if (confirmed) {
+                        window.location.href = `${BACKEND_URL}/api/oauth/${post.platform}/login`;
+                      }
+                    }}
+                  >
+                    <div className="flex flex-col items-center justify-center h-full px-8">
+                      <div className="bg-gradient-to-br from-blue-600/30 to-purple-600/30 border-2 border-blue-500 rounded-full p-8 mb-4 group-hover:scale-110 transition-transform">
+                        <svg className="w-16 h-16 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                        </svg>
+                      </div>
+                      <div className="text-white text-xl font-bold mb-2 text-center capitalize">
+                        Tap to Connect {post.platform}
+                      </div>
+                      <div className="text-blue-400 text-sm">
+                        View real {post.platform} content
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
             )}
           </div>
 

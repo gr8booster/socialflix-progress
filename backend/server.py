@@ -24,6 +24,7 @@ from threads_scraper import ThreadsScraper
 from snapchat_scraper import SnapchatScraper
 from pinterest_scraper import PinterestScraper
 from linkedin_scraper import LinkedInScraper
+from recommendation_engine import RecommendationEngine
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')

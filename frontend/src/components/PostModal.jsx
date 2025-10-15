@@ -184,6 +184,40 @@ const PostModal = ({ post, isOpen, onClose }) => {
     }
   };
 
+  const handleSave = async () => {
+    if (!user) {
+      toast({
+        title: "Sign in required",
+        description: "Please sign in to save posts",
+        duration: 3000,
+      });
+      return;
+    }
+
+    try {
+      const response = await axios.post(
+        `${API}/user/favorites/${post.id}`,
+        {},
+        { withCredentials: true }
+      );
+      
+      setIsSaved(response.data.favorited);
+      toast({
+        title: response.data.favorited ? "Saved!" : "Removed",
+        description: response.data.message,
+        duration: 2000,
+      });
+    } catch (error) {
+      console.error('Error saving post:', error);
+      toast({
+        title: "Error",
+        description: "Failed to save post",
+        duration: 2000,
+        variant: "destructive"
+      });
+    }
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-6xl h-[90vh] p-0 bg-black border-gray-800 overflow-hidden">

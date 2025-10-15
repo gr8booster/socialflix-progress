@@ -761,6 +761,320 @@ class ChyllAppAPITester:
         except Exception as e:
             self.log_test("Get Activity With Limit Param (No Auth)", False, f"Request failed: {str(e)}")
     
+    # ============ Advanced Filtering & Sorting Tests (Sprint 2.2) ============
+    
+    def test_multi_platform_filter(self):
+        """Test GET /api/posts?platform=reddit,youtube - Multi-platform filter"""
+        try:
+            response = requests.get(f"{self.base_url}/posts?platform=reddit,youtube")
+            if response.status_code == 200:
+                posts = response.json()
+                if isinstance(posts, list) and posts:
+                    # Check if all posts are from reddit or youtube
+                    valid_posts = [p for p in posts if p.get("platform") in ["reddit", "youtube"]]
+                    if len(valid_posts) == len(posts):
+                        reddit_count = len([p for p in posts if p.get("platform") == "reddit"])
+                        youtube_count = len([p for p in posts if p.get("platform") == "youtube"])
+                        self.log_test("Multi-Platform Filter (reddit,youtube)", True, 
+                                    f"Retrieved {len(posts)} posts: {reddit_count} Reddit, {youtube_count} YouTube")
+                    else:
+                        invalid_count = len(posts) - len(valid_posts)
+                        self.log_test("Multi-Platform Filter (reddit,youtube)", False, 
+                                    f"Found {invalid_count} posts from other platforms")
+                else:
+                    self.log_test("Multi-Platform Filter (reddit,youtube)", False, "No posts found or invalid response")
+            else:
+                self.log_test("Multi-Platform Filter (reddit,youtube)", False, f"HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("Multi-Platform Filter (reddit,youtube)", False, f"Request failed: {str(e)}")
+    
+    def test_multi_category_filter(self):
+        """Test GET /api/posts?category=viral,trending - Multi-category filter"""
+        try:
+            response = requests.get(f"{self.base_url}/posts?category=viral,trending")
+            if response.status_code == 200:
+                posts = response.json()
+                if isinstance(posts, list) and posts:
+                    # Check if all posts are from viral or trending categories
+                    valid_posts = [p for p in posts if p.get("category") in ["viral", "trending"]]
+                    if len(valid_posts) == len(posts):
+                        viral_count = len([p for p in posts if p.get("category") == "viral"])
+                        trending_count = len([p for p in posts if p.get("category") == "trending"])
+                        self.log_test("Multi-Category Filter (viral,trending)", True, 
+                                    f"Retrieved {len(posts)} posts: {viral_count} viral, {trending_count} trending")
+                    else:
+                        invalid_count = len(posts) - len(valid_posts)
+                        self.log_test("Multi-Category Filter (viral,trending)", False, 
+                                    f"Found {invalid_count} posts from other categories")
+                else:
+                    self.log_test("Multi-Category Filter (viral,trending)", False, "No posts found or invalid response")
+            else:
+                self.log_test("Multi-Category Filter (viral,trending)", False, f"HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("Multi-Category Filter (viral,trending)", False, f"Request failed: {str(e)}")
+    
+    def test_time_range_filter_today(self):
+        """Test GET /api/posts?time_range=today - Filter posts from last 24 hours"""
+        try:
+            response = requests.get(f"{self.base_url}/posts?time_range=today")
+            if response.status_code == 200:
+                posts = response.json()
+                if isinstance(posts, list):
+                    from datetime import datetime, timezone, timedelta
+                    now = datetime.now(timezone.utc)
+                    yesterday = now - timedelta(days=1)
+                    
+                    # Check if posts are from last 24 hours
+                    recent_posts = []
+                    for post in posts:
+                        created_at = post.get("createdAt", "")
+                        try:
+                            post_date = datetime.fromisoformat(created_at.replace('Z', '+00:00'))
+                            if post_date >= yesterday:
+                                recent_posts.append(post)
+                        except:
+                            pass
+                    
+                    if len(posts) == 0:
+                        self.log_test("Time Range Filter (today)", True, "No posts from last 24 hours (acceptable)")
+                    elif len(recent_posts) == len(posts):
+                        self.log_test("Time Range Filter (today)", True, f"Retrieved {len(posts)} posts from last 24 hours")
+                    else:
+                        old_posts = len(posts) - len(recent_posts)
+                        self.log_test("Time Range Filter (today)", False, f"Found {old_posts} posts older than 24 hours")
+                else:
+                    self.log_test("Time Range Filter (today)", False, f"Expected list, got {type(posts)}")
+            else:
+                self.log_test("Time Range Filter (today)", False, f"HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("Time Range Filter (today)", False, f"Request failed: {str(e)}")
+    
+    def test_time_range_filter_week(self):
+        """Test GET /api/posts?time_range=week - Filter posts from last 7 days"""
+        try:
+            response = requests.get(f"{self.base_url}/posts?time_range=week")
+            if response.status_code == 200:
+                posts = response.json()
+                if isinstance(posts, list):
+                    from datetime import datetime, timezone, timedelta
+                    now = datetime.now(timezone.utc)
+                    week_ago = now - timedelta(days=7)
+                    
+                    # Check if posts are from last 7 days
+                    recent_posts = []
+                    for post in posts:
+                        created_at = post.get("createdAt", "")
+                        try:
+                            post_date = datetime.fromisoformat(created_at.replace('Z', '+00:00'))
+                            if post_date >= week_ago:
+                                recent_posts.append(post)
+                        except:
+                            pass
+                    
+                    if len(posts) == 0:
+                        self.log_test("Time Range Filter (week)", True, "No posts from last 7 days (acceptable)")
+                    elif len(recent_posts) == len(posts):
+                        self.log_test("Time Range Filter (week)", True, f"Retrieved {len(posts)} posts from last 7 days")
+                    else:
+                        old_posts = len(posts) - len(recent_posts)
+                        self.log_test("Time Range Filter (week)", False, f"Found {old_posts} posts older than 7 days")
+                else:
+                    self.log_test("Time Range Filter (week)", False, f"Expected list, got {type(posts)}")
+            else:
+                self.log_test("Time Range Filter (week)", False, f"HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("Time Range Filter (week)", False, f"Request failed: {str(e)}")
+    
+    def test_time_range_filter_month(self):
+        """Test GET /api/posts?time_range=month - Filter posts from last 30 days"""
+        try:
+            response = requests.get(f"{self.base_url}/posts?time_range=month")
+            if response.status_code == 200:
+                posts = response.json()
+                if isinstance(posts, list):
+                    from datetime import datetime, timezone, timedelta
+                    now = datetime.now(timezone.utc)
+                    month_ago = now - timedelta(days=30)
+                    
+                    # Check if posts are from last 30 days
+                    recent_posts = []
+                    for post in posts:
+                        created_at = post.get("createdAt", "")
+                        try:
+                            post_date = datetime.fromisoformat(created_at.replace('Z', '+00:00'))
+                            if post_date >= month_ago:
+                                recent_posts.append(post)
+                        except:
+                            pass
+                    
+                    if len(posts) == 0:
+                        self.log_test("Time Range Filter (month)", True, "No posts from last 30 days (acceptable)")
+                    elif len(recent_posts) == len(posts):
+                        self.log_test("Time Range Filter (month)", True, f"Retrieved {len(posts)} posts from last 30 days")
+                    else:
+                        old_posts = len(posts) - len(recent_posts)
+                        self.log_test("Time Range Filter (month)", False, f"Found {old_posts} posts older than 30 days")
+                else:
+                    self.log_test("Time Range Filter (month)", False, f"Expected list, got {type(posts)}")
+            else:
+                self.log_test("Time Range Filter (month)", False, f"HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("Time Range Filter (month)", False, f"Request failed: {str(e)}")
+    
+    def test_sort_by_likes(self):
+        """Test GET /api/posts?sort_by=likes&limit=10 - Sort by likes descending"""
+        try:
+            response = requests.get(f"{self.base_url}/posts?sort_by=likes&limit=10")
+            if response.status_code == 200:
+                posts = response.json()
+                if isinstance(posts, list) and len(posts) >= 2:
+                    # Verify posts are sorted by likes (highest first)
+                    likes_sorted = True
+                    first_likes = posts[0].get("likes", 0)
+                    for i in range(len(posts) - 1):
+                        current_likes = posts[i].get("likes", 0)
+                        next_likes = posts[i + 1].get("likes", 0)
+                        if current_likes < next_likes:
+                            likes_sorted = False
+                            break
+                    
+                    if likes_sorted:
+                        last_likes = posts[-1].get("likes", 0)
+                        self.log_test("Sort by Likes", True, 
+                                    f"Posts correctly sorted by likes: {first_likes} (highest) → {last_likes} (lowest)")
+                    else:
+                        self.log_test("Sort by Likes", False, "Posts not properly sorted by likes")
+                elif len(posts) == 1:
+                    self.log_test("Sort by Likes", True, "Only 1 post, sorting not applicable")
+                else:
+                    self.log_test("Sort by Likes", False, "No posts found")
+            else:
+                self.log_test("Sort by Likes", False, f"HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("Sort by Likes", False, f"Request failed: {str(e)}")
+    
+    def test_sort_by_comments(self):
+        """Test GET /api/posts?sort_by=comments&limit=10 - Sort by comments descending"""
+        try:
+            response = requests.get(f"{self.base_url}/posts?sort_by=comments&limit=10")
+            if response.status_code == 200:
+                posts = response.json()
+                if isinstance(posts, list) and len(posts) >= 2:
+                    # Verify posts are sorted by comments (highest first)
+                    comments_sorted = True
+                    first_comments = posts[0].get("comments", 0)
+                    for i in range(len(posts) - 1):
+                        current_comments = posts[i].get("comments", 0)
+                        next_comments = posts[i + 1].get("comments", 0)
+                        if current_comments < next_comments:
+                            comments_sorted = False
+                            break
+                    
+                    if comments_sorted:
+                        last_comments = posts[-1].get("comments", 0)
+                        self.log_test("Sort by Comments", True, 
+                                    f"Posts correctly sorted by comments: {first_comments} (highest) → {last_comments} (lowest)")
+                    else:
+                        self.log_test("Sort by Comments", False, "Posts not properly sorted by comments")
+                elif len(posts) == 1:
+                    self.log_test("Sort by Comments", True, "Only 1 post, sorting not applicable")
+                else:
+                    self.log_test("Sort by Comments", False, "No posts found")
+            else:
+                self.log_test("Sort by Comments", False, f"HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("Sort by Comments", False, f"Request failed: {str(e)}")
+    
+    def test_combined_filters(self):
+        """Test GET /api/posts with combined filters - platform, category, time_range, sort_by"""
+        try:
+            response = requests.get(f"{self.base_url}/posts?platform=youtube,reddit&category=viral&time_range=week&sort_by=likes&limit=5")
+            if response.status_code == 200:
+                posts = response.json()
+                if isinstance(posts, list):
+                    # Verify platform filter
+                    valid_platforms = [p for p in posts if p.get("platform") in ["youtube", "reddit"]]
+                    platform_ok = len(valid_platforms) == len(posts)
+                    
+                    # Verify category filter
+                    valid_categories = [p for p in posts if p.get("category") == "viral"]
+                    category_ok = len(valid_categories) == len(posts)
+                    
+                    # Verify sorting by likes
+                    likes_sorted = True
+                    if len(posts) >= 2:
+                        for i in range(len(posts) - 1):
+                            if posts[i].get("likes", 0) < posts[i + 1].get("likes", 0):
+                                likes_sorted = False
+                                break
+                    
+                    if len(posts) == 0:
+                        self.log_test("Combined Filters", True, "No posts match all filters (acceptable)")
+                    elif platform_ok and category_ok and likes_sorted:
+                        self.log_test("Combined Filters", True, 
+                                    f"All filters applied correctly: {len(posts)} YouTube/Reddit viral posts sorted by likes")
+                    else:
+                        issues = []
+                        if not platform_ok:
+                            issues.append("platform filter failed")
+                        if not category_ok:
+                            issues.append("category filter failed")
+                        if not likes_sorted:
+                            issues.append("sorting failed")
+                        self.log_test("Combined Filters", False, f"Filter issues: {', '.join(issues)}")
+                else:
+                    self.log_test("Combined Filters", False, f"Expected list, got {type(posts)}")
+            else:
+                self.log_test("Combined Filters", False, f"HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("Combined Filters", False, f"Request failed: {str(e)}")
+    
+    # ============ Custom Feeds Endpoint Tests (Sprint 2.2) ============
+    
+    def test_create_custom_feed_without_auth(self):
+        """Test POST /api/user/feeds without authentication - Should return 401"""
+        try:
+            feed_data = {
+                "name": "My Feed",
+                "platforms": ["youtube", "reddit"],
+                "categories": ["viral"],
+                "time_range": "week",
+                "sort_by": "likes"
+            }
+            response = requests.post(f"{self.base_url}/user/feeds", json=feed_data)
+            if response.status_code == 401:
+                data = response.json()
+                self.log_test("Create Custom Feed Without Auth", True, f"Correctly returned 401: {data.get('detail', 'Not authenticated')}")
+            else:
+                self.log_test("Create Custom Feed Without Auth", False, f"Expected 401, got HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("Create Custom Feed Without Auth", False, f"Request failed: {str(e)}")
+    
+    def test_get_custom_feeds_without_auth(self):
+        """Test GET /api/user/feeds without authentication - Should return 401"""
+        try:
+            response = requests.get(f"{self.base_url}/user/feeds")
+            if response.status_code == 401:
+                data = response.json()
+                self.log_test("Get Custom Feeds Without Auth", True, f"Correctly returned 401: {data.get('detail', 'Not authenticated')}")
+            else:
+                self.log_test("Get Custom Feeds Without Auth", False, f"Expected 401, got HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("Get Custom Feeds Without Auth", False, f"Request failed: {str(e)}")
+    
+    def test_delete_custom_feed_without_auth(self):
+        """Test DELETE /api/user/feeds/{feed_id} without authentication - Should return 401"""
+        try:
+            test_feed_id = "test-feed-id-12345"
+            response = requests.delete(f"{self.base_url}/user/feeds/{test_feed_id}")
+            if response.status_code == 401:
+                data = response.json()
+                self.log_test("Delete Custom Feed Without Auth", True, f"Correctly returned 401: {data.get('detail', 'Not authenticated')}")
+            else:
+                self.log_test("Delete Custom Feed Without Auth", False, f"Expected 401, got HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("Delete Custom Feed Without Auth", False, f"Request failed: {str(e)}")
+    
     def run_all_tests(self):
         """Run all API tests"""
         print(f"🚀 Starting ChyllApp Backend API Tests")

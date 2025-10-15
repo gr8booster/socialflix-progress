@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Implement Sprint 1: Google OAuth Authentication for ChyllApp. Users should be able to login with Google OAuth, see their profile in navbar, and logout. Authentication is optional (users can browse without login)."
+user_problem_statement: "Complete Sprint 1 for ChyllApp: Implement Search Functionality, Performance Optimization, and Testing & Polish"
 
 backend:
   - task: "User Model & Session Model"

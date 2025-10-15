@@ -333,9 +333,6 @@ metadata:
 
 test_plan:
   current_focus:
-    - "POST /api/auth/session - Create Session Endpoint"
-    - "GET /api/auth/me - Get Current User"
-    - "POST /api/auth/logout - Logout Endpoint"
     - "AuthContext - User State Management"
     - "Navbar - Authentication UI"
   stuck_tasks: []

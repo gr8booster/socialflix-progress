@@ -374,21 +374,23 @@ const PostModal = ({ post, isOpen, onClose }) => {
                         {post.platform === 'tiktok' && 'Sign in with TikTok'}
                         {post.platform === 'facebook' && 'Sign in with Facebook'}
                         {post.platform === 'instagram' && 'Sign in with Instagram'}
+                        {post.platform === 'twitter' && 'Sign in with Twitter/X'}
                         {post.platform === 'threads' && 'Sign in with Threads'}
                         {post.platform === 'snapchat' && 'Sign in with Snapchat'}
                         {post.platform === 'pinterest' && 'Sign in with Pinterest'}
                         {post.platform === 'linkedin' && 'Sign in with LinkedIn'}
-                        {!['tiktok', 'facebook', 'instagram', 'threads', 'snapchat', 'pinterest', 'linkedin'].includes(post.platform) && 'Sign in Required'}
+                        {!['tiktok', 'facebook', 'instagram', 'twitter', 'threads', 'snapchat', 'pinterest', 'linkedin'].includes(post.platform) && 'Sign in Required'}
                       </div>
                       <div className="text-gray-300 text-base text-center max-w-md mb-6 leading-relaxed">
                         {post.platform === 'tiktok' && 'Connect your TikTok account to watch viral TikTok videos directly in ChyllApp!'}
                         {post.platform === 'facebook' && 'Connect your Facebook account to view Facebook videos and posts!'}
                         {post.platform === 'instagram' && 'Connect your Instagram account to watch Instagram Reels and videos!'}
+                        {post.platform === 'twitter' && 'Connect your Twitter/X account to view full Twitter videos!'}
                         {post.platform === 'threads' && 'Connect your Threads account to view Threads content!'}
                         {post.platform === 'snapchat' && 'Connect your Snapchat account to view Spotlight videos!'}
                         {post.platform === 'pinterest' && 'Connect your Pinterest account to view Pin videos!'}
                         {post.platform === 'linkedin' && 'Connect your LinkedIn account to view LinkedIn posts!'}
-                        {!['tiktok', 'facebook', 'instagram', 'threads', 'snapchat', 'pinterest', 'linkedin'].includes(post.platform) && 
+                        {!['tiktok', 'facebook', 'instagram', 'twitter', 'threads', 'snapchat', 'pinterest', 'linkedin'].includes(post.platform) && 
                           'Sign in with your social media account to unlock exclusive content from this platform.'}
                       </div>
                       

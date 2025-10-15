@@ -65,13 +65,20 @@ const PostModal = ({ post, isOpen, onClose }) => {
   const tiktokEmbedUrl = isTikTokVideo ? `https://www.tiktok.com/embed/v2/${tiktokId}` : null;
   
   // Check if it's a Reddit video with actual video URL
-  const isRedditVideo = post.platform === 'reddit' && post.media.type === 'video' && post.media.url && !post.media.url.includes('unsplash');
+  const isRedditVideo = post.platform === 'reddit' && post.media.type === 'video' && post.media.url && 
+    (post.media.url.includes('v.redd.it') || post.media.url.includes('.mp4'));
+  
+  // Check if it's a Twitter video (note: Twitter API only provides thumbnails, not video URLs)
+  const isTwitterVideo = post.platform === 'twitter' && post.media.type === 'video';
   
   // Check if any video type
   const isAnyVideo = post.media.type === 'video';
   
   // Check if we have actual playable video content
-  const hasPlayableVideo = isYouTubeVideo || isTikTokVideo || isRedditVideo || (isAnyVideo && post.media.url && !post.media.url.includes('unsplash'));
+  const hasPlayableVideo = isYouTubeVideo || isTikTokVideo || isRedditVideo;
+  
+  // Platforms that need OAuth to view videos
+  const needsOAuth = isTwitterVideo || (isAnyVideo && !hasPlayableVideo && ['tiktok', 'facebook', 'instagram', 'threads', 'snapchat', 'pinterest', 'linkedin'].includes(post.platform));
 
   const handlePlayVideo = () => {
     if (!hasPlayableVideo) {

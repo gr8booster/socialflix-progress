@@ -102,7 +102,11 @@ const Navbar = () => {
             <a href="/" className="text-white hover:text-gray-300 transition-colors font-medium">Home</a>
             <a href="#" className="text-gray-300 hover:text-white transition-colors">Trending</a>
             <a href="#" className="text-gray-300 hover:text-white transition-colors">Viral</a>
-            <a href="#" className="text-gray-300 hover:text-white transition-colors">My Feed</a>
+            {user ? (
+              <a href="/profile" className="text-gray-300 hover:text-white transition-colors">My Profile</a>
+            ) : (
+              <a href="#" className="text-gray-300 hover:text-white transition-colors">My Feed</a>
+            )}
           </div>
         </div>
 

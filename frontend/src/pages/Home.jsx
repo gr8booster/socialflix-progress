@@ -21,6 +21,12 @@ const Home = () => {
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
+  const [activeFilters, setActiveFilters] = useState({
+    platforms: [],
+    categories: [],
+    timeRange: 'all',
+    sortBy: 'date',
+  });
 
   const POSTS_PER_PAGE = 50;
 

@@ -44,13 +44,15 @@ const Hero = ({ onViewPost }) => {
     <div className="relative h-[85vh] w-full overflow-hidden">
       {/* Background Image with Gradient Overlay */}
       <div 
-        className="absolute inset-0 bg-cover bg-center"
+        className="absolute inset-0 bg-cover bg-center animate-slow-zoom"
         style={{
           backgroundImage: `url(${featuredPost.media.url})`,
         }}
       >
-        <div className="absolute inset-0 bg-gradient-to-r from-black via-black/70 to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black via-black/80 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/50" />
+        {/* Animated overlay for depth */}
+        <div className="absolute inset-0 bg-gradient-to-br from-red-900/20 via-transparent to-purple-900/20 animate-pulse-slow" />
       </div>
 
       {/* Content */}

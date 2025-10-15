@@ -393,7 +393,6 @@ metadata:
 
 test_plan:
   current_focus:
-    - "GET /api/search - Search Posts Endpoint"
     - "Search Bar - Functional Search Input"
     - "SearchResults Page - Search Results UI"
     - "App.js - Search Route"

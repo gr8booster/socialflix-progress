@@ -379,6 +379,66 @@ async def fetch_instagram_posts(limit: int = 50):
         raise HTTPException(status_code=500, detail=f"Error fetching Instagram posts: {str(e)}")
 
 
+@api_router.post("/scraper/fetch-tiktok")
+async def fetch_tiktok_videos(limit: int = 50):
+    """Fetch trending videos from TikTok and save to database"""
+    try:
+        logger.info(f"Fetching {limit} trending videos from TikTok...")
+        tiktok_videos = tiktok_scraper.fetch_trending_videos(max_results=limit)
+        
+        if not tiktok_videos:
+            return {"success": False, "message": "No videos fetched from TikTok", "posts_added": 0}
+        
+        posts_added = 0
+        for video_data in tiktok_videos:
+            existing_post = await db.posts.find_one({"tiktok_id": video_data.get("tiktok_id")})
+            if not existing_post:
+                post = Post(**video_data)
+                await db.posts.insert_one(post.dict())
+                posts_added += 1
+        
+        logger.info(f"Successfully added {posts_added} new TikTok videos to database")
+        return {
+            "success": True,
+            "message": f"Successfully fetched and saved {posts_added} TikTok videos",
+            "posts_added": posts_added,
+            "total_fetched": len(tiktok_videos)
+        }
+    except Exception as e:
+        logger.error(f"Error fetching TikTok videos: {e}")
+        raise HTTPException(status_code=500, detail=f"Error fetching TikTok videos: {str(e)}")
+
+
+@api_router.post("/scraper/fetch-facebook")
+async def fetch_facebook_posts(limit: int = 50):
+    """Fetch trending posts from Facebook and save to database"""
+    try:
+        logger.info(f"Fetching {limit} trending posts from Facebook...")
+        facebook_posts = facebook_scraper.fetch_trending_posts(max_results=limit)
+        
+        if not facebook_posts:
+            return {"success": False, "message": "No posts fetched from Facebook", "posts_added": 0}
+        
+        posts_added = 0
+        for post_data in facebook_posts:
+            existing_post = await db.posts.find_one({"facebook_id": post_data.get("facebook_id")})
+            if not existing_post:
+                post = Post(**post_data)
+                await db.posts.insert_one(post.dict())
+                posts_added += 1
+        
+        logger.info(f"Successfully added {posts_added} new Facebook posts to database")
+        return {
+            "success": True,
+            "message": f"Successfully fetched and saved {posts_added} Facebook posts",
+            "posts_added": posts_added,
+            "total_fetched": len(facebook_posts)
+        }
+    except Exception as e:
+        logger.error(f"Error fetching Facebook posts: {e}")
+        raise HTTPException(status_code=500, detail=f"Error fetching Facebook posts: {str(e)}")
+
+
 @api_router.get("/scraper/status")
 async def scraper_status():
     """Get status of scraper and database"""
@@ -388,7 +448,9 @@ async def scraper_status():
         youtube_posts = await db.posts.count_documents({"platform": "youtube"})
         twitter_posts = await db.posts.count_documents({"platform": "twitter"})
         instagram_posts = await db.posts.count_documents({"platform": "instagram"})
-        mock_posts = total_posts - reddit_posts - youtube_posts - twitter_posts - instagram_posts
+        tiktok_posts = await db.posts.count_documents({"platform": "tiktok"})
+        facebook_posts = await db.posts.count_documents({"platform": "facebook"})
+        mock_posts = total_posts - reddit_posts - youtube_posts - twitter_posts - instagram_posts - tiktok_posts - facebook_posts
         
         return {
             "status": "active",
@@ -397,6 +459,8 @@ async def scraper_status():
             "youtube_posts": youtube_posts,
             "twitter_posts": twitter_posts,
             "instagram_posts": instagram_posts,
+            "tiktok_posts": tiktok_posts,
+            "facebook_posts": facebook_posts,
             "mock_posts": mock_posts,
             "scraper_ready": True
         }

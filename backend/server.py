@@ -10,7 +10,7 @@ from typing import List, Optional
 from datetime import datetime, timezone, timedelta
 import httpx
 
-from models import Post, PostCreate, LikeRequest, CommentRequest, ShareRequest, PlatformInfo, User, Session, SessionCreate, UserResponse, UserProfileUpdate, UserPreferences, ActivityItem
+from models import Post, PostCreate, LikeRequest, CommentRequest, ShareRequest, PlatformInfo, User, Session, SessionCreate, UserResponse, UserProfileUpdate, UserPreferences, ActivityItem, CustomFeed, CustomFeedCreate
 from seed_data import seed_posts, platform_info
 from reddit_scraper import RedditScraper
 from youtube_scraper import YouTubeScraper

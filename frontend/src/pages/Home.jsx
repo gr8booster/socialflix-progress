@@ -141,6 +141,9 @@ const Home = () => {
 
   return (
     <div className="min-h-screen bg-black">
+      {/* Iframe Warning Banner */}
+      <IframeWarning />
+      
       <Navbar />
       
       {/* Hero Section */}

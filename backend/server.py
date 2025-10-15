@@ -741,7 +741,9 @@ async def scraper_status():
 
 GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID')
 GOOGLE_CLIENT_SECRET = os.getenv('GOOGLE_CLIENT_SECRET')
-REDIRECT_URI = f"{os.getenv('CORS_ORIGINS', 'http://localhost:3000')}/auth/callback"
+# Redirect URI should be the backend callback URL
+BACKEND_BASE_URL = os.getenv('REACT_APP_BACKEND_URL', 'https://contentchill.preview.emergentagent.com')
+REDIRECT_URI = f"{BACKEND_BASE_URL}/api/auth/google/callback"
 
 async def get_current_user_from_token(session_token: Optional[str] = None) -> Optional[dict]:
     """

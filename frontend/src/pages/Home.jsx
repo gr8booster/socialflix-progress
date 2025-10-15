@@ -14,6 +14,7 @@ const Home = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [allPosts, setAllPosts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showScrollTop, setShowScrollTop] = useState(false);
 
   // Fetch all posts on component mount
   useEffect(() => {

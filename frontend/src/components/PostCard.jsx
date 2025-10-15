@@ -11,7 +11,7 @@ const formatNumber = (num) => {
   return num.toString();
 };
 
-const PostCard = ({ post, onClick }) => {
+const PostCard = ({ post, onClick, isGridLayout = false }) => {
   const [isClicked, setIsClicked] = React.useState(false);
   
   const handleClick = () => {
@@ -24,7 +24,7 @@ const PostCard = ({ post, onClick }) => {
 
   return (
     <div 
-      className={`group relative flex-shrink-0 w-[280px] md:w-[320px] cursor-pointer transition-all duration-500 hover:scale-110 hover:z-50 ${isClicked ? 'scale-95' : ''}`}
+      className={`group relative ${isGridLayout ? 'w-full' : 'flex-shrink-0 w-[280px] md:w-[320px]'} cursor-pointer transition-all duration-500 hover:scale-110 hover:z-50 ${isClicked ? 'scale-95' : ''}`}
       onClick={handleClick}
     >
       {/* Card Container */}

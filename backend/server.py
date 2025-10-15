@@ -682,7 +682,12 @@ async def create_session(request: Request, response: Response, session_data: Ses
                 picture=auth_data.get("picture"),
                 google_id=auth_data.get("id")
             )
-            await db.users.insert_one(new_user.dict())
+            # Convert datetime to ISO string for MongoDB
+            user_dict = new_user.dict()
+            user_dict["created_at"] = new_user.created_at.isoformat()
+            user_dict["updated_at"] = new_user.updated_at.isoformat()
+            
+            await db.users.insert_one(user_dict)
             user_id = new_user.id
             logger.info(f"New user created: {auth_data['email']}")
         

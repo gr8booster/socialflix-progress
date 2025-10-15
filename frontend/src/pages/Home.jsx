@@ -226,6 +226,12 @@ const Home = () => {
       {/* Iframe Warning Banner */}
       <IframeWarning />
       
+      {/* New Posts Notification */}
+      <NewPostsNotification 
+        lastCheckTime={lastCheckTime}
+        onRefresh={handleRefreshPosts}
+      />
+      
       <Navbar />
       
       {/* Hero Section */}

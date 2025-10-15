@@ -4,6 +4,7 @@ import Navbar from '../components/Navbar';
 import Hero from '../components/Hero';
 import PostCarousel from '../components/PostCarousel';
 import PostModal from '../components/PostModal';
+import IframeWarning from '../components/IframeWarning';
 import { Toaster } from '../components/ui/toaster';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;

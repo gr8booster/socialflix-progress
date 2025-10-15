@@ -175,13 +175,17 @@ const Navbar = () => {
           <Button variant="ghost" size="icon" className="text-white hover:text-gray-300 hidden md:flex">
             <Search className="w-5 h-5" />
           </Button>
+          
+          {/* Language Selector */}
+          <LanguageSelector />
+          
           <Button variant="ghost" size="icon" className="text-white hover:text-gray-300">
             <Bell className="w-5 h-5" />
           </Button>
 
           {/* User Authentication */}
           {processingSession ? (
-            <div className="text-white text-sm">Loading...</div>
+            <div className="text-white text-sm">{t('loading')}</div>
           ) : user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

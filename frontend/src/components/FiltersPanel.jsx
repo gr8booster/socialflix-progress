@@ -103,9 +103,9 @@ const FiltersPanel = ({ onApplyFilters, onSaveFilter }) => {
   return (
     <>
       {/* Filter Button */}
-      <Button
+      <button
         onClick={handleButtonClick}
-        className="bg-gray-800 hover:bg-gray-700 border border-gray-700 relative"
+        className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 h-9 px-4 py-2 bg-gray-800 hover:bg-gray-700 border border-gray-700 relative"
       >
         <Filter className="w-4 h-4 mr-2" />
         Filters
@@ -114,7 +114,7 @@ const FiltersPanel = ({ onApplyFilters, onSaveFilter }) => {
             {activeFiltersCount}
           </span>
         )}
-      </Button>
+      </button>
 
       {/* Filter Panel */}
       {isOpen && (

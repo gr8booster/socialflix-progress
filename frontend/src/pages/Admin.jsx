@@ -143,6 +143,41 @@ const Admin = () => {
     }
   };
 
+  const fetchInstagramPosts = async () => {
+    try {
+      setFetchingInstagram(true);
+      toast({
+        title: "Fetching Instagram Posts...",
+        description: "This may take a few seconds",
+      });
+
+      const response = await axios.post(`${API}/scraper/fetch-instagram?limit=15`);
+      
+      if (response.data.success) {
+        toast({
+          title: "Success!",
+          description: `Added ${response.data.posts_added} new Instagram posts`,
+        });
+        // Refresh status
+        await fetchStatus();
+      } else {
+        toast({
+          title: "No New Posts",
+          description: response.data.message,
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching Instagram posts:', error);
+      toast({
+        title: "Error",
+        description: "Failed to fetch Instagram posts",
+        variant: "destructive"
+      });
+    } finally {
+      setFetchingInstagram(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 p-8">
       <div className="max-w-6xl mx-auto">

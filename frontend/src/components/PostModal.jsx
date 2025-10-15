@@ -395,8 +395,19 @@ const PostModal = ({ post, isOpen, onClose }) => {
                       {/* Sign In Button */}
                       <button
                         onClick={() => {
-                          // TODO: Implement OAuth flow for each platform
-                          alert(`OAuth integration for ${post.platform} coming soon! This will redirect you to ${post.platform} to authorize access.`);
+                          // Check if user is logged in
+                          if (!user) {
+                            toast({
+                              title: "Login Required",
+                              description: "Please sign in to ChyllApp first before connecting social media accounts",
+                              duration: 3000,
+                            });
+                            return;
+                          }
+                          
+                          // Redirect to platform OAuth
+                          const oauthUrl = `${BACKEND_URL}/api/oauth/${post.platform}/login`;
+                          window.location.href = oauthUrl;
                         }}
                         className="px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-lg transition-all transform hover:scale-105 shadow-lg mb-4 capitalize"
                       >

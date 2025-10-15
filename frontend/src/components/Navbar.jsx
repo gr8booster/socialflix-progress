@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Search, Bell, User, LogOut, Sparkles, Menu, X, TrendingUp } from 'lucide-react';
 import { Input } from './ui/input';
 import { Button } from './ui/button';
 import { useAuth } from '../contexts/AuthContext';
+import LanguageSelector from './LanguageSelector';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,6 +16,7 @@ import {
 } from './ui/dropdown-menu';
 
 const Navbar = () => {
+  const { t } = useTranslation();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');

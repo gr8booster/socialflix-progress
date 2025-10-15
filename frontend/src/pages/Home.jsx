@@ -5,7 +5,9 @@ import Hero from '../components/Hero';
 import PostCarousel from '../components/PostCarousel';
 import PostModal from '../components/PostModal';
 import IframeWarning from '../components/IframeWarning';
+import FiltersPanel from '../components/FiltersPanel';
 import { Toaster } from '../components/ui/toaster';
+import { toast } from '../hooks/use-toast';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;

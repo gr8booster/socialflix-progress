@@ -13,7 +13,7 @@ from typing import Dict, Any, List
 # Use the production backend URL from frontend/.env
 BACKEND_URL = "https://contentchill.preview.emergentagent.com/api"
 
-class SocialFlixAPITester:
+class ChyllAppAPITester:
     def __init__(self):
         self.base_url = BACKEND_URL
         self.test_results = []

@@ -48,8 +48,11 @@ const PostCarousel = ({ title, posts, onPostClick }) => {
         {posts.map((post, index) => (
           <div 
             key={post.id}
-            className="animate-in fade-in slide-in-from-right"
-            style={{ animationDelay: `${index * 0.1}s`, animationFillMode: 'backwards' }}
+            className="animate-slide-in-up opacity-0"
+            style={{ 
+              animationDelay: `${Math.min(index * 0.05, 0.5)}s`, 
+              animationFillMode: 'forwards' 
+            }}
           >
             <PostCard post={post} onClick={onPostClick} />
           </div>

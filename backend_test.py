@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """
-SocialFlix Backend API Test Suite
+ChyllApp Backend API Test Suite
 Tests all backend API endpoints for functionality and data integrity
+Including Sprint 1: Google OAuth Authentication endpoints
 """
 
 import requests

@@ -610,6 +610,172 @@ async def scraper_status():
         }
 
 
+# ============ Authentication Endpoints ============
+
+async def get_current_user_from_token(session_token: Optional[str] = None) -> Optional[dict]:
+    """
+    Helper function to get current user from session_token
+    Checks session validity and returns user data
+    """
+    if not session_token:
+        return None
+    
+    try:
+        # Find active session
+        session = await db.sessions.find_one({
+            "session_token": session_token,
+            "expires_at": {"$gt": datetime.now(timezone.utc).isoformat()}
+        })
+        
+        if not session:
+            return None
+        
+        # Get user data
+        user = await db.users.find_one({"id": session["user_id"]})
+        return user
+    except Exception as e:
+        logger.error(f"Error getting current user: {e}")
+        return None
+
+
+@api_router.post("/auth/session")
+async def create_session(request: Request, response: Response, session_data: SessionCreate):
+    """
+    Process session_id from OAuth callback and create user session
+    
+    Flow:
+    1. Frontend receives session_id from OAuth redirect
+    2. Frontend calls this endpoint with session_id
+    3. Backend calls Emergent Auth API to get session data
+    4. Backend stores user and session in database
+    5. Backend sets httpOnly cookie with session_token
+    """
+    try:
+        # Call Emergent Auth API to get session data
+        async with httpx.AsyncClient() as client:
+            auth_response = await client.get(
+                "https://demobackend.emergentagent.com/auth/v1/env/oauth/session-data",
+                headers={"X-Session-ID": session_data.session_id},
+                timeout=10.0
+            )
+            
+            if auth_response.status_code != 200:
+                raise HTTPException(
+                    status_code=auth_response.status_code,
+                    detail="Failed to validate session with auth provider"
+                )
+            
+            auth_data = auth_response.json()
+        
+        # Check if user exists
+        existing_user = await db.users.find_one({"email": auth_data["email"]})
+        
+        if existing_user:
+            user_id = existing_user["id"]
+            # Don't update existing user data as per playbook
+            logger.info(f"Existing user logged in: {auth_data['email']}")
+        else:
+            # Create new user
+            new_user = User(
+                email=auth_data["email"],
+                name=auth_data["name"],
+                picture=auth_data.get("picture"),
+                google_id=auth_data.get("id")
+            )
+            await db.users.insert_one(new_user.dict())
+            user_id = new_user.id
+            logger.info(f"New user created: {auth_data['email']}")
+        
+        # Create session with 7-day expiry
+        session_token = auth_data["session_token"]
+        expires_at = datetime.now(timezone.utc) + timedelta(days=7)
+        
+        new_session = Session(
+            user_id=user_id,
+            session_token=session_token,
+            expires_at=expires_at
+        )
+        
+        await db.sessions.insert_one(new_session.dict())
+        
+        # Set httpOnly cookie
+        response.set_cookie(
+            key="session_token",
+            value=session_token,
+            httponly=True,
+            secure=True,
+            samesite="none",
+            max_age=7 * 24 * 60 * 60,  # 7 days in seconds
+            path="/"
+        )
+        
+        # Get user data to return
+        user = await db.users.find_one({"id": user_id})
+        
+        return {
+            "success": True,
+            "user": UserResponse(**user).dict()
+        }
+        
+    except httpx.TimeoutException:
+        raise HTTPException(status_code=504, detail="Auth service timeout")
+    except Exception as e:
+        logger.error(f"Error creating session: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@api_router.get("/auth/me", response_model=UserResponse)
+async def get_current_user(
+    request: Request,
+    session_token: Optional[str] = Cookie(None)
+):
+    """
+    Get current authenticated user from session_token
+    Checks cookie first, then Authorization header as fallback
+    """
+    # Try cookie first
+    token = session_token
+    
+    # Fallback to Authorization header
+    if not token:
+        auth_header = request.headers.get("Authorization")
+        if auth_header and auth_header.startswith("Bearer "):
+            token = auth_header.replace("Bearer ", "")
+    
+    if not token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    user = await get_current_user_from_token(token)
+    
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid or expired session")
+    
+    return UserResponse(**user)
+
+
+@api_router.post("/auth/logout")
+async def logout(
+    response: Response,
+    session_token: Optional[str] = Cookie(None)
+):
+    """
+    Logout user by deleting session and clearing cookie
+    """
+    if session_token:
+        # Delete session from database
+        await db.sessions.delete_one({"session_token": session_token})
+    
+    # Clear cookie
+    response.delete_cookie(
+        key="session_token",
+        path="/",
+        samesite="none",
+        secure=True
+    )
+    
+    return {"success": True, "message": "Logged out successfully"}
+
+
 # Include the router in the main app
 app.include_router(api_router)
 

@@ -47,7 +47,7 @@ const PostModal = ({ post, isOpen, onClose }) => {
   
   const youtubeId = post.platform === 'youtube' ? (post.youtube_id || extractYouTubeId(post.media?.url)) : null;
   const isYouTubeVideo = post.platform === 'youtube' && youtubeId;
-  const youtubeEmbedUrl = isYouTubeVideo ? `https://www.youtube.com/embed/${youtubeId}?autoplay=1&rel=0` : null;
+  const youtubeEmbedUrl = isYouTubeVideo ? `https://www.youtube.com/embed/${youtubeId}?autoplay=1&mute=0&rel=0&enablejsapi=1` : null;
   
   // Check if it's TikTok video
   const extractTikTokId = (url) => {

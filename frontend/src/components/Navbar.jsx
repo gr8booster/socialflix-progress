@@ -90,13 +90,16 @@ const Navbar = () => {
       <div className="flex items-center justify-between px-8 md:px-16 py-4">
         {/* Logo */}
         <div className="flex items-center gap-8">
-          <h1 className="text-3xl font-bold text-red-600 tracking-tight">
+          <h1 
+            onClick={() => navigate('/')}
+            className="text-3xl font-bold text-red-600 tracking-tight cursor-pointer hover:text-red-500 transition-colors"
+          >
             ChyllApp
           </h1>
           
           {/* Navigation Links */}
           <div className="hidden md:flex items-center gap-6">
-            <a href="#" className="text-white hover:text-gray-300 transition-colors font-medium">Home</a>
+            <a href="/" className="text-white hover:text-gray-300 transition-colors font-medium">Home</a>
             <a href="#" className="text-gray-300 hover:text-white transition-colors">Trending</a>
             <a href="#" className="text-gray-300 hover:text-white transition-colors">Viral</a>
             <a href="#" className="text-gray-300 hover:text-white transition-colors">My Feed</a>

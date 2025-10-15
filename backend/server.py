@@ -1073,6 +1073,87 @@ async def get_user_activity(
     return activities
 
 
+# ============ Custom Feeds Endpoints ============
+
+@api_router.post("/user/feeds")
+async def create_custom_feed(
+    feed: CustomFeedCreate,
+    request: Request,
+    session_token: Optional[str] = Cookie(None)
+):
+    """Create a custom feed with saved filters"""
+    token = session_token or (request.headers.get("Authorization", "").replace("Bearer ", "") if request.headers.get("Authorization") else None)
+    
+    if not token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    user = await get_current_user_from_token(token)
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid or expired session")
+    
+    # Create feed
+    custom_feed = CustomFeed(
+        user_id=user["id"],
+        name=feed.name,
+        platforms=feed.platforms,
+        categories=feed.categories,
+        time_range=feed.time_range,
+        sort_by=feed.sort_by
+    )
+    
+    feed_dict = custom_feed.dict()
+    feed_dict["created_at"] = custom_feed.created_at.isoformat()
+    
+    await db.custom_feeds.insert_one(feed_dict)
+    
+    return {"success": True, "feed_id": custom_feed.id, "message": "Custom feed created"}
+
+
+@api_router.get("/user/feeds")
+async def get_custom_feeds(
+    request: Request,
+    session_token: Optional[str] = Cookie(None)
+):
+    """Get user's custom feeds"""
+    token = session_token or (request.headers.get("Authorization", "").replace("Bearer ", "") if request.headers.get("Authorization") else None)
+    
+    if not token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    user = await get_current_user_from_token(token)
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid or expired session")
+    
+    feeds = await db.custom_feeds.find({"user_id": user["id"]}).sort("created_at", -1).to_list(100)
+    
+    return feeds
+
+
+@api_router.delete("/user/feeds/{feed_id}")
+async def delete_custom_feed(
+    feed_id: str,
+    request: Request,
+    session_token: Optional[str] = Cookie(None)
+):
+    """Delete a custom feed"""
+    token = session_token or (request.headers.get("Authorization", "").replace("Bearer ", "") if request.headers.get("Authorization") else None)
+    
+    if not token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    user = await get_current_user_from_token(token)
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid or expired session")
+    
+    # Delete feed (only if it belongs to user)
+    result = await db.custom_feeds.delete_one({"id": feed_id, "user_id": user["id"]})
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Feed not found")
+    
+    return {"success": True, "message": "Feed deleted"}
+
+
 # Include the router in the main app
 app.include_router(api_router)
 

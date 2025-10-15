@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Complete remaining Sprint 1 items: Infinite scroll for post feeds, Mobile responsiveness testing, Cross-browser compatibility testing, Image compression optimization, Virtual scrolling for carousels"
+user_problem_statement: "Sprint 2.1: Implement User Profiles & Favorites - User profile page, save/favorite posts, view saved posts feed, user preferences (favorite platforms), profile customization (bio), activity history"
 
 backend:
   - task: "User Model & Session Model"

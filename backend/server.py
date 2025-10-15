@@ -87,21 +87,22 @@ async def root():
 async def get_posts(
     platform: Optional[str] = Query(None, description="Filter by platform"),
     category: Optional[str] = Query(None, description="Filter by category"),
-    limit: Optional[int] = Query(None, description="Limit number of results")
+    limit: Optional[int] = Query(None, description="Limit number of results"),
+    skip: Optional[int] = Query(0, description="Skip number of results for pagination")
 ):
-    """Get all posts with optional filters"""
+    """Get all posts with optional filters and pagination"""
     query = {}
     if platform:
         query["platform"] = platform
     if category:
         query["category"] = category
     
-    posts_cursor = db.posts.find(query).sort("createdAt", -1)
+    posts_cursor = db.posts.find(query).sort("createdAt", -1).skip(skip)
     
     if limit:
         posts_cursor = posts_cursor.limit(limit)
     
-    posts = await posts_cursor.to_list(1000)
+    posts = await posts_cursor.to_list(limit or 1000)
     return [Post(**post) for post in posts]
 
 

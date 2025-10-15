@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { X, Heart, MessageCircle, Share2, Send } from 'lucide-react';
+import { X, Heart, MessageCircle, Share2, Send, Bookmark } from 'lucide-react';
 import { Dialog, DialogContent } from './ui/dialog';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { toast } from '../hooks/use-toast';
+import { useAuth } from '../contexts/AuthContext';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -20,13 +21,22 @@ const formatNumber = (num) => {
 };
 
 const PostModal = ({ post, isOpen, onClose }) => {
+  const { user } = useAuth();
   const [isLiked, setIsLiked] = useState(false);
+  const [isSaved, setIsSaved] = useState(false);
   const [comment, setComment] = useState('');
   const [localLikes, setLocalLikes] = useState(post?.likes || 0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [showPlayButton, setShowPlayButton] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [videoError, setVideoError] = useState(false);
+
+  // Check if post is saved when user changes
+  useEffect(() => {
+    if (user && post) {
+      setIsSaved(user.favorite_posts?.includes(post.id) || false);
+    }
+  }, [user, post]);
 
   if (!post) return null;
 

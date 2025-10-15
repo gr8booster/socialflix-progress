@@ -290,15 +290,18 @@ backend:
 
   - task: "GET /api/search - Search Posts Endpoint"
     implemented: true
-    working: "NA"
+    working: true
     file: "backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Implemented search endpoint that searches posts by keywords in content and user names (case-insensitive). Supports platform filtering, sorting (relevance, date, likes, comments), and limit parameter."
+      - working: true
+        agent: "testing"
+        comment: "Search endpoint fully functional. All 11 test scenarios passed: (1) Basic keyword search working - found 8 posts matching 'viral', (2) Platform filtering working - correctly filtered reddit posts, (3) Sort by date working - results sorted newest first, (4) Sort by likes working - results sorted highest likes first, (5) Sort by comments working - results sorted most commented first, (6) Sort by relevance working - returned 14 posts, (7) No results handling - correctly returned empty array for non-existent query, (8) Missing query parameter - correctly returned 422 validation error, (9) Empty string handling - returned 50 posts, (10) Special characters handling - returned 50 posts, (11) Case-insensitive search confirmed - 'VIRAL' and 'viral' returned same results. Search correctly searches in content, user names, and usernames. Response format matches Post model structure."
 
 frontend:
   - task: "AuthContext - User State Management"

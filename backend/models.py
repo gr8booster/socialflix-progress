@@ -103,3 +103,20 @@ class ActivityItem(BaseModel):
     post_id: Optional[str] = None
     details: Optional[str] = None
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class CustomFeed(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    user_id: str
+    name: str
+    platforms: List[str] = Field(default_factory=list)
+    categories: List[str] = Field(default_factory=list)
+    time_range: Optional[str] = None
+    sort_by: str = "date"
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class CustomFeedCreate(BaseModel):
+    name: str
+    platforms: List[str] = Field(default_factory=list)
+    categories: List[str] = Field(default_factory=list)
+    time_range: Optional[str] = None
+    sort_by: str = "date"

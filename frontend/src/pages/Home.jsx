@@ -220,8 +220,16 @@ const Home = () => {
       {/* Hero Section */}
       <Hero onViewPost={handleViewPost} />
 
+      {/* Filters Panel */}
+      <div className="relative z-10 -mt-24 px-8 md:px-16 mb-8">
+        <FiltersPanel 
+          onApplyFilters={handleApplyFilters}
+          onSaveFilter={handleSaveFilter}
+        />
+      </div>
+
       {/* Content Sections */}
-      <div className="relative z-10 -mt-32">
+      <div className="relative z-10 -mt-16">
         {/* Trending Now */}
         <PostCarousel 
           title="Trending Now"

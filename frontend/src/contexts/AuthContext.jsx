@@ -84,12 +84,18 @@ export const AuthProvider = ({ children }) => {
     const redirectUrl = window.location.origin;
     const authUrl = `https://auth.emergentagent.com/?redirect=${encodeURIComponent(redirectUrl)}`;
     
-    // For mobile browsers, ensure we're doing a full page redirect
-    // Use window.top to break out of any iframe context
-    if (window.top) {
-      window.top.location.href = authUrl;
-    } else {
-      window.location.href = authUrl;
+    // Force top-level redirect to break out of any iframe
+    try {
+      if (window.top && window.top !== window.self) {
+        // We're in an iframe - try to break out
+        window.top.location.href = authUrl;
+      } else {
+        // Normal redirect
+        window.location.href = authUrl;
+      }
+    } catch (e) {
+      // Fallback if top access is blocked
+      window.open(authUrl, '_top');
     }
   };
 

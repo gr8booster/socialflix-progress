@@ -125,16 +125,80 @@ const PostModal = ({ post, isOpen, onClose }) => {
             {isYouTubeVideo ? (
               // YouTube video player
               <div className="w-full h-full relative">
-                <iframe
-                  width="100%"
-                  height="100%"
-                  src={youtubeEmbedUrl}
-                  title={post.content}
-                  frameBorder="0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                  allowFullScreen
-                  className="w-full h-full"
-                />
+                {!isPlaying && showPlayButton ? (
+                  // Thumbnail with play button
+                  <div 
+                    className="w-full h-full relative cursor-pointer group"
+                    onClick={handlePlayVideo}
+                  >
+                    <img 
+                      src={post.media.thumbnail || post.media.url}
+                      alt={post.content}
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/40 group-hover:bg-black/60 transition-colors">
+                      {/* Large pulsing play button */}
+                      <div className="relative mb-4">
+                        <div className="absolute inset-0 w-32 h-32 rounded-full bg-red-600 opacity-30 animate-ping"></div>
+                        <div className="relative w-32 h-32 rounded-full bg-gradient-to-br from-red-600 to-red-700 flex items-center justify-center shadow-2xl border-4 border-white group-hover:scale-110 transition-transform">
+                          <div className="w-0 h-0 border-t-[24px] border-t-transparent border-l-[40px] border-l-white border-b-[24px] border-b-transparent ml-2" />
+                        </div>
+                      </div>
+                      <div className="text-white text-2xl font-bold tracking-wider">PLAY VIDEO</div>
+                      <div className="text-gray-300 text-sm mt-2">YouTube</div>
+                    </div>
+                  </div>
+                ) : (
+                  // YouTube iframe
+                  <iframe
+                    width="100%"
+                    height="100%"
+                    src={youtubeEmbedUrl}
+                    title={post.content}
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowFullScreen
+                    className="w-full h-full"
+                  />
+                )}
+              </div>
+            ) : isTikTokVideo ? (
+              // TikTok video player
+              <div className="w-full h-full relative">
+                {!isPlaying && showPlayButton ? (
+                  // Thumbnail with play button
+                  <div 
+                    className="w-full h-full relative cursor-pointer group"
+                    onClick={handlePlayVideo}
+                  >
+                    <img 
+                      src={post.media.thumbnail || post.media.url}
+                      alt={post.content}
+                      className="w-full h-full object-contain"
+                    />
+                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/40 group-hover:bg-black/60 transition-colors">
+                      {/* Large pulsing play button */}
+                      <div className="relative mb-4">
+                        <div className="absolute inset-0 w-32 h-32 rounded-full bg-red-600 opacity-30 animate-ping"></div>
+                        <div className="relative w-32 h-32 rounded-full bg-gradient-to-br from-red-600 to-red-700 flex items-center justify-center shadow-2xl border-4 border-white group-hover:scale-110 transition-transform">
+                          <div className="w-0 h-0 border-t-[24px] border-t-transparent border-l-[40px] border-l-white border-b-[24px] border-b-transparent ml-2" />
+                        </div>
+                      </div>
+                      <div className="text-white text-2xl font-bold tracking-wider">PLAY VIDEO</div>
+                      <div className="text-gray-300 text-sm mt-2">TikTok</div>
+                    </div>
+                  </div>
+                ) : (
+                  // TikTok iframe
+                  <iframe
+                    src={tiktokEmbedUrl}
+                    className="w-full h-full"
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    title={post.content}
+                  />
+                )}
               </div>
             ) : isRedditVideo && post.media.url ? (
               // Reddit video player
@@ -148,31 +212,59 @@ const PostModal = ({ post, isOpen, onClose }) => {
                 <source src={post.media.url} type="video/mp4" />
                 Your browser does not support the video tag.
               </video>
-            ) : isTikTokVideo || isAnyVideo ? (
-              // TikTok and other videos - show thumbnail with prominent play overlay
-              <div className="relative w-full h-full flex items-center justify-center">
-                <img 
-                  src={post.media.thumbnail || post.media.url}
-                  alt={post.content}
-                  className="max-w-full max-h-full object-contain"
-                />
-                <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/40">
-                  {/* Large pulsing play button */}
-                  <div className="relative mb-4">
-                    <div className="absolute inset-0 w-24 h-24 rounded-full bg-red-600 opacity-30 animate-ping"></div>
-                    <div className="relative w-24 h-24 rounded-full bg-gradient-to-br from-red-600 to-red-700 flex items-center justify-center shadow-2xl border-4 border-white cursor-pointer hover:scale-110 transition-transform">
-                      <div className="w-0 h-0 border-t-[20px] border-t-transparent border-l-[32px] border-l-white border-b-[20px] border-b-transparent ml-2" />
+            ) : isAnyVideo ? (
+              // Generic video - show with HTML5 video player
+              <div className="w-full h-full relative">
+                {!isPlaying && showPlayButton ? (
+                  // Thumbnail with play button
+                  <div 
+                    className="w-full h-full relative cursor-pointer group"
+                    onClick={handlePlayVideo}
+                  >
+                    <img 
+                      src={post.media.thumbnail || post.media.url}
+                      alt={post.content}
+                      className="w-full h-full object-contain"
+                    />
+                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/40 group-hover:bg-black/60 transition-colors">
+                      {/* Large pulsing play button */}
+                      <div className="relative mb-4">
+                        <div className="absolute inset-0 w-32 h-32 rounded-full bg-red-600 opacity-30 animate-ping"></div>
+                        <div className="relative w-32 h-32 rounded-full bg-gradient-to-br from-red-600 to-red-700 flex items-center justify-center shadow-2xl border-4 border-white group-hover:scale-110 transition-transform">
+                          <div className="w-0 h-0 border-t-[24px] border-t-transparent border-l-[40px] border-l-white border-b-[24px] border-b-transparent ml-2" />
+                        </div>
+                      </div>
+                      <div className="text-white text-2xl font-bold tracking-wider">PLAY VIDEO</div>
+                      <div className="text-gray-300 text-sm mt-2 capitalize">{post.platform}</div>
                     </div>
                   </div>
-                  <div className="text-white text-xl font-bold tracking-wider">TAP TO PLAY</div>
-                  <div className="text-gray-300 text-sm mt-2">Video content from {post.platform}</div>
-                </div>
+                ) : post.media.url ? (
+                  // HTML5 video player
+                  <video
+                    controls
+                    autoPlay
+                    loop
+                    className="max-w-full max-h-full"
+                    poster={post.media.thumbnail}
+                  >
+                    <source src={post.media.url} type="video/mp4" />
+                    Your browser does not support the video tag.
+                  </video>
+                ) : (
+                  // Fallback - just show thumbnail
+                  <img 
+                    src={post.media.thumbnail || post.media.url}
+                    alt={post.content}
+                    className="max-w-full max-h-full object-contain"
+                  />
+                )}
               </div>
             ) : (
               // Regular image
               <img 
                 src={post.media.url}
                 alt={post.content}
+                loading="lazy"
                 className="max-w-full max-h-full object-contain"
               />
             )}

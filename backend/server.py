@@ -12,6 +12,7 @@ from models import Post, PostCreate, LikeRequest, CommentRequest, ShareRequest, 
 from seed_data import seed_posts, platform_info
 from reddit_scraper import RedditScraper
 from youtube_scraper import YouTubeScraper
+from twitter_scraper import TwitterScraper
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')

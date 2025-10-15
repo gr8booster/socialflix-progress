@@ -159,8 +159,18 @@ const Navbar = () => {
           </form>
 
           {/* Icons */}
-          <Button variant="ghost" size="icon" className="text-white hover:text-gray-300">
-            <Search className="w-5 h-5 md:hidden" />
+          {/* Mobile Menu Button */}
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="text-white hover:text-gray-300 md:hidden"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          >
+            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </Button>
+          
+          <Button variant="ghost" size="icon" className="text-white hover:text-gray-300 hidden md:flex">
+            <Search className="w-5 h-5" />
           </Button>
           <Button variant="ghost" size="icon" className="text-white hover:text-gray-300">
             <Bell className="w-5 h-5" />

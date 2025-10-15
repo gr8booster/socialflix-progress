@@ -759,16 +759,19 @@ frontend:
 
 metadata:
   created_by: "main_agent"
-  version: "2.8"
-  test_sequence: 10
+  version: "2.9"
+  test_sequence: 11
   run_ui: true
 
 test_plan:
   current_focus:
-    - "Profile Page - User Profile UI"
-    - "PostModal - Save/Favorite Button"
-    - "Navbar - Profile Link"
-    - "App.js - Profile Route"
+    - "Enhanced GET /api/posts - Multi-Platform & Multi-Category Filters"
+    - "Enhanced GET /api/posts - Time Range Filter"
+    - "Enhanced GET /api/posts - Advanced Sorting"
+    - "Enhanced GET /api/posts - Combined Filters"
+    - "POST /api/user/feeds - Create Custom Feed"
+    - "GET /api/user/feeds - Get Custom Feeds"
+    - "DELETE /api/user/feeds/{feed_id} - Delete Custom Feed"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"

@@ -66,6 +66,8 @@ tiktok_scraper = TikTokScraper()
 facebook_scraper = FacebookScraper()
 threads_scraper = ThreadsScraper()
 snapchat_scraper = SnapchatScraper()
+pinterest_scraper = PinterestScraper()
+linkedin_scraper = LinkedInScraper()
 
 # Startup event to seed database
 @app.on_event("startup")

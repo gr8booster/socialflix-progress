@@ -281,6 +281,52 @@ async def fetch_youtube_videos(limit: int = 50):
         raise HTTPException(status_code=500, detail=f"Error fetching YouTube videos: {str(e)}")
 
 
+@api_router.post("/scraper/fetch-twitter")
+async def fetch_twitter_posts(limit: int = 50):
+    """
+    Fetch trending tweets from Twitter and save to database
+    
+    Args:
+        limit: Number of tweets to fetch (default 50)
+    """
+    try:
+        logger.info(f"Fetching {limit} trending tweets from Twitter...")
+        
+        # Fetch tweets from Twitter
+        twitter_posts = twitter_scraper.fetch_trending_tweets(max_results=limit)
+        
+        if not twitter_posts:
+            return {
+                "success": False,
+                "message": "No tweets fetched from Twitter",
+                "posts_added": 0
+            }
+        
+        # Save tweets to database (avoid duplicates)
+        posts_added = 0
+        for tweet_data in twitter_posts:
+            # Check if tweet already exists (by twitter_id)
+            existing_post = await db.posts.find_one({"twitter_id": tweet_data.get("twitter_id")})
+            
+            if not existing_post:
+                post = Post(**tweet_data)
+                await db.posts.insert_one(post.dict())
+                posts_added += 1
+        
+        logger.info(f"Successfully added {posts_added} new Twitter posts to database")
+        
+        return {
+            "success": True,
+            "message": f"Successfully fetched and saved {posts_added} Twitter posts",
+            "posts_added": posts_added,
+            "total_fetched": len(twitter_posts)
+        }
+        
+    except Exception as e:
+        logger.error(f"Error fetching Twitter posts: {e}")
+        raise HTTPException(status_code=500, detail=f"Error fetching Twitter posts: {str(e)}")
+
+
 @api_router.get("/scraper/status")
 async def scraper_status():
     """Get status of scraper and database"""
@@ -288,13 +334,15 @@ async def scraper_status():
         total_posts = await db.posts.count_documents({})
         reddit_posts = await db.posts.count_documents({"platform": "reddit"})
         youtube_posts = await db.posts.count_documents({"platform": "youtube"})
-        mock_posts = total_posts - reddit_posts - youtube_posts
+        twitter_posts = await db.posts.count_documents({"platform": "twitter"})
+        mock_posts = total_posts - reddit_posts - youtube_posts - twitter_posts
         
         return {
             "status": "active",
             "total_posts": total_posts,
             "reddit_posts": reddit_posts,
             "youtube_posts": youtube_posts,
+            "twitter_posts": twitter_posts,
             "mock_posts": mock_posts,
             "scraper_ready": True
         }

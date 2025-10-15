@@ -154,14 +154,31 @@ async def get_posts(
 async def get_featured_post():
     """Get the featured post for hero section"""
     # Get the post with most likes from viral category
+    # Prioritize platforms with real video content (YouTube, Reddit)
     post = await db.posts.find_one(
-        {"category": "viral"},
+        {
+            "category": "viral",
+            "platform": {"$in": ["youtube", "reddit"]}
+        },
         sort=[("likes", -1)]
     )
     
     if not post:
-        # Fallback to any post with most likes
-        post = await db.posts.find_one(sort=[("likes", -1)])
+        # Fallback to viral posts from any fully integrated platform
+        post = await db.posts.find_one(
+            {
+                "category": "viral",
+                "platform": {"$in": ["youtube", "reddit", "twitter"]}
+            },
+            sort=[("likes", -1)]
+        )
+    
+    if not post:
+        # Final fallback to any viral post
+        post = await db.posts.find_one(
+            {"category": "viral"},
+            sort=[("likes", -1)]
+        )
     
     if not post:
         raise HTTPException(status_code=404, detail="No posts found")

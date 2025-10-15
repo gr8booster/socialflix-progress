@@ -859,10 +859,17 @@ async def create_session(request: Request, response: Response, session_data: Ses
         }
         
     except httpx.TimeoutException:
-        raise HTTPException(status_code=504, detail="Auth service timeout")
+        logger.error("Timeout connecting to Emergent Auth API")
+        raise HTTPException(status_code=504, detail="Auth service timeout - please try again")
+    except httpx.ConnectError as e:
+        logger.error(f"Connection error to Emergent Auth API: {e}")
+        raise HTTPException(status_code=503, detail="Unable to connect to auth service - please try again later")
+    except httpx.HTTPStatusError as e:
+        logger.error(f"HTTP error from Emergent Auth API: {e}")
+        raise HTTPException(status_code=e.response.status_code, detail=f"Auth service error: {str(e)}")
     except Exception as e:
-        logger.error(f"Error creating session: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.error(f"Error creating session: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"Session creation failed: {str(e)}")
 
 
 @api_router.get("/auth/me", response_model=UserResponse)

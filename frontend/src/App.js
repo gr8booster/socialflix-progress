@@ -11,6 +11,8 @@ const Profile = lazy(() => import("./pages/Profile"));
 const Recommendations = lazy(() => import("./pages/Recommendations"));
 const Analytics = lazy(() => import("./pages/Analytics"));
 const Premium = lazy(() => import("./pages/Premium"));
+const Developer = lazy(() => import("./pages/Developer"));
+const Creator = lazy(() => import("./pages/Creator"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 // Loading component

@@ -984,14 +984,14 @@ frontend:
 metadata:
   created_by: "main_agent"
   version: "3.1"
-  test_sequence: 13
+  test_sequence: 14
   run_ui: true
 
 test_plan:
   current_focus:
-    - "GET /api/recommendations - AI-Powered Personalized Recommendations"
-    - "GET /api/trending/topics - AI-Detected Trending Topics"
-  stuck_tasks: []
+    - "Recommendations Page - AI-Powered 'For You' Feed"
+  stuck_tasks:
+    - "Recommendations Page - AI-Powered 'For You' Feed"
   test_all: false
   test_priority: "high_first"
 
@@ -1002,4 +1002,8 @@ agent_communication:
     message: "Implemented Sprint 3.1: AI-Powered Recommendations using Emergent LLM Key with emergentintegrations library. Added 2 new endpoints: (1) GET /api/recommendations - Get AI-powered personalized recommendations (uses AI for authenticated users, engagement algorithm for unauthenticated), (2) GET /api/trending/topics - Get AI-detected trending topics. Both endpoints support custom limit parameter. EMERGENT_LLM_KEY configured in backend/.env. Need to test: Recommendations endpoint (unauthenticated), recommendations with custom limit, trending topics endpoint, trending topics with custom limit, engagement algorithm fallback, response format validation."
   - agent: "testing"
     message: "Completed comprehensive testing of Sprint 3.1: AI-Powered Recommendations backend. ALL 4 TESTS PASSED ✅ (60/60 total tests). Test Results: (1) GET /api/recommendations (Not Authenticated): ✅ Returns 20 recommendations (default limit), ✅ Uses engagement algorithm fallback (likes + comments*2 + shares*3), ✅ Posts correctly sorted by engagement score (highest first), ✅ Returns array of Post objects with correct structure. (2) GET /api/recommendations?limit=5: ✅ Returns exactly 5 recommendations, ✅ Custom limit parameter working. (3) GET /api/trending/topics: ✅ Returns 5 trending topics (default limit), ✅ AI successfully detects trending topics using LLM, ✅ Returns array with correct structure: {topic, count, platforms}. (4) GET /api/trending/topics?limit=3: ✅ Returns exactly 3 trending topics. Backend logs confirm: ✅ LiteLLM successfully calling gpt-4o-mini model, ✅ AI recommendations working with EMERGENT_LLM_KEY, ✅ No critical errors. Sprint 3.1 AI Recommendations is FULLY WORKING. All endpoints tested and verified. Ready for production."
+  - agent: "main"
+    message: "Implemented Sprint 3.1 frontend: (1) Recommendations page (/recommendations) with AI-powered 'For You' feed, (2) Navbar 'For You' link with Sparkles icon, (3) Trending Topics section with AI-detected topics, (4) Grid of 20 recommended posts, (5) Post modal integration. Need to test: Navbar link, recommendations page load, trending topics display, post grid, modal integration, API calls, mobile responsiveness, navigation flow."
+  - agent: "testing"
+    message: "Completed comprehensive testing of Sprint 3.1: AI-Powered Recommendations frontend. FOUND 1 CRITICAL BUG ❌. Test Results: (1) Navbar 'For You' Link: ✅ WORKING - Link visible with Sparkles icon, positioned between Home and Viral, navigates to /recommendations correctly. (2) Recommendations Page: ✅ MOSTLY WORKING - Page loads correctly, title shows 'Trending Now' for non-logged-in users, subtitle correct, Sparkles icon visible. (3) Trending Topics: ✅ WORKING - 5 topics displayed as pills with #TopicName (count) format, gradient background (red to pink), TrendingUp icon visible. (4) Recommended Posts Grid: ✅ WORKING - 20 posts displayed in grid (xl:grid-cols-6), 'Most Engaging Posts' heading visible, posts clickable. (5) Post Modal: ✅ WORKING - Modal opens, Save/Like/Comment/Share buttons all visible and functional. (6) API Calls: ✅ WORKING - /api/recommendations?limit=20 called successfully, /api/trending/topics?limit=5 called successfully. (7) Navigation Flow: ✅ WORKING - Home → For You → Click post → Close → Back all working smoothly. (8) Mobile Responsiveness: ❌ CRITICAL BUG - Horizontal overflow on mobile (375px viewport). Page width is 476px causing 101px overflow. Root cause: PostCard component has fixed width 'w-[280px]' designed for carousel layouts but is being used in grid layout on Recommendations page. FIX NEEDED: PostCard should not have fixed width when used in grid layouts. Recommend creating separate component for grid layouts or making PostCard responsive based on parent container. All other features working correctly. No critical console errors (only expected 401 auth errors and DialogTitle accessibility warnings)."
 

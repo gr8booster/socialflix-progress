@@ -1500,6 +1500,11 @@ async def platform_oauth_login(
         'tiktok': f"https://www.tiktok.com/v2/auth/authorize/?client_key={os.getenv('TIKTOK_CLIENT_ID')}&scope=user.info.basic,video.list&response_type=code&redirect_uri={redirect_uri}&state={state}",
         'facebook': f"https://www.facebook.com/v18.0/dialog/oauth?client_id={os.getenv('FACEBOOK_CLIENT_ID')}&redirect_uri={redirect_uri}&state={state}&scope=public_profile,email",
         'instagram': f"https://api.instagram.com/oauth/authorize?client_id={os.getenv('INSTAGRAM_CLIENT_ID')}&redirect_uri={redirect_uri}&scope=user_profile,user_media&response_type=code&state={state}",
+        'twitter': f"https://twitter.com/i/oauth2/authorize?response_type=code&client_id={os.getenv('TWITTER_CLIENT_ID')}&redirect_uri={redirect_uri}&scope=tweet.read%20users.read&state={state}&code_challenge=challenge&code_challenge_method=plain",
+        'threads': f"https://threads.net/oauth/authorize?client_id={os.getenv('THREADS_CLIENT_ID')}&redirect_uri={redirect_uri}&scope=threads_basic,threads_content_publish&response_type=code&state={state}",
+        'snapchat': f"https://accounts.snapchat.com/login/oauth2/authorize?client_id={os.getenv('SNAPCHAT_CLIENT_ID')}&redirect_uri={redirect_uri}&response_type=code&scope=snapchat-marketing-api&state={state}",
+        'pinterest': f"https://www.pinterest.com/oauth/?client_id={os.getenv('PINTEREST_CLIENT_ID')}&redirect_uri={redirect_uri}&response_type=code&scope=boards:read,pins:read&state={state}",
+        'linkedin': f"https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id={os.getenv('LINKEDIN_CLIENT_ID')}&redirect_uri={redirect_uri}&scope=r_liteprofile%20r_emailaddress&state={state}",
     }
     
     if platform not in oauth_urls:

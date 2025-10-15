@@ -443,6 +443,66 @@ async def fetch_facebook_posts(limit: int = 50):
         raise HTTPException(status_code=500, detail=f"Error fetching Facebook posts: {str(e)}")
 
 
+@api_router.post("/scraper/fetch-threads")
+async def fetch_threads_posts(limit: int = 50):
+    """Fetch trending posts from Threads and save to database"""
+    try:
+        logger.info(f"Fetching {limit} trending posts from Threads...")
+        threads_posts = threads_scraper.fetch_trending_posts(max_results=limit)
+        
+        if not threads_posts:
+            return {"success": False, "message": "No posts fetched from Threads", "posts_added": 0}
+        
+        posts_added = 0
+        for post_data in threads_posts:
+            existing_post = await db.posts.find_one({"threads_id": post_data.get("threads_id")})
+            if not existing_post:
+                post = Post(**post_data)
+                await db.posts.insert_one(post.dict())
+                posts_added += 1
+        
+        logger.info(f"Successfully added {posts_added} new Threads posts to database")
+        return {
+            "success": True,
+            "message": f"Successfully fetched and saved {posts_added} Threads posts",
+            "posts_added": posts_added,
+            "total_fetched": len(threads_posts)
+        }
+    except Exception as e:
+        logger.error(f"Error fetching Threads posts: {e}")
+        raise HTTPException(status_code=500, detail=f"Error fetching Threads posts: {str(e)}")
+
+
+@api_router.post("/scraper/fetch-snapchat")
+async def fetch_snapchat_content(limit: int = 50):
+    """Fetch trending content from Snapchat and save to database"""
+    try:
+        logger.info(f"Fetching {limit} trending content from Snapchat...")
+        snapchat_content = snapchat_scraper.fetch_trending_content(max_results=limit)
+        
+        if not snapchat_content:
+            return {"success": False, "message": "No content fetched from Snapchat", "posts_added": 0}
+        
+        posts_added = 0
+        for post_data in snapchat_content:
+            existing_post = await db.posts.find_one({"snapchat_id": post_data.get("snapchat_id")})
+            if not existing_post:
+                post = Post(**post_data)
+                await db.posts.insert_one(post.dict())
+                posts_added += 1
+        
+        logger.info(f"Successfully added {posts_added} new Snapchat posts to database")
+        return {
+            "success": True,
+            "message": f"Successfully fetched and saved {posts_added} Snapchat content",
+            "posts_added": posts_added,
+            "total_fetched": len(snapchat_content)
+        }
+    except Exception as e:
+        logger.error(f"Error fetching Snapchat content: {e}")
+        raise HTTPException(status_code=500, detail=f"Error fetching Snapchat content: {str(e)}")
+
+
 @api_router.get("/scraper/status")
 async def scraper_status():
     """Get status of scraper and database"""
@@ -454,7 +514,9 @@ async def scraper_status():
         instagram_posts = await db.posts.count_documents({"platform": "instagram"})
         tiktok_posts = await db.posts.count_documents({"platform": "tiktok"})
         facebook_posts = await db.posts.count_documents({"platform": "facebook"})
-        mock_posts = total_posts - reddit_posts - youtube_posts - twitter_posts - instagram_posts - tiktok_posts - facebook_posts
+        threads_posts = await db.posts.count_documents({"platform": "threads"})
+        snapchat_posts = await db.posts.count_documents({"platform": "snapchat"})
+        mock_posts = total_posts - reddit_posts - youtube_posts - twitter_posts - instagram_posts - tiktok_posts - facebook_posts - threads_posts - snapchat_posts
         
         return {
             "status": "active",
@@ -465,6 +527,8 @@ async def scraper_status():
             "instagram_posts": instagram_posts,
             "tiktok_posts": tiktok_posts,
             "facebook_posts": facebook_posts,
+            "threads_posts": threads_posts,
+            "snapchat_posts": snapchat_posts,
             "mock_posts": mock_posts,
             "scraper_ready": True
         }

@@ -535,6 +535,80 @@ const Admin = () => {
             </CardContent>
           </Card>
 
+          {/* TikTok Scraper */}
+          <Card className="bg-gray-800 border-gray-700">
+            <CardHeader>
+              <CardTitle className="text-white flex items-center gap-2">
+                <div className="w-8 h-8 rounded-full bg-black border-2 border-cyan-400 flex items-center justify-center text-white">
+                  🎵
+                </div>
+                TikTok Scraper
+              </CardTitle>
+              <CardDescription className="text-gray-400">
+                Fetch trending videos from TikTok
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-gray-300 mb-4">
+                Click below to fetch the latest trending TikTok videos from top creators.
+              </p>
+              <Button 
+                onClick={fetchTikTokVideos}
+                disabled={fetchingTiktok}
+                className="w-full bg-black hover:bg-gray-900 text-white border-2 border-cyan-400"
+              >
+                {fetchingTiktok ? (
+                  <>
+                    <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                    Fetching...
+                  </>
+                ) : (
+                  <>
+                    <RefreshCw className="w-4 h-4 mr-2" />
+                    Fetch TikTok Videos
+                  </>
+                )}
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* Facebook Scraper */}
+          <Card className="bg-gray-800 border-gray-700">
+            <CardHeader>
+              <CardTitle className="text-white flex items-center gap-2">
+                <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold">
+                  f
+                </div>
+                Facebook Scraper
+              </CardTitle>
+              <CardDescription className="text-gray-400">
+                Fetch trending posts from Facebook
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-gray-300 mb-4">
+                Click below to fetch the latest trending posts from Facebook pages.
+              </p>
+              <Button 
+                onClick={fetchFacebookPosts}
+                disabled={fetchingFacebook}
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                {fetchingFacebook ? (
+                  <>
+                    <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                    Fetching...
+                  </>
+                ) : (
+                  <>
+                    <RefreshCw className="w-4 h-4 mr-2" />
+                    Fetch Facebook Posts
+                  </>
+                )}
+              </Button>
+            </CardContent>
+          </Card>
+
           {/* Database Info */}
           <Card className="bg-gray-800 border-gray-700">
             <CardHeader>

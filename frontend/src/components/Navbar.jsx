@@ -244,6 +244,14 @@ const Navbar = () => {
               For You
             </a>
             <a 
+              href="/analytics" 
+              className="text-gray-300 hover:text-white transition-colors flex items-center gap-2 text-lg"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              <TrendingUp className="w-5 h-5" />
+              Analytics
+            </a>
+            <a 
               href="#" 
               className="text-gray-300 hover:text-white transition-colors text-lg"
               onClick={() => setMobileMenuOpen(false)}

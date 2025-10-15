@@ -225,7 +225,7 @@ const Navbar = () => {
               disabled={loading}
               className="bg-red-600 hover:bg-red-700 text-white"
             >
-              Sign in
+              {t('signIn')}
             </Button>
           )}
         </div>

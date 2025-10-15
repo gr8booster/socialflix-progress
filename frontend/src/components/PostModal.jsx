@@ -528,7 +528,7 @@ const PostModal = ({ post, isOpen, onClose }) => {
             <div className="border-t border-gray-800 p-4">
               {/* Stats */}
               <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-8">
+                <div className="flex items-center gap-6">
                   <button 
                     className="flex flex-col items-center gap-1 text-white hover:text-red-500 transition-all transform hover:scale-110"
                     onClick={handleLike}
@@ -549,6 +549,16 @@ const PostModal = ({ post, isOpen, onClose }) => {
                   >
                     <Share2 className="w-7 h-7" />
                     <span className="font-bold text-sm">{formatNumber(post.shares || 0)}</span>
+                  </button>
+                  <button 
+                    className="flex flex-col items-center gap-1 text-white hover:text-yellow-500 transition-all transform hover:scale-110"
+                    onClick={handleSave}
+                  >
+                    <Bookmark 
+                      className="w-7 h-7" 
+                      fill={isSaved ? "currentColor" : "none"}
+                    />
+                    <span className="font-bold text-sm text-xs">Save</span>
                   </button>
                 </div>
               </div>

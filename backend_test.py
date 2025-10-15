@@ -335,6 +335,259 @@ class ChyllAppAPITester:
         except Exception as e:
             self.log_test("Auth Session Invalid session_id", False, f"Request failed: {str(e)}")
     
+    # ============ Search Endpoint Tests (Sprint 1.2) ============
+    
+    def test_search_basic_keyword(self):
+        """Test GET /api/search with basic keyword search"""
+        try:
+            # Test with common keyword
+            response = requests.get(f"{self.base_url}/search?q=viral")
+            if response.status_code == 200:
+                posts = response.json()
+                if isinstance(posts, list):
+                    # Verify results contain the search term (case-insensitive)
+                    matching_posts = []
+                    for post in posts:
+                        content = post.get("content", "").lower()
+                        user_name = post.get("user", {}).get("name", "").lower()
+                        user_username = post.get("user", {}).get("username", "").lower()
+                        if "viral" in content or "viral" in user_name or "viral" in user_username:
+                            matching_posts.append(post)
+                    
+                    if len(matching_posts) > 0:
+                        self.log_test("Search Basic Keyword (viral)", True, f"Found {len(matching_posts)} posts matching 'viral'")
+                    else:
+                        self.log_test("Search Basic Keyword (viral)", False, "No posts found matching 'viral'")
+                    
+                    # Validate post structure
+                    if posts:
+                        post = posts[0]
+                        required_fields = ["id", "platform", "user", "content", "likes", "comments"]
+                        missing_fields = [field for field in required_fields if field not in post]
+                        if not missing_fields:
+                            self.log_test("Search Result Structure", True, "Search results have correct Post structure")
+                        else:
+                            self.log_test("Search Result Structure", False, f"Missing fields in search results: {missing_fields}")
+                else:
+                    self.log_test("Search Basic Keyword (viral)", False, f"Expected list, got {type(posts)}")
+            else:
+                self.log_test("Search Basic Keyword (viral)", False, f"HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("Search Basic Keyword (viral)", False, f"Request failed: {str(e)}")
+    
+    def test_search_with_platform_filter(self):
+        """Test GET /api/search with platform filter"""
+        try:
+            # Test search with platform filter
+            response = requests.get(f"{self.base_url}/search?q=post&platform=reddit")
+            if response.status_code == 200:
+                posts = response.json()
+                if isinstance(posts, list):
+                    if len(posts) > 0:
+                        # Verify all results are from reddit
+                        reddit_posts = [p for p in posts if p.get("platform") == "reddit"]
+                        if len(reddit_posts) == len(posts):
+                            self.log_test("Search with Platform Filter (reddit)", True, f"Found {len(posts)} reddit posts matching 'post'")
+                        else:
+                            non_reddit = len(posts) - len(reddit_posts)
+                            self.log_test("Search with Platform Filter (reddit)", False, f"Found {non_reddit} non-reddit posts in results")
+                    else:
+                        # No results is acceptable if there are no reddit posts matching "post"
+                        self.log_test("Search with Platform Filter (reddit)", True, "No reddit posts found matching 'post' (acceptable)")
+                else:
+                    self.log_test("Search with Platform Filter (reddit)", False, f"Expected list, got {type(posts)}")
+            else:
+                self.log_test("Search with Platform Filter (reddit)", False, f"HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("Search with Platform Filter (reddit)", False, f"Request failed: {str(e)}")
+    
+    def test_search_sort_by_date(self):
+        """Test GET /api/search with sort_by=date"""
+        try:
+            response = requests.get(f"{self.base_url}/search?q=the&sort_by=date")
+            if response.status_code == 200:
+                posts = response.json()
+                if isinstance(posts, list) and len(posts) >= 2:
+                    # Verify posts are sorted by date (newest first)
+                    dates_sorted = True
+                    for i in range(len(posts) - 1):
+                        current_date = posts[i].get("createdAt", "")
+                        next_date = posts[i + 1].get("createdAt", "")
+                        if current_date < next_date:
+                            dates_sorted = False
+                            break
+                    
+                    if dates_sorted:
+                        self.log_test("Search Sort by Date", True, f"Results correctly sorted by date (newest first), {len(posts)} posts")
+                    else:
+                        self.log_test("Search Sort by Date", False, "Results not properly sorted by date")
+                elif len(posts) == 1:
+                    self.log_test("Search Sort by Date", True, "Only 1 result, sorting not applicable")
+                else:
+                    self.log_test("Search Sort by Date", True, "No results found for 'the' (acceptable)")
+            else:
+                self.log_test("Search Sort by Date", False, f"HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("Search Sort by Date", False, f"Request failed: {str(e)}")
+    
+    def test_search_sort_by_likes(self):
+        """Test GET /api/search with sort_by=likes"""
+        try:
+            response = requests.get(f"{self.base_url}/search?q=the&sort_by=likes")
+            if response.status_code == 200:
+                posts = response.json()
+                if isinstance(posts, list) and len(posts) >= 2:
+                    # Verify posts are sorted by likes (highest first)
+                    likes_sorted = True
+                    for i in range(len(posts) - 1):
+                        current_likes = posts[i].get("likes", 0)
+                        next_likes = posts[i + 1].get("likes", 0)
+                        if current_likes < next_likes:
+                            likes_sorted = False
+                            break
+                    
+                    if likes_sorted:
+                        self.log_test("Search Sort by Likes", True, f"Results correctly sorted by likes (highest first), {len(posts)} posts")
+                    else:
+                        self.log_test("Search Sort by Likes", False, "Results not properly sorted by likes")
+                elif len(posts) == 1:
+                    self.log_test("Search Sort by Likes", True, "Only 1 result, sorting not applicable")
+                else:
+                    self.log_test("Search Sort by Likes", True, "No results found for 'the' (acceptable)")
+            else:
+                self.log_test("Search Sort by Likes", False, f"HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("Search Sort by Likes", False, f"Request failed: {str(e)}")
+    
+    def test_search_sort_by_comments(self):
+        """Test GET /api/search with sort_by=comments"""
+        try:
+            response = requests.get(f"{self.base_url}/search?q=the&sort_by=comments")
+            if response.status_code == 200:
+                posts = response.json()
+                if isinstance(posts, list) and len(posts) >= 2:
+                    # Verify posts are sorted by comments (highest first)
+                    comments_sorted = True
+                    for i in range(len(posts) - 1):
+                        current_comments = posts[i].get("comments", 0)
+                        next_comments = posts[i + 1].get("comments", 0)
+                        if current_comments < next_comments:
+                            comments_sorted = False
+                            break
+                    
+                    if comments_sorted:
+                        self.log_test("Search Sort by Comments", True, f"Results correctly sorted by comments (highest first), {len(posts)} posts")
+                    else:
+                        self.log_test("Search Sort by Comments", False, "Results not properly sorted by comments")
+                elif len(posts) == 1:
+                    self.log_test("Search Sort by Comments", True, "Only 1 result, sorting not applicable")
+                else:
+                    self.log_test("Search Sort by Comments", True, "No results found for 'the' (acceptable)")
+            else:
+                self.log_test("Search Sort by Comments", False, f"HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("Search Sort by Comments", False, f"Request failed: {str(e)}")
+    
+    def test_search_sort_by_relevance(self):
+        """Test GET /api/search with sort_by=relevance (default)"""
+        try:
+            response = requests.get(f"{self.base_url}/search?q=video&sort_by=relevance")
+            if response.status_code == 200:
+                posts = response.json()
+                if isinstance(posts, list):
+                    if len(posts) > 0:
+                        self.log_test("Search Sort by Relevance", True, f"Found {len(posts)} posts with relevance sorting")
+                    else:
+                        self.log_test("Search Sort by Relevance", True, "No results found for 'video' (acceptable)")
+                else:
+                    self.log_test("Search Sort by Relevance", False, f"Expected list, got {type(posts)}")
+            else:
+                self.log_test("Search Sort by Relevance", False, f"HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("Search Sort by Relevance", False, f"Request failed: {str(e)}")
+    
+    def test_search_no_results(self):
+        """Test GET /api/search with query that returns no results"""
+        try:
+            response = requests.get(f"{self.base_url}/search?q=xyzabc123nonexistent")
+            if response.status_code == 200:
+                posts = response.json()
+                if isinstance(posts, list) and len(posts) == 0:
+                    self.log_test("Search No Results", True, "Correctly returned empty array for non-existent query")
+                else:
+                    self.log_test("Search No Results", False, f"Expected empty array, got {len(posts)} results")
+            else:
+                self.log_test("Search No Results", False, f"HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("Search No Results", False, f"Request failed: {str(e)}")
+    
+    def test_search_missing_query_parameter(self):
+        """Test GET /api/search without query parameter - Should return 422"""
+        try:
+            response = requests.get(f"{self.base_url}/search")
+            if response.status_code == 422:
+                self.log_test("Search Missing Query Parameter", True, "Correctly returned 422 validation error for missing 'q' parameter")
+            else:
+                self.log_test("Search Missing Query Parameter", False, f"Expected 422, got HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("Search Missing Query Parameter", False, f"Request failed: {str(e)}")
+    
+    def test_search_empty_string(self):
+        """Test GET /api/search with empty string query"""
+        try:
+            response = requests.get(f"{self.base_url}/search?q=")
+            if response.status_code == 200:
+                posts = response.json()
+                if isinstance(posts, list):
+                    # Empty string might return all posts or no posts depending on implementation
+                    self.log_test("Search Empty String", True, f"Handled empty string query, returned {len(posts)} posts")
+                else:
+                    self.log_test("Search Empty String", False, f"Expected list, got {type(posts)}")
+            elif response.status_code == 422:
+                self.log_test("Search Empty String", True, "Correctly rejected empty string with 422 validation error")
+            else:
+                self.log_test("Search Empty String", False, f"HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("Search Empty String", False, f"Request failed: {str(e)}")
+    
+    def test_search_special_characters(self):
+        """Test GET /api/search with special characters"""
+        try:
+            response = requests.get(f"{self.base_url}/search?q=@#$%")
+            if response.status_code == 200:
+                posts = response.json()
+                if isinstance(posts, list):
+                    self.log_test("Search Special Characters", True, f"Handled special characters query, returned {len(posts)} posts")
+                else:
+                    self.log_test("Search Special Characters", False, f"Expected list, got {type(posts)}")
+            else:
+                self.log_test("Search Special Characters", False, f"HTTP {response.status_code}: {response.text}")
+        except Exception as e:
+            self.log_test("Search Special Characters", False, f"Request failed: {str(e)}")
+    
+    def test_search_case_insensitive(self):
+        """Test that search is case-insensitive"""
+        try:
+            # Search with uppercase
+            response_upper = requests.get(f"{self.base_url}/search?q=VIRAL")
+            # Search with lowercase
+            response_lower = requests.get(f"{self.base_url}/search?q=viral")
+            
+            if response_upper.status_code == 200 and response_lower.status_code == 200:
+                posts_upper = response_upper.json()
+                posts_lower = response_lower.json()
+                
+                if len(posts_upper) == len(posts_lower) and len(posts_upper) > 0:
+                    self.log_test("Search Case Insensitive", True, f"Case-insensitive search working: 'VIRAL' and 'viral' both returned {len(posts_upper)} posts")
+                elif len(posts_upper) == len(posts_lower) == 0:
+                    self.log_test("Search Case Insensitive", True, "Both searches returned 0 results (acceptable)")
+                else:
+                    self.log_test("Search Case Insensitive", False, f"Case sensitivity issue: 'VIRAL' returned {len(posts_upper)}, 'viral' returned {len(posts_lower)}")
+            else:
+                self.log_test("Search Case Insensitive", False, f"HTTP errors: upper={response_upper.status_code}, lower={response_lower.status_code}")
+        except Exception as e:
+            self.log_test("Search Case Insensitive", False, f"Request failed: {str(e)}")
+    
     def run_all_tests(self):
         """Run all API tests"""
         print(f"🚀 Starting ChyllApp Backend API Tests")

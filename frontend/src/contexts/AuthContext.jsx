@@ -59,6 +59,8 @@ export const AuthProvider = ({ children }) => {
         return;
       }
 
+      console.log('Processing session_id from OAuth callback...');
+
       // Call backend to process session
       const response = await axios.post(
         `${BACKEND_URL}/api/auth/session`,
@@ -68,12 +70,20 @@ export const AuthProvider = ({ children }) => {
 
       if (response.data.success) {
         setUser(response.data.user);
+        console.log('Successfully authenticated user:', response.data.user.email);
         
         // Clean URL fragment
         window.history.replaceState(null, '', window.location.pathname);
       }
     } catch (error) {
       console.error('Error processing session:', error);
+      
+      // Show user-friendly error message
+      const errorMessage = error.response?.data?.detail || 'Login failed. Please try again.';
+      alert(`Login Error: ${errorMessage}\n\nPlease try signing in again.`);
+      
+      // Clean URL fragment even on error
+      window.history.replaceState(null, '', window.location.pathname);
     } finally {
       setProcessingSession(false);
     }

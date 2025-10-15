@@ -842,6 +842,195 @@ async def logout(
     return {"success": True, "message": "Logged out successfully"}
 
 
+# ============ User Profile & Favorites Endpoints ============
+
+@api_router.get("/user/profile", response_model=UserResponse)
+async def get_user_profile(
+    request: Request,
+    session_token: Optional[str] = Cookie(None)
+):
+    """Get authenticated user's profile"""
+    token = session_token or (request.headers.get("Authorization", "").replace("Bearer ", "") if request.headers.get("Authorization") else None)
+    
+    if not token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    user = await get_current_user_from_token(token)
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid or expired session")
+    
+    return UserResponse(**user)
+
+
+@api_router.put("/user/profile", response_model=UserResponse)
+async def update_user_profile(
+    profile_update: UserProfileUpdate,
+    request: Request,
+    session_token: Optional[str] = Cookie(None)
+):
+    """Update user profile (name, bio, picture)"""
+    token = session_token or (request.headers.get("Authorization", "").replace("Bearer ", "") if request.headers.get("Authorization") else None)
+    
+    if not token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    user = await get_current_user_from_token(token)
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid or expired session")
+    
+    # Update user profile
+    update_data = profile_update.dict(exclude_unset=True)
+    update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+    
+    await db.users.update_one(
+        {"id": user["id"]},
+        {"$set": update_data}
+    )
+    
+    # Get updated user
+    updated_user = await db.users.find_one({"id": user["id"]})
+    return UserResponse(**updated_user)
+
+
+@api_router.post("/user/favorites/{post_id}")
+async def toggle_favorite(
+    post_id: str,
+    request: Request,
+    session_token: Optional[str] = Cookie(None)
+):
+    """Add or remove post from user's favorites"""
+    token = session_token or (request.headers.get("Authorization", "").replace("Bearer ", "") if request.headers.get("Authorization") else None)
+    
+    if not token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    user = await get_current_user_from_token(token)
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid or expired session")
+    
+    # Check if post exists
+    post = await db.posts.find_one({"id": post_id})
+    if not post:
+        raise HTTPException(status_code=404, detail="Post not found")
+    
+    # Toggle favorite
+    favorite_posts = user.get("favorite_posts", [])
+    is_favorited = post_id in favorite_posts
+    
+    if is_favorited:
+        # Remove from favorites
+        await db.users.update_one(
+            {"id": user["id"]},
+            {"$pull": {"favorite_posts": post_id}}
+        )
+        
+        # Log activity
+        activity = ActivityItem(
+            user_id=user["id"],
+            action="unfavorite",
+            post_id=post_id
+        )
+        activity_dict = activity.dict()
+        activity_dict["created_at"] = activity.created_at.isoformat()
+        await db.activities.insert_one(activity_dict)
+        
+        return {"success": True, "favorited": False, "message": "Removed from favorites"}
+    else:
+        # Add to favorites
+        await db.users.update_one(
+            {"id": user["id"]},
+            {"$addToSet": {"favorite_posts": post_id}}
+        )
+        
+        # Log activity
+        activity = ActivityItem(
+            user_id=user["id"],
+            action="favorite",
+            post_id=post_id
+        )
+        activity_dict = activity.dict()
+        activity_dict["created_at"] = activity.created_at.isoformat()
+        await db.activities.insert_one(activity_dict)
+        
+        return {"success": True, "favorited": True, "message": "Added to favorites"}
+
+
+@api_router.get("/user/favorites", response_model=List[Post])
+async def get_user_favorites(
+    request: Request,
+    session_token: Optional[str] = Cookie(None)
+):
+    """Get all user's favorite posts"""
+    token = session_token or (request.headers.get("Authorization", "").replace("Bearer ", "") if request.headers.get("Authorization") else None)
+    
+    if not token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    user = await get_current_user_from_token(token)
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid or expired session")
+    
+    favorite_post_ids = user.get("favorite_posts", [])
+    
+    if not favorite_post_ids:
+        return []
+    
+    # Get all favorite posts
+    posts = await db.posts.find({"id": {"$in": favorite_post_ids}}).sort("createdAt", -1).to_list(1000)
+    
+    return [Post(**post) for post in posts]
+
+
+@api_router.put("/user/preferences")
+async def update_user_preferences(
+    preferences: UserPreferences,
+    request: Request,
+    session_token: Optional[str] = Cookie(None)
+):
+    """Update user's favorite platforms"""
+    token = session_token or (request.headers.get("Authorization", "").replace("Bearer ", "") if request.headers.get("Authorization") else None)
+    
+    if not token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    user = await get_current_user_from_token(token)
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid or expired session")
+    
+    # Update preferences
+    await db.users.update_one(
+        {"id": user["id"]},
+        {"$set": {
+            "favorite_platforms": preferences.favorite_platforms,
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }}
+    )
+    
+    return {"success": True, "message": "Preferences updated"}
+
+
+@api_router.get("/user/activity")
+async def get_user_activity(
+    request: Request,
+    session_token: Optional[str] = Cookie(None),
+    limit: int = Query(50, description="Number of activities to return")
+):
+    """Get user's activity history"""
+    token = session_token or (request.headers.get("Authorization", "").replace("Bearer ", "") if request.headers.get("Authorization") else None)
+    
+    if not token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    user = await get_current_user_from_token(token)
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid or expired session")
+    
+    # Get activities
+    activities = await db.activities.find({"user_id": user["id"]}).sort("created_at", -1).limit(limit).to_list(limit)
+    
+    return activities
+
+
 # Include the router in the main app
 app.include_router(api_router)
 

@@ -12,7 +12,7 @@ import httpx
 from google.oauth2 import id_token
 from google.auth.transport import requests as google_requests
 
-from models import Post, PostCreate, LikeRequest, CommentRequest, ShareRequest, PlatformInfo, User, Session, SessionCreate, UserResponse, UserProfileUpdate, UserPreferences, ActivityItem, CustomFeed, CustomFeedCreate, NotificationPreferences, NotificationPreferencesUpdate
+from models import Post, PostCreate, LikeRequest, CommentRequest, ShareRequest, PlatformInfo, User, Session, SessionCreate, UserResponse, UserProfileUpdate, UserPreferences, ActivityItem, CustomFeed, CustomFeedCreate, NotificationPreferences, NotificationPreferencesUpdate, PlatformConnection
 from seed_data import seed_posts, platform_info
 from reddit_scraper import RedditScraper
 from youtube_scraper import YouTubeScraper

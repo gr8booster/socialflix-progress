@@ -10,7 +10,7 @@ import sys
 from typing import Dict, Any, List
 
 # Use the production backend URL from frontend/.env
-BACKEND_URL = "https://socialflix-1.preview.emergentagent.com/api"
+BACKEND_URL = "https://contentchill.preview.emergentagent.com/api"
 
 class SocialFlixAPITester:
     def __init__(self):

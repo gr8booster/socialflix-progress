@@ -306,9 +306,13 @@ const PostModal = ({ post, isOpen, onClose }) => {
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                         </svg>
                       </div>
-                      <div className="text-white text-xl font-bold mb-2">Video Demo Content</div>
+                      <div className="text-white text-xl font-bold mb-2 capitalize">{post.platform} Video Demo</div>
                       <div className="text-gray-300 text-sm text-center max-w-md px-4">
-                        This is a demonstration post. Connect real {post.platform} API to play actual videos.
+                        {post.platform === 'tiktok' ? (
+                          <>This is demonstration content. TikTok's API requires special authentication. Real TikTok videos coming soon!</>
+                        ) : (
+                          <>This is demonstration content. Real {post.platform} video integration coming soon!</>
+                        )}
                       </div>
                       <button
                         onClick={resetVideoState}

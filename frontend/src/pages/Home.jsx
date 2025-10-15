@@ -181,6 +181,15 @@ const Home = () => {
     }
   };
 
+  const handleRefreshPosts = () => {
+    setLoading(true);
+    setPage(0);
+    setAllPosts([]);
+    setLastCheckTime(new Date().toISOString());
+    fetchInitialPosts();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const getPostsByPlatform = (platform) => {
     return allPosts.filter(post => post.platform === platform);
   };

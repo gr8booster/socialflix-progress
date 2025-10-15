@@ -332,6 +332,34 @@ const Admin = () => {
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
+                  <p className="text-gray-400 text-sm">TikTok Posts</p>
+                  <p className="text-3xl font-bold text-white">
+                    {loading ? '...' : status?.tiktok_posts || 0}
+                  </p>
+                </div>
+                <div className="w-10 h-10 rounded-full bg-black border-2 border-cyan-400 flex items-center justify-center text-white text-xl">🎵</div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-gray-800 border-gray-700">
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-400 text-sm">Facebook Posts</p>
+                  <p className="text-3xl font-bold text-white">
+                    {loading ? '...' : status?.facebook_posts || 0}
+                  </p>
+                </div>
+                <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white text-xl">f</div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-gray-800 border-gray-700">
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between">
+                <div>
                   <p className="text-gray-400 text-sm">Mock Posts</p>
                   <p className="text-3xl font-bold text-white">
                     {loading ? '...' : status?.mock_posts || 0}

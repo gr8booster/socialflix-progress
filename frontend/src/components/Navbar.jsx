@@ -19,7 +19,7 @@ const Navbar = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [recentSearches, setRecentSearches] = useState([]);
   const [showRecentSearches, setShowRecentSearches] = useState(false);
-  const { user, login, logout, loading, processingSession } = useAuth();
+  const { user, login, logout, loading } = useAuth();
   const navigate = useNavigate();
   const searchRef = useRef(null);
 

@@ -101,6 +101,48 @@ SUBSCRIPTION_PACKAGES = {
 @app.on_event("startup")
 async def startup_db():
     await seed_database()
+    # Start background auto-refresh task
+    import asyncio
+    asyncio.create_task(auto_refresh_viral_content())
+
+
+async def auto_refresh_viral_content():
+    """Background task to fetch fresh viral content every 5 minutes"""
+    while True:
+        try:
+            await asyncio.sleep(300)  # 5 minutes
+            
+            logger.info("Auto-refresh: Fetching fresh viral content from all platforms...")
+            
+            # Fetch top 5 from YouTube (fastest, most reliable)
+            youtube_posts = youtube_scraper.fetch_trending_videos(max_results=5)
+            for post_data in youtube_posts:
+                existing = await db.posts.find_one({"youtube_id": post_data.get("youtube_id")})
+                if not existing:
+                    await db.posts.insert_one(post_data)
+                    logger.info(f"Added new YouTube post: {post_data['content'][:50]}")
+            
+            # Fetch top 5 from Reddit
+            reddit_posts = reddit_scraper.fetch_viral_content(limit=5)
+            for post_data in reddit_posts:
+                existing = await db.posts.find_one({"reddit_id": post_data.get("reddit_id")})
+                if not existing:
+                    await db.posts.insert_one(post_data)
+                    logger.info(f"Added new Reddit post: {post_data['content'][:50]}")
+            
+            # Fetch from Twitter
+            twitter_posts = twitter_scraper.fetch_trending_tweets(max_results=5)
+            for post_data in twitter_posts:
+                existing = await db.posts.find_one({"twitter_id": post_data.get("twitter_id")})
+                if not existing:
+                    await db.posts.insert_one(post_data)
+                    logger.info(f"Added new Twitter post: {post_data['content'][:50]}")
+            
+            logger.info("Auto-refresh completed successfully")
+            
+        except Exception as e:
+            logger.error(f"Auto-refresh error: {e}")
+            await asyncio.sleep(60)  # Wait 1 min before retry on error
 
 
 # API Routes

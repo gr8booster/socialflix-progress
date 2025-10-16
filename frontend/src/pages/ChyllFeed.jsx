@@ -203,45 +203,6 @@ const ChyllFeed = () => {
           onClose={() => setSelectedPost(null)}
         />
       )}
-
-      <style jsx>{`
-        @keyframes gradient-x {
-          0%, 100% { background-position: 0% 50%; }
-          50% { background-position: 100% 50%; }
-        }
-        @keyframes matrix {
-          0% { transform: translateY(0); }
-          100% { transform: translateY(50px); }
-        }
-        @keyframes scan {
-          0% { transform: translateY(-100%); }
-          100% { transform: translateY(300%); }
-        }
-        @keyframes rotateBorder {
-          0% { filter: hue-rotate(0deg); }
-          100% { filter: hue-rotate(360deg); }
-        }
-        @keyframes pulse-glow {
-          0%, 100% { opacity: 1; }
-          50% { opacity: 0.7; }
-        }
-        .animate-gradient-x {
-          background-size: 200% 200%;
-          animation: gradient-x 3s ease infinite;
-        }
-        .animate-scan {
-          animation: scan 3s linear infinite;
-        }
-        .animate-pulse-glow {
-          animation: pulse-glow 2s ease-in-out infinite;
-        }
-        .animate-bounce-slow {
-          animation: bounce 3s ease-in-out infinite;
-        }
-        .animate-spin-slow {
-          animation: spin 4s linear infinite;
-        }
-      `}</style>
     </div>
   );
 };

@@ -56,24 +56,30 @@ const Hero = ({ onViewPost }) => {
   }
 
   return (
-    <div className="relative h-screen w-full overflow-hidden">
-      {/* Sliding Background Images */}
+    <div className="relative h-screen w-full overflow-hidden bg-black">
+      {/* Sliding Background Images - FULL SCREEN */}
       <div className="absolute inset-0">
         {featuredPosts.map((post, index) => (
           <div
             key={post.id}
-            className={`absolute inset-0 transition-all duration-1000 ${
+            className={`absolute inset-0 transition-all duration-1000 ease-in-out ${
               index === currentIndex 
-                ? 'opacity-100 scale-100' 
-                : 'opacity-0 scale-110'
+                ? 'opacity-100 translate-x-0' 
+                : index < currentIndex
+                ? 'opacity-0 -translate-x-full'
+                : 'opacity-0 translate-x-full'
             }`}
           >
-            <img
-              src={post.media.type === 'video' ? post.media.thumbnail : post.media.url}
-              alt={post.content}
-              className="absolute inset-0 w-full h-full object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-r from-black via-black/70 to-transparent" />
+            {/* Full Screen Image */}
+            <div className="absolute inset-0 bg-black">
+              <img
+                src={post.media.type === 'video' ? post.media.thumbnail : post.media.url}
+                alt={post.content}
+                className="w-full h-full object-cover"
+              />
+            </div>
+            {/* Overlays */}
+            <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/60 to-transparent" />
             <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/50" />
           </div>
         ))}

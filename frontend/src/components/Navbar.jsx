@@ -23,7 +23,8 @@ const Navbar = () => {
   const [recentSearches, setRecentSearches] = useState([]);
   const [showRecentSearches, setShowRecentSearches] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { user, login, logout, loading, processingSession } = useAuth();
+  const [showLoginMenu, setShowLoginMenu] = useState(false);
+  const { user, login, loginWithFacebook, logout, loading, processingSession } = useAuth();
   const navigate = useNavigate();
   const searchRef = useRef(null);
 

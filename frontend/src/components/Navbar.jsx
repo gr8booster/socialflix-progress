@@ -108,7 +108,10 @@ const Navbar = () => {
               <Sparkles className="w-4 h-4" />
               {t('forYou')}
             </a>
-            <a href="#" className="text-gray-300 hover:text-white transition-colors">{t('viral')}</a>
+            <a href="/chill" className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-purple-500 to-blue-500 hover:from-red-400 hover:via-purple-400 hover:to-blue-400 transition-all font-bold flex items-center gap-1">
+              <Zap className="w-4 h-4 text-yellow-500 animate-pulse" />
+              CHILL FEED
+            </a>
             {user ? (
               <a href="/profile" className="text-gray-300 hover:text-white transition-colors">{t('myProfile')}</a>
             ) : (

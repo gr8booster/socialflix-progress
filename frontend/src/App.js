@@ -31,6 +31,7 @@ function App() {
           <Suspense fallback={<LoadingFallback />}>
             <Routes>
               <Route path="/" element={<Home />} />
+              <Route path="/chill" element={<ChyllFeed />} />
               <Route path="/search" element={<SearchResults />} />
               <Route path="/recommendations" element={<Recommendations />} />
               <Route path="/analytics" element={<Analytics />} />

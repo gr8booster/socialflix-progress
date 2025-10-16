@@ -1018,6 +1018,84 @@ async def logout(
     return {"success": True, "message": "Logged out successfully"}
 
 
+@api_router.get("/auth/facebook/callback")
+async def facebook_callback(code: str, response: Response):
+    """Handle Facebook OAuth callback"""
+    try:
+        fb_client_id = os.getenv('FACEBOOK_AUTH_APP_ID')
+        fb_client_secret = os.getenv('FACEBOOK_AUTH_APP_SECRET')
+        redirect_uri = f"{os.getenv('REACT_APP_BACKEND_URL', 'https://contentchill.preview.emergentagent.com')}/api/auth/facebook/callback"
+        
+        # Exchange code for token
+        async with httpx.AsyncClient() as client:
+            token_response = await client.get(
+                f"https://graph.facebook.com/v18.0/oauth/access_token?client_id={fb_client_id}&redirect_uri={redirect_uri}&client_secret={fb_client_secret}&code={code}",
+                timeout=15.0
+            )
+            
+            if token_response.status_code != 200:
+                raise HTTPException(status_code=400, detail="Failed to get Facebook token")
+            
+            tokens = token_response.json()
+            access_token = tokens.get('access_token')
+            
+            # Get user info
+            user_response = await client.get(
+                f"https://graph.facebook.com/me?fields=id,name,email,picture&access_token={access_token}",
+                timeout=15.0
+            )
+            
+            user_data = user_response.json()
+            
+        # Create or get user
+        existing_user = await db.users.find_one({"email": user_data.get('email')})
+        
+        if existing_user:
+            user_id = existing_user["id"]
+        else:
+            new_user = User(
+                email=user_data.get('email', f"{user_data['id']}@facebook.com"),
+                name=user_data.get('name'),
+                picture=user_data.get('picture', {}).get('data', {}).get('url'),
+                google_id=None
+            )
+            user_dict = new_user.dict()
+            user_dict["created_at"] = new_user.created_at.isoformat()
+            user_dict["updated_at"] = new_user.updated_at.isoformat()
+            await db.users.insert_one(user_dict)
+            user_id = new_user.id
+        
+        # Create session
+        import secrets
+        session_token = secrets.token_urlsafe(32)
+        expires_at = datetime.now(timezone.utc) + timedelta(days=7)
+        
+        new_session = Session(user_id=user_id, session_token=session_token, expires_at=expires_at)
+        session_dict = new_session.dict()
+        session_dict["expires_at"] = expires_at.isoformat()
+        session_dict["created_at"] = new_session.created_at.isoformat()
+        await db.sessions.insert_one(session_dict)
+        
+        # Set cookie
+        response.set_cookie(
+            key="session_token",
+            value=session_token,
+            httponly=True,
+            secure=True,
+            samesite="none",
+            max_age=7 * 24 * 60 * 60,
+            path="/"
+        )
+        
+        # Redirect to frontend
+        frontend_url = os.getenv('REACT_APP_BACKEND_URL', 'https://contentchill.preview.emergentagent.com')
+        return RedirectResponse(url=frontend_url)
+        
+    except Exception as e:
+        logger.error(f"Facebook OAuth error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 # ============ User Profile & Favorites Endpoints ============
 
 @api_router.get("/user/profile", response_model=UserResponse)

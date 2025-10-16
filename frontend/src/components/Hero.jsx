@@ -56,18 +56,27 @@ const Hero = ({ onViewPost }) => {
   }
 
   return (
-    <div className="relative h-[85vh] w-full overflow-hidden">
-      {/* Background Image with Gradient Overlay */}
-      <div 
-        className="absolute inset-0 bg-cover bg-center animate-slow-zoom"
-        style={{
-          backgroundImage: `url(${featuredPost.media.url})`,
-        }}
-      >
-        <div className="absolute inset-0 bg-gradient-to-r from-black via-black/80 to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/50" />
-        {/* Animated overlay for depth */}
-        <div className="absolute inset-0 bg-gradient-to-br from-red-900/20 via-transparent to-purple-900/20 animate-pulse-slow" />
+    <div className="relative h-screen w-full overflow-hidden">
+      {/* Sliding Background Images */}
+      <div className="absolute inset-0">
+        {featuredPosts.map((post, index) => (
+          <div
+            key={post.id}
+            className={`absolute inset-0 transition-all duration-1000 ${
+              index === currentIndex 
+                ? 'opacity-100 scale-100' 
+                : 'opacity-0 scale-110'
+            }`}
+          >
+            <img
+              src={post.media.type === 'video' ? post.media.thumbnail : post.media.url}
+              alt={post.content}
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-black via-black/70 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/50" />
+          </div>
+        ))}
       </div>
 
       {/* Content */}

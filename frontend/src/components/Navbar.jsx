@@ -307,6 +307,14 @@ const Navbar = () => {
               Premium
             </a>
             <a 
+              href="/connections" 
+              className="text-purple-500 hover:text-purple-400 transition-colors flex items-center gap-2 text-lg font-semibold"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              <Link2 className="w-5 h-5" />
+              Connections
+            </a>
+            <a 
               href="/creator" 
               className="text-pink-500 hover:text-pink-400 transition-colors flex items-center gap-2 text-lg font-semibold"
               onClick={() => setMobileMenuOpen(false)}

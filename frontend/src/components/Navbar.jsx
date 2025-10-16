@@ -239,11 +239,19 @@ const Navbar = () => {
         <div className="md:hidden bg-black border-t border-gray-800 py-4 px-8">
           <div className="flex flex-col gap-4">
             <a 
+              href="/chill" 
+              className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-purple-500 to-blue-500 font-black text-2xl flex items-center gap-2"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              <Zap className="w-6 h-6 text-yellow-500" />
+              CHILL FEED
+            </a>
+            <a 
               href="/" 
               className="text-white hover:text-red-500 transition-colors font-medium text-lg"
               onClick={() => setMobileMenuOpen(false)}
             >
-              {t('home')}
+              Classic Feed
             </a>
             <a 
               href="/recommendations" 
@@ -252,14 +260,6 @@ const Navbar = () => {
             >
               <Sparkles className="w-5 h-5" />
               {t('forYou')}
-            </a>
-            <a 
-              href="/chill" 
-              className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-purple-500 to-blue-500 font-black text-lg flex items-center gap-2"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              <Zap className="w-5 h-5 text-yellow-500" />
-              CHILL FEED
             </a>
             <a 
               href="/analytics" 

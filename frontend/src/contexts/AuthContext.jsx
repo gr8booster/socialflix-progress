@@ -100,6 +100,7 @@ export const AuthProvider = ({ children }) => {
     loading,
     processingSession,
     login,
+    loginWithFacebook,
     logout,
   };
 

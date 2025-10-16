@@ -139,6 +139,35 @@ async def auto_refresh_viral_content():
                     await db.posts.insert_one(post_data)
                     logger.info(f"Added new Twitter post: {post_data['content'][:50]}")
             
+            # Fetch personalized content for users with connected platforms
+            connections = await db.platform_connections.find({}).to_list(None)
+            
+            for conn in connections:
+                platform = conn["platform"]
+                user_id = conn["user_id"]
+                
+                logger.info(f"Fetching personalized {platform} content for user {user_id}")
+                
+                # Note: For production, you'd use the stored access_token to fetch user's feed
+                # For now, we'll fetch sample content and tag it with user_id
+                if platform == 'tiktok':
+                    tiktok_posts = tiktok_scraper.fetch_trending_videos(max_results=5)
+                    for post_data in tiktok_posts[:2]:  # 2 per user to avoid spam
+                        post_data["user_specific"] = user_id
+                        await db.posts.insert_one(post_data)
+                
+                elif platform == 'facebook':
+                    fb_posts = facebook_scraper.fetch_trending_posts(max_results=5)
+                    for post_data in fb_posts[:2]:
+                        post_data["user_specific"] = user_id
+                        await db.posts.insert_one(post_data)
+                
+                elif platform == 'instagram':
+                    ig_posts = instagram_scraper.fetch_trending_posts(max_results=5)
+                    for post_data in ig_posts[:2]:
+                        post_data["user_specific"] = user_id
+                        await db.posts.insert_one(post_data)
+            
             logger.info("Auto-refresh completed successfully")
             
         except Exception as e:

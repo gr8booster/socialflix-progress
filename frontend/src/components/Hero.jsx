@@ -17,20 +17,35 @@ const formatNumber = (num) => {
 };
 
 const Hero = ({ onViewPost }) => {
-  const [featuredPost, setFeaturedPost] = useState(null);
+  const [featuredPosts, setFeaturedPosts] = useState([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
-    fetchFeaturedPost();
+    fetchTop10Posts();
   }, []);
 
-  const fetchFeaturedPost = async () => {
+  // Auto-rotate every 5 seconds
+  useEffect(() => {
+    if (featuredPosts.length === 0) return;
+
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % featuredPosts.length);
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [featuredPosts]);
+
+  const fetchTop10Posts = async () => {
     try {
-      const response = await axios.get(`${API}/posts/featured`);
-      setFeaturedPost(response.data);
+      // Get top 10 viral posts from YouTube/Reddit for best video experience
+      const response = await axios.get(`${API}/posts?platform=youtube,reddit&category=viral&sort_by=likes&limit=10`);
+      setFeaturedPosts(response.data);
     } catch (error) {
-      console.error('Error fetching featured post:', error);
+      console.error('Error fetching top posts:', error);
     }
   };
+
+  const featuredPost = featuredPosts[currentIndex];
 
   if (!featuredPost) {
     return (

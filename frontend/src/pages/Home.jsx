@@ -415,6 +415,9 @@ const Home = () => {
 
       {/* Toast Notifications */}
       <Toaster />
+      
+      {/* PWA Install Prompt */}
+      <InstallPWA />
 
       {/* Scroll to Top Button */}
       {showScrollTop && (

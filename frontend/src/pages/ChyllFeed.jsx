@@ -120,25 +120,36 @@ const ChyllFeed = () => {
 
                 {/* Content */}
                 <div className="relative h-full">
-                  {/* Background Image with Glitch Effect */}
+                  {/* Background Image with Magic Newspaper Effect */}
                   <img
                     src={post.media.type === 'video' ? post.media.thumbnail : post.media.url}
                     alt={post.content}
-                    className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                    style={{ filter: 'brightness(0.7) contrast(1.2)' }}
+                    className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 animate-pulse-slow"
+                    style={{ 
+                      filter: 'brightness(0.8) contrast(1.2) grayscale(0.2)',
+                      animation: 'subtle-move 8s ease-in-out infinite'
+                    }}
                   />
+                  
+                  {/* Magical shimmer overlay effect */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-shimmer"></div>
+                  
+                  {/* Vintage newspaper texture */}
+                  <div className="absolute inset-0 opacity-20 mix-blend-overlay" style={{
+                    backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'100\' height=\'100\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noise\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.9\' numOctaves=\'4\' /%3E%3C/filter%3E%3Crect width=\'100\' height=\'100\' filter=\'url(%23noise)\' opacity=\'0.3\'/%3E%3C/svg%3E")',
+                  }}></div>
 
                   {/* Gradient Overlay */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent"></div>
 
-                  {/* Glowing Platform Badge */}
+                  {/* Glowing Platform Badge - Magical Style */}
                   <div className="absolute top-4 left-4">
                     <div
-                      className="px-3 py-1 rounded-full text-xs font-black uppercase backdrop-blur-md border-2 animate-pulse-glow"
+                      className="px-3 py-1 rounded-full text-xs font-black uppercase backdrop-blur-md border-2 animate-pulse-glow shadow-2xl"
                       style={{
                         backgroundColor: `${post.platformColor}80`,
                         borderColor: post.platformColor,
-                        boxShadow: `0 0 20px ${post.platformColor}`
+                        boxShadow: `0 0 20px ${post.platformColor}, 0 0 40px ${post.platformColor}60`
                       }}
                     >
                       {post.platform}

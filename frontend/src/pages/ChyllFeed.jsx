@@ -119,24 +119,24 @@ const ChyllFeed = () => {
                 ></div>
 
                 {/* Content */}
-                <div className="relative h-full">
-                  {/* Background Image with Magic Newspaper Effect */}
-                  <img
-                    src={post.media.type === 'video' ? post.media.thumbnail : post.media.url}
-                    alt={post.content}
-                    className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 animate-pulse-slow"
-                    style={{ 
-                      filter: 'brightness(0.8) contrast(1.2) grayscale(0.2)',
-                      animation: 'subtle-move 8s ease-in-out infinite'
-                    }}
-                  />
+                <div className="relative h-full overflow-hidden">
+                  {/* Background Image with Magic Newspaper Effect - ANIMATED */}
+                  <div className="absolute inset-0 animate-subtle-move">
+                    <img
+                      src={post.media.type === 'video' ? post.media.thumbnail : post.media.url}
+                      alt={post.content}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                      style={{ filter: 'brightness(0.8) contrast(1.2) grayscale(0.2)' }}
+                    />
+                  </div>
                   
                   {/* Magical shimmer overlay effect */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-shimmer"></div>
+                  <div className="absolute inset-0 bg-gradient-to-br from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-shimmer"></div>
                   
                   {/* Vintage newspaper texture */}
-                  <div className="absolute inset-0 opacity-20 mix-blend-overlay" style={{
-                    backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'100\' height=\'100\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noise\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.9\' numOctaves=\'4\' /%3E%3C/filter%3E%3Crect width=\'100\' height=\'100\' filter=\'url(%23noise)\' opacity=\'0.3\'/%3E%3C/svg%3E")',
+                  <div className="absolute inset-0 opacity-30 mix-blend-multiply pointer-events-none" style={{
+                    backgroundImage: 'repeating-linear-gradient(0deg, rgba(255,255,255,0.03) 0px, transparent 1px, transparent 2px, rgba(255,255,255,0.03) 3px)',
+                    backgroundSize: '100% 4px'
                   }}></div>
 
                   {/* Gradient Overlay */}

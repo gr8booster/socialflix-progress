@@ -13,6 +13,7 @@ const Analytics = lazy(() => import("./pages/Analytics"));
 const Premium = lazy(() => import("./pages/Premium"));
 const Developer = lazy(() => import("./pages/Developer"));
 const Creator = lazy(() => import("./pages/Creator"));
+const ChyllFeed = lazy(() => import("./pages/ChyllFeed"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 // Loading component

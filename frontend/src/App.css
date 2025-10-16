@@ -81,11 +81,6 @@
   animation: shimmer 3s ease-in-out infinite;
 }
 
-.animate-pulse-slow {
-    opacity: 0.6;
-  }
-}
-
 @keyframes slide-in-up {
   from {
     transform: translateY(30px);

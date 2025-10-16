@@ -77,6 +77,13 @@ export const AuthProvider = ({ children }) => {
     window.location.href = `https://auth.emergentagent.com/?redirect=${encodeURIComponent(redirectUrl)}`;
   };
 
+  const loginWithFacebook = () => {
+    // Facebook OAuth URL
+    const fbClientId = '1883773512033948'; // From .env FACEBOOK_AUTH_APP_ID
+    const redirectUri = encodeURIComponent(`${BACKEND_URL}/api/auth/facebook/callback`);
+    window.location.href = `https://www.facebook.com/v18.0/dialog/oauth?client_id=${fbClientId}&redirect_uri=${redirectUri}&scope=public_profile,email&response_type=code`;
+  };
+
   const logout = async () => {
     try {
       await axios.post(`${BACKEND_URL}/api/auth/logout`, {}, {

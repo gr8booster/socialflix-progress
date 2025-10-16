@@ -7,6 +7,7 @@ import PostModal from '../components/PostModal';
 import IframeWarning from '../components/IframeWarning';
 import FiltersPanel from '../components/FiltersPanel';
 import NewPostsNotification from '../components/NewPostsNotification';
+import InstallPWA from '../components/InstallPWA';
 import { Toaster } from '../components/ui/toaster';
 import { toast } from '../hooks/use-toast';
 

@@ -42,6 +42,9 @@ function App() {
               <Route path="/developer" element={<Developer />} />
               <Route path="/creator" element={<Creator />} />
               <Route path="/profile" element={<Profile />} />
+              <Route path="/privacy" element={<Privacy />} />
+              <Route path="/terms" element={<Terms />} />
+              <Route path="/cookies" element={<Cookies />} />
               <Route path="/admin" element={<Admin />} />
               <Route path="*" element={<NotFound />} />
             </Routes>

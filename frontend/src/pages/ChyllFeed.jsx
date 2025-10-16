@@ -63,7 +63,7 @@ const ChyllFeed = () => {
         {/* Wild Header */}
         <div className="text-center mb-12 relative">
           <div className="absolute inset-0 blur-3xl bg-gradient-to-r from-red-600/30 via-purple-600/30 to-blue-600/30 animate-pulse"></div>
-          <h1 className="relative text-6xl md:text-8xl font-black mb-4 bg-clip-text text-transparent bg-gradient-to-r from-red-500 via-purple-500 to-blue-500 animate-gradient-x">
+          <h1 className="relative text-6xl md:text-8xl font-black mb-4 bg-clip-text text-transparent bg-gradient-to-r from-red-500 via-purple-500 to-blue-500 animate-gradient-x" style={{backgroundSize: '200% 200%'}}>
             CHILL FEED
           </h1>
           <p className="relative text-xl text-gray-300 font-light tracking-widest">

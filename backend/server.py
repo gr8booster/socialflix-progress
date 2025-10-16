@@ -878,6 +878,97 @@ async def get_current_user_from_token(session_token: Optional[str] = None) -> Op
         return None
 
 
+@api_router.get("/auth/google/login")
+async def google_login_direct():
+    """Direct Google OAuth (bypasses Emergent)"""
+    google_client_id = os.getenv('GOOGLE_CLIENT_ID')
+    redirect_uri = f"{os.getenv('REACT_APP_BACKEND_URL', 'https://contentchill.preview.emergentagent.com')}/api/auth/google/callback"
+    
+    oauth_url = (
+        f"https://accounts.google.com/o/oauth2/v2/auth?"
+        f"client_id={google_client_id}&"
+        f"response_type=code&"
+        f"scope=openid%20email%20profile&"
+        f"redirect_uri={redirect_uri}&"
+        f"access_type=offline"
+    )
+    return RedirectResponse(url=oauth_url)
+
+
+@api_router.get("/auth/google/callback")
+async def google_callback_direct(code: str, response: Response):
+    """Handle Google OAuth callback"""
+    try:
+        google_client_id = os.getenv('GOOGLE_CLIENT_ID')
+        google_client_secret = os.getenv('GOOGLE_CLIENT_SECRET')
+        redirect_uri = f"{os.getenv('REACT_APP_BACKEND_URL', 'https://contentchill.preview.emergentagent.com')}/api/auth/google/callback"
+        
+        async with httpx.AsyncClient() as client:
+            token_response = await client.post(
+                "https://oauth2.googleapis.com/token",
+                data={
+                    "code": code,
+                    "client_id": google_client_id,
+                    "client_secret": google_client_secret,
+                    "redirect_uri": redirect_uri,
+                    "grant_type": "authorization_code"
+                },
+                timeout=15.0
+            )
+            
+            if token_response.status_code != 200:
+                raise HTTPException(status_code=400, detail="Failed to exchange code")
+            
+            tokens = token_response.json()
+            id_token_jwt = tokens.get('id_token')
+            
+            idinfo = id_token.verify_oauth2_token(id_token_jwt, google_requests.Request(), google_client_id)
+            
+            email = idinfo['email']
+            name = idinfo.get('name', '')
+            picture = idinfo.get('picture', '')
+            google_id = idinfo['sub']
+        
+        existing_user = await db.users.find_one({"email": email})
+        
+        if existing_user:
+            user_id = existing_user["id"]
+        else:
+            new_user = User(email=email, name=name, picture=picture, google_id=google_id)
+            user_dict = new_user.dict()
+            user_dict["created_at"] = new_user.created_at.isoformat()
+            user_dict["updated_at"] = new_user.updated_at.isoformat()
+            await db.users.insert_one(user_dict)
+            user_id = new_user.id
+        
+        import secrets
+        session_token = secrets.token_urlsafe(32)
+        expires_at = datetime.now(timezone.utc) + timedelta(days=7)
+        
+        new_session = Session(user_id=user_id, session_token=session_token, expires_at=expires_at)
+        session_dict = new_session.dict()
+        session_dict["expires_at"] = expires_at.isoformat()
+        session_dict["created_at"] = new_session.created_at.isoformat()
+        await db.sessions.insert_one(session_dict)
+        
+        response.set_cookie(
+            key="session_token",
+            value=session_token,
+            httponly=True,
+            secure=True,
+            samesite="none",
+            max_age=7 * 24 * 60 * 60,
+            path="/"
+        )
+        
+        frontend_url = os.getenv('REACT_APP_BACKEND_URL', 'https://contentchill.preview.emergentagent.com')
+        return RedirectResponse(url=frontend_url)
+        
+    except Exception as e:
+        logger.error(f"Google OAuth error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @api_router.post("/auth/session")
 async def create_session(request: Request, response: Response, session_data: SessionCreate):
     """

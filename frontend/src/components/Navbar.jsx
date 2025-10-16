@@ -254,6 +254,14 @@ const Navbar = () => {
               {t('forYou')}
             </a>
             <a 
+              href="/chill" 
+              className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-purple-500 to-blue-500 font-black text-lg flex items-center gap-2"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              <Zap className="w-5 h-5 text-yellow-500" />
+              CHILL FEED
+            </a>
+            <a 
               href="/analytics" 
               className="text-gray-300 hover:text-white transition-colors flex items-center gap-2 text-lg"
               onClick={() => setMobileMenuOpen(false)}

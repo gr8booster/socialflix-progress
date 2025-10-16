@@ -14,6 +14,7 @@ const Premium = lazy(() => import("./pages/Premium"));
 const Developer = lazy(() => import("./pages/Developer"));
 const Creator = lazy(() => import("./pages/Creator"));
 const ChyllFeed = lazy(() => import("./pages/ChyllFeed"));
+const Connections = lazy(() => import("./pages/Connections"));
 const Privacy = lazy(() => import("./pages/Privacy"));
 const Terms = lazy(() => import("./pages/Terms"));
 const Cookies = lazy(() => import("./pages/Cookies"));

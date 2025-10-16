@@ -148,4 +148,3 @@ const ChyllFeed = () => {
 export default ChyllFeed;
 
 
-export default ChyllFeed;

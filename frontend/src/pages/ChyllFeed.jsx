@@ -77,27 +77,37 @@ const ChyllFeed = () => {
         </div>
 
         {/* Bento Grid Layout - Wild & Unique */}
-        <div className="grid grid-cols-6 gap-4 auto-rows-[200px] max-w-7xl mx-auto">
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 auto-rows-[200px] max-w-7xl mx-auto">
           {posts.map((post, index) => {
-            // Create unique grid patterns
-            const patterns = [
-              'col-span-2 row-span-2', // Large square
-              'col-span-3 row-span-1', // Wide
-              'col-span-2 row-span-3', // Tall
-              'col-span-4 row-span-2', // Extra wide
-              'col-span-2 row-span-1', // Normal
-              'col-span-2 row-span-2', // Square
+            // Create unique grid patterns - MOBILE RESPONSIVE
+            const mobilePatterns = [
+              'col-span-2 row-span-2', // Large square on mobile
+              'col-span-1 row-span-2', // Tall
+              'col-span-2 row-span-1', // Wide
+              'col-span-1 row-span-1', // Normal
             ];
-            const pattern = patterns[index % patterns.length];
+            
+            const desktopPatterns = [
+              'md:col-span-3 md:row-span-2', // Large on desktop
+              'md:col-span-2 md:row-span-3', // Tall
+              'md:col-span-4 md:row-span-2', // Extra wide
+              'md:col-span-2 md:row-span-2', // Square
+              'md:col-span-2 md:row-span-1', // Normal
+            ];
+            
+            const mobilePattern = mobilePatterns[index % mobilePatterns.length];
+            const desktopPattern = desktopPatterns[index % desktopPatterns.length];
+            const pattern = `${mobilePattern} ${desktopPattern}`;
 
             return (
               <div
                 key={post.id}
-                className={`${pattern} group relative cursor-pointer overflow-hidden rounded-2xl transform transition-all duration-500 hover:scale-105 hover:z-50 hover:rotate-1`}
+                className={`${pattern} group relative cursor-pointer overflow-hidden rounded-2xl transform transition-all duration-500 hover:scale-105 hover:z-50`}
                 onClick={() => setSelectedPost(post)}
                 style={{
-                  background: `linear-gradient(135deg, ${post.platformColor}40, ${post.platformColor}20)`,
-                  boxShadow: `0 0 30px ${post.platformColor}40`
+                  background: `linear-gradient(135deg, ${post.platformColor}40, ${post.platformColor}10)`,
+                  border: `2px solid ${post.platformColor}60`,
+                  boxShadow: `0 0 30px ${post.platformColor}30`
                 }}
               >
                 {/* Holographic border effect */}

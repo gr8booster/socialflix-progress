@@ -267,6 +267,22 @@ const Navbar = () => {
               Premium
             </a>
             <a 
+              href="/creator" 
+              className="text-pink-500 hover:text-pink-400 transition-colors flex items-center gap-2 text-lg font-semibold"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              <User className="w-5 h-5" />
+              Creator
+            </a>
+            <a 
+              href="/developer" 
+              className="text-purple-500 hover:text-purple-400 transition-colors flex items-center gap-2 text-lg font-semibold"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              <Code className="w-5 h-5" />
+              Developer
+            </a>
+            <a 
               href="#" 
               className="text-gray-300 hover:text-white transition-colors text-lg"
               onClick={() => setMobileMenuOpen(false)}

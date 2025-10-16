@@ -103,14 +103,14 @@ const Navbar = () => {
           
           {/* Navigation Links */}
           <div className="hidden md:flex items-center gap-6">
-            <a href="/" className="text-white hover:text-gray-300 transition-colors font-medium">{t('home')}</a>
+            <a href="/chill" className="text-white hover:text-gray-300 transition-colors font-black text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-purple-500 to-blue-500 flex items-center gap-1">
+              <Zap className="w-5 h-5 text-yellow-500 animate-pulse" />
+              CHILL FEED
+            </a>
+            <a href="/" className="text-gray-300 hover:text-white transition-colors font-medium">Classic</a>
             <a href="/recommendations" className="text-gray-300 hover:text-white transition-colors flex items-center gap-1">
               <Sparkles className="w-4 h-4" />
               {t('forYou')}
-            </a>
-            <a href="/chill" className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-purple-500 to-blue-500 hover:from-red-400 hover:via-purple-400 hover:to-blue-400 transition-all font-bold flex items-center gap-1">
-              <Zap className="w-4 h-4 text-yellow-500 animate-pulse" />
-              CHILL FEED
             </a>
             {user ? (
               <a href="/profile" className="text-gray-300 hover:text-white transition-colors">{t('myProfile')}</a>

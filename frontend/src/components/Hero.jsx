@@ -123,7 +123,7 @@ const Hero = ({ onViewPost }) => {
         </p>
 
         {/* Action Buttons */}
-        <div className="flex flex-wrap gap-4">
+        <div className="flex flex-wrap gap-4 mb-8">
           <Button 
             size="lg" 
             className="bg-white text-black hover:bg-white/90 font-semibold px-8 transition-all duration-300 hover:scale-110 hover:shadow-2xl transform"
@@ -141,6 +141,21 @@ const Hero = ({ onViewPost }) => {
             <Info className="w-5 h-5 mr-2" />
             More Info
           </Button>
+        </div>
+
+        {/* Carousel Dots */}
+        <div className="flex gap-2">
+          {featuredPosts.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => setCurrentIndex(index)}
+              className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                index === currentIndex 
+                  ? 'bg-white w-8' 
+                  : 'bg-white/40 hover:bg-white/70'
+              }`}
+            />
+          ))}
         </div>
       </div>
 

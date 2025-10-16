@@ -897,10 +897,13 @@ async def create_session(request: Request, response: Response, session_data: Ses
             logger.info(f"Auth response status: {auth_response.status_code}")
             
             if auth_response.status_code != 200:
-                logger.error(f"Auth error: {auth_response.text}")
+                error_detail = auth_response.text
+                logger.error(f"Emergent Auth API error ({auth_response.status_code}): {error_detail}")
+                
+                # Return detailed error to frontend
                 raise HTTPException(
-                    status_code=400,
-                    detail="Invalid or expired session"
+                    status_code=auth_response.status_code,
+                    detail=f"Authentication failed. Please try signing in again. (Error: {auth_response.status_code})"
                 )
             
             auth_data = auth_response.json()

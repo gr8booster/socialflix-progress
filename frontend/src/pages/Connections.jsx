@@ -66,8 +66,8 @@ const Connections = () => {
 
   if (authLoading || loading) {
     return (
-      <div className=\"min-h-screen bg-black flex items-center justify-center\">
-        <div className=\"text-white text-xl\">Loading...</div>
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="text-white text-xl">Loading...</div>
       </div>
     );
   }
@@ -78,69 +78,69 @@ const Connections = () => {
   };
 
   return (
-    <div className=\"min-h-screen bg-black text-white\">
+    <div className="min-h-screen bg-black text-white">
       <Navbar />
       
-      <div className=\"pt-24 px-8 md:px-16 pb-16 max-w-6xl mx-auto\">
+      <div className=\"pt-24 px-8 md:px-16 pb-16 max-w-6xl mx-auto">
         {/* Header */}
-        <div className=\"mb-8\">
-          <h1 className=\"text-4xl font-bold mb-2 flex items-center gap-3\">
+        <div className=\"mb-8">
+          <h1 className=\"text-4xl font-bold mb-2 flex items-center gap-3">
             <Link2 className=\"w-10 h-10 text-purple-600\" />
             Connect Your Social Media
           </h1>
-          <p className=\"text-gray-400 text-lg\">
+          <p className=\"text-gray-400 text-lg">
             Connect your accounts to view personalized content from all platforms in ChyllApp
           </p>
         </div>
 
         {/* Stats */}
-        <div className=\"grid grid-cols-2 md:grid-cols-4 gap-4 mb-8\">
-          <Card className=\"bg-gradient-to-br from-green-900/20 to-green-600/20 border-green-600/30\">
-            <CardContent className=\"p-6 text-center\">
-              <div className=\"text-4xl font-bold text-green-500 mb-1\">
+        <div className=\"grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+          <Card className=\"bg-gradient-to-br from-green-900/20 to-green-600/20 border-green-600/30">
+            <CardContent className=\"p-6 text-center">
+              <div className=\"text-4xl font-bold text-green-500 mb-1">
                 {connectedPlatforms.length + 2}
               </div>
-              <div className=\"text-gray-400 text-sm\">Connected</div>
+              <div className=\"text-gray-400 text-sm">Connected</div>
             </CardContent>
           </Card>
-          <Card className=\"bg-gradient-to-br from-gray-900/20 to-gray-600/20 border-gray-600/30\">
-            <CardContent className=\"p-6 text-center\">
-              <div className=\"text-4xl font-bold text-gray-400 mb-1\">
+          <Card className=\"bg-gradient-to-br from-gray-900/20 to-gray-600/20 border-gray-600/30">
+            <CardContent className=\"p-6 text-center">
+              <div className=\"text-4xl font-bold text-gray-400 mb-1">
                 {8 - connectedPlatforms.length}
               </div>
-              <div className=\"text-gray-400 text-sm\">Available</div>
+              <div className=\"text-gray-400 text-sm">Available</div>
             </CardContent>
           </Card>
         </div>
 
         {/* Platform Cards */}
-        <div className=\"grid md:grid-cols-2 gap-6\">
+        <div className=\"grid md:grid-cols-2 gap-6">
           {platforms.map((platform) => (
             <Card 
               key={platform.id}
               className={`border-2 transition-all ${\n                isConnected(platform.id)\n                  ? 'bg-gradient-to-br from-green-900/20 to-green-600/10 border-green-600/50'\n                  : 'bg-gray-900 border-gray-800 hover:border-gray-700'\n              }`}
             >
               <CardHeader>
-                <CardTitle className=\"flex items-center justify-between\">
-                  <div className=\"flex items-center gap-3\">
-                    <span className=\"text-4xl\">{platform.icon}</span>
+                <CardTitle className=\"flex items-center justify-between">
+                  <div className=\"flex items-center gap-3">
+                    <span className=\"text-4xl">{platform.icon}</span>
                     <div>
-                      <div className=\"text-white text-xl\">{platform.name}</div>
-                      <div className=\"text-gray-400 text-sm font-normal\">{platform.description}</div>
+                      <div className="text-white text-xl">{platform.name}</div>
+                      <div className=\"text-gray-400 text-sm font-normal">{platform.description}</div>
                     </div>
                   </div>
                   {isConnected(platform.id) && (
-                    <div className=\"flex items-center gap-2 text-green-500\">
+                    <div className=\"flex items-center gap-2 text-green-500">
                       <Check className=\"w-5 h-5\" />
-                      <span className=\"text-sm font-semibold\">Connected</span>
+                      <span className=\"text-sm font-semibold">Connected</span>
                     </div>
                   )}
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 {isConnected(platform.id) ? (
-                  <div className=\"space-y-2\">
-                    <div className=\"text-sm text-gray-400\">
+                  <div className=\"space-y-2">
+                    <div className=\"text-sm text-gray-400">
                       ✅ Fetching personalized content every 5 minutes
                     </div>
                     {!platform.connected && (
@@ -168,10 +168,10 @@ const Connections = () => {
         </div>
 
         {/* Info Box */}
-        <Card className=\"bg-blue-900/20 border-blue-600/30 mt-8\">
-          <CardContent className=\"p-6\">
-            <h3 className=\"text-white font-bold text-lg mb-2\">🔒 Your Privacy Matters</h3>
-            <p className=\"text-gray-300 text-sm\">
+        <Card className=\"bg-blue-900/20 border-blue-600/30 mt-8">
+          <CardContent className=\"p-6">
+            <h3 className="text-white font-bold text-lg mb-2">🔒 Your Privacy Matters</h3>
+            <p className=\"text-gray-300 text-sm">
               We only request access to <strong>view content</strong>, never to post on your behalf. 
               You can disconnect any platform at any time. All connections are encrypted and secure.
             </p>

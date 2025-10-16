@@ -73,8 +73,8 @@ export const AuthProvider = ({ children }) => {
   };
 
   const login = () => {
-    const redirectUrl = window.location.origin;
-    window.location.href = `https://auth.emergentagent.com/?redirect=${encodeURIComponent(redirectUrl)}`;
+    // Use direct Google OAuth instead of Emergent
+    window.location.href = `${BACKEND_URL}/api/auth/google/login`;
   };
 
   const loginWithFacebook = () => {

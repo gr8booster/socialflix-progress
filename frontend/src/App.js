@@ -42,6 +42,7 @@ function App() {
               <Route path="/premium" element={<Premium />} />
               <Route path="/developer" element={<Developer />} />
               <Route path="/creator" element={<Creator />} />
+              <Route path="/connections" element={<Connections />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/privacy" element={<Privacy />} />
               <Route path="/terms" element={<Terms />} />
